@@ -25,15 +25,10 @@ set.title = true
 set.visualbell = true
 set.cursorline = true
 set.number = true
-set.termguicolors = false
 set.fillchars:append({ vert = "|" })
-vim.cmd.colorscheme("retrobox")
 vim.filetype.add({
-    extension = {
-        psql = "sql",
-        mdc = "markdown"
-    },
-    pattern = {
-        [".*%.log.*"] = "messages"
-    }
+    extension = { psql = "sql", mdc = "markdown" },
+    pattern = { [".*%.log.*"] = "messages" }
 })
+set.termguicolors = false
+vim.cmd.colorscheme("retrobox")

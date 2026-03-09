@@ -1,7 +1,6 @@
 local augroup = vim.api.nvim_create_augroup
 local autocmd = vim.api.nvim_create_autocmd
 local cmd = vim.cmd
-local fn = vim.fn
 local map = vim.keymap.set
 local common = require("me.common")
 
@@ -63,7 +62,7 @@ if not wd or wd == "." then
         pattern = "*",
         callback = function()
             local sfile = common.get_session_filepath()
-            if sfile then cmd("mksession! " .. fn.fnameescape(sfile)) end
+            if sfile then cmd.mksession({ args = { sfile }, bang = true }) end
         end
     })
 
@@ -72,7 +71,7 @@ if not wd or wd == "." then
         pattern = "*",
         callback = function()
             local sfile = common.get_session_filepath()
-            if sfile and fn.filereadable(sfile) == 1 then cmd("source " .. fn.fnameescape(sfile)) end
+            if sfile and vim.uv.fs_stat(sfile) then cmd.source(sfile) end
         end
     })
 end

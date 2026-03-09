@@ -1,7 +1,6 @@
-local fn = vim.fn
 local jdtls_jdk = os.getenv("JDK25")
 local jdtls_dir = os.getenv("XDG_DATA_HOME") .. "/eclipse.jdt.ls/org.eclipse.jdt.ls.product/target/repository"
-local project_name = fn.fnamemodify(fn.getcwd(), ":p:h:t")
+local project_name = vim.fs.basename(vim.uv.cwd())
 local workspace_dir = os.getenv("XDG_CACHE_HOME") .. "/jdtls/ws/" .. project_name
 local java_debug_dir = os.getenv("XDG_DATA_HOME") .. "/java-debug/com.microsoft.java.debug.plugin/target/"
 
@@ -21,7 +20,8 @@ vim.lsp.config("jdtls", {
         "--add-modules=ALL-SYSTEM",
         "--add-opens=java.base/java.util=ALL-UNNAMED",
         "--add-opens=java.base/java.lang=ALL-UNNAMED",
-        "-jar", fn.glob(jdtls_dir .. "/plugins/org.eclipse.equinox.launcher_*.jar"),
+        "-jar", vim.fs.find(function(name) return name:match("^org%.eclipse%.equinox%.launcher_.+%.jar$") end,
+            { path = jdtls_dir .. "/plugins", limit = 1 })[1],
         "-configuration", jdtls_dir .. "/config_mac_arm",
         "-data", workspace_dir
     },
@@ -91,7 +91,8 @@ vim.lsp.config("jdtls", {
             executeClientCommandSupport = true
         },
         bundles = {
-            fn.glob(java_debug_dir .. "com.microsoft.java.debug.plugin-*.jar")
+            vim.fs.find(function(name) return name:match("^com%.microsoft%.java%.debug%.plugin%-.+%.jar$") end,
+                { path = java_debug_dir, limit = 1 })[1]
         }
     }
 })
