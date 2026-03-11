@@ -7,9 +7,9 @@ if vim.fn.executable("rg") > 0 then
     set.grepprg = "rg --vimgrep --smart-case --no-heading --column"
     set.grepformat:prepend("%f:%l:%c:%m")
     -- add `--hidden --no-ignore` for wildcard
-    map("n", "<Space>g", [[:silent grep! ]])
-    map("v", "<Space>g", [["0y:silent grep! --case-sensitive <C-r>0]])
-    map("n", "<Space>G", [["0y:silent grep! --case-sensitive <C-r><C-w><CR>]])
+    map("n", "<Space>g", [[:silent grep! ''<Left>]])
+    map("v", "<Space>g", [["0y:silent grep! --case-sensitive '<C-r>0'<Left>]])
+    map("n", "<Space>G", [["0y:silent grep! --case-sensitive '<C-r><C-w>'<CR>]])
 end -- result can be accessible through qf list
 
 -- some proper ways to browse/search
