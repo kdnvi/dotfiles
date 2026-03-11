@@ -18,7 +18,6 @@ link_dotfiles() {
     echo 'linking dotfiles'
 
     local -a dotfiles=(
-        alacritty
         fish
         nvim
         .tmux.conf
@@ -28,13 +27,15 @@ link_dotfiles() {
     )
 
     for file in "${dotfiles[@]}"; do
-        if [[ -d "$ROOT_DIR/$file" ]]; then
+        if [[ -d $ROOT_DIR/$file ]]; then
             ln -sfn "$ROOT_DIR/$file" "$XDG_CONFIG_HOME/$file"
-        elif [[ -f "$ROOT_DIR/$file" ]]; then
-            ln -sfn "$ROOT_DIR/$file" "$HOME/$file"
-        else # should never happen
-            echo "file not found: $ROOT_DIR/$file" >&2
+            continue
         fi
+        if [[ -f $ROOT_DIR/$file ]]; then
+            ln -sfn "$ROOT_DIR/$file" "$HOME/$file"
+            continue
+        fi
+        echo "file not found: $ROOT_DIR/$file" >&2
     done
 }
 
@@ -63,47 +64,9 @@ setup_macos() {
     brew update
 
     local -a packages=(
-        wget git fish watch cmake ninja alacritty tmux tree ncdu ripgrep jq font-hack
+        wget git fish watch cmake ninja tmux tree ncdu ripgrep jq
     )
     brew install "${packages[@]}"
-}
-
-build_from_source() {
-    local name="$1"
-    local target_dir="$HOME/personal/$name"
-    local repo_url="$2"
-    local build_commands="$3"
-
-    echo "building $name from source"
-    if [[ !  -d "$target_dir" ]]; then
-        git clone --depth 1 "$repo_url" "$target_dir"
-    else
-        echo "$name already cloned, updating..."
-        git -C "$target_dir" pull --rebase
-    fi
-
-    (
-        cd "$target_dir"
-        eval "$build_commands"
-    )
-}
-
-install_font() {
-    local target_dir="$XDG_DATA_HOME/fonts"
-    if [[ -f "$target_dir/Hack-Regular.ttf" ]]; then
-        echo 'hack font already installed'
-        return 0
-    fi
-
-    echo 'installing hack font'
-    wget -O /tmp/Hack-v3.003-ttf.zip \
-        https://github.com/source-foundry/Hack/releases/download/v3.003/Hack-v3.003-ttf.zip
-
-    mkdir -p "$target_dir"
-    unzip -j /tmp/Hack-v3.003-ttf.zip 'ttf/*.ttf' -d "$target_dir"
-
-    rm -f /tmp/Hack-v3.003-ttf.zip
-    fc-cache -f -v
 }
 
 setup_linux() {
@@ -111,32 +74,28 @@ setup_linux() {
     sudo apt-get update && sudo apt-get upgrade -y
 
     local -a packages=(
-        curl wget zip git fish gcc clang clangd cmake make ninja-build watch
-        alacritty tree vim tmux gdb ripgrep ncdu parallel jq xxd wl-clipboard
+        curl wget zip git fish gcc clang clangd cmake make ninja-build
+        watch tree vim tmux gdb ripgrep ncdu parallel jq xxd wl-clipboard
     )
     sudo apt-get install -y "${packages[@]}"
-
-    install_font
 
     echo 'disable dash to dock hot-keys on ubuntu'
     gsettings set org.gnome.shell.extensions.dash-to-dock hot-keys false
 }
 
 install_neovim() {
-    build_from_source 'neovim' \
-        'https://github.com/neovim/neovim.git' \
-        'make distclean && make CMAKE_BUILD_TYPE=RelWithDebInfo && sudo make install'
+    fish -c "build_from_source neovim https://github.com/neovim/neovim.git 'make distclean && make CMAKE_BUILD_TYPE=RelWithDebInfo && sudo make install'"
 }
 
 configure_shell() {
-    if [[ "$SHELL" == */fish ]]; then
+    if [[ $SHELL == */fish ]]; then
         echo 'default shell is already fish'
         return 0
     fi
 
     echo 'changing default shell to fish'
     local fish_path=$(command -v fish)
-    if [[ -z "$fish_path" ]]; then
+    if [[ -z $fish_path ]]; then
         echo 'fish not found in path' >&2
         return 1
     fi
@@ -154,7 +113,7 @@ main() {
     create_directories
     link_dotfiles
     configure_git
-    if [[ "$(uname -s)" == 'Darwin' ]]; then
+    if [[ $(uname -s) == Darwin ]]; then
         setup_macos
     else
         setup_linux
