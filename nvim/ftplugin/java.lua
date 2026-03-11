@@ -16,8 +16,8 @@ if fs.find("pom.xml", { upward = true, path = "." })[1] then
         assert(is_test_file, "not a test file")
 
         -- walk up the directory tree to find pom.xml
-        local pom = fs.find("pom.xml", { upward = true, path = fs.dirname(fpath) })[1]
-        local modpath = pom and fs.dirname(pom) or ""
+        local pompath = fs.find("pom.xml", { upward = true, path = fs.dirname(fpath) })[1]
+        local modpath = pompath and fs.dirname(pompath) or ""
 
         -- generate test command
         local test_cmd = { "terminal mvn test -e -DskipTests=false" }
@@ -62,7 +62,7 @@ if fs.find("pom.xml", { upward = true, path = "." })[1] then
 
         -- bang = debug (:MvnTest! or :MvnTest! method)
         if opts.bang then
-            table.insert(test_cmd, " -DargLine=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=localhost:5155")
+            table.insert(test_cmd, " -DargLine=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=localhost:5500")
         end -- checkout dap.configurations.java
         vim.cmd(table.concat(test_cmd))
     end, { nargs = "?", bang = true, desc = "run maven test (method); use ! to debug" })

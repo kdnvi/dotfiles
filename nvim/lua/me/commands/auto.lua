@@ -55,8 +55,8 @@ autocmd("BufReadCmd", {
 })
 
 -- don't do sessionize stuff if opening specific files
-local wd = vim.v.argv[3]
-if not wd or wd == "." then
+local workspace = vim.v.argv[3]
+if not workspace or workspace == "." then
     autocmd("BufWritePost", {
         group = augroup("session_auto_save", { clear = true }),
         pattern = "*",
@@ -69,6 +69,7 @@ if not wd or wd == "." then
     autocmd("VimEnter", {
         group = augroup("session_auto_load", { clear = true }),
         pattern = "*",
+        nested = true,
         callback = function()
             local sfile = common.get_session_filepath()
             if sfile and vim.uv.fs_stat(sfile) then cmd.source(sfile) end

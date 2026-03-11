@@ -18,7 +18,7 @@ dap.adapters.java = function(callback)
         end, buf)
 end
 
--- run `set -x JDK_JAVA_OPTIONS "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=localhost:5055"` to turn on debug agent
+-- run `set -x JDK_JAVA_OPTIONS "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=localhost:5501"` to turn on debug agent
 -- use `set -e JDK_JAVA_OPTIONS` to erase the env variable
 
 -- project specific configs are located in launch.json
@@ -27,19 +27,21 @@ dap.configurations.java = {
     {
         type = "java",
         request = "attach",
-        name = "Debug (Attach) - Local 5055",
+        name = "Debug (Attach) - Local 5501",
         projectName = function() return vim.fn.input("project_name: ") end,
         hostName = "localhost",
-        port = 5055,
+        port = function()
+            return tonumber(vim.fn.input("port: ", "5501")) or 5501
+        end,
         timeout = 5000
     },
     {
         type = "java",
         request = "attach",
-        name = "Test Debug (Attach) - Local 5155",
+        name = "Test Debug (Attach) - Local 5500",
         projectName = function() return vim.fn.input("project_name: ") end,
         hostName = "localhost",
-        port = 5155,
+        port = 5500,
         timeout = 5000
     },
     {
