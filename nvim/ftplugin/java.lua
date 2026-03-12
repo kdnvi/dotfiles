@@ -133,7 +133,7 @@ user_command("Jdb", function()
     if not port then return end
     jdb_attach(host, port)
 end, { desc = "jdb attach" })
-vim.keymap.set("n", "<C-w>b", jdb_toggle_breakpoint, { buffer = true, desc = "jdb toggle breakpoint" })
+user_command("Bp", jdb_toggle_breakpoint, { desc = "jdb toggle breakpoint" })
 user_command("JdbClear", function()
     api.nvim_buf_clear_namespace(0, ns, 0, -1)
 end, { desc = "clear jdb breakpoint signs in current buffer" })
