@@ -66,11 +66,12 @@ end
 
 -- Normal
 hi("Normal",       { ctermfg = fg,  ctermbg = bg })
+hi("NormalNC",     { ctermfg = fg,  ctermbg = bg - 1 })
 
 -- UI
 hi("LineNr",       { ctermfg = 101, ctermbg = bg - 2 })
-hi("Visual",       { ctermbg = 152 })
-hi("VisualNOS",    { ctermbg = 152 })
+hi("Visual",       { ctermfg = 23, ctermbg = 152 })
+hi("VisualNOS",    { ctermfg = 59, ctermbg = 152 })
 hi("CursorLine",   { ctermbg = bg - 1, cterm = "NONE" })
 hi("CursorLineNr", { ctermfg = 131, ctermbg = bg - 1, cterm = "NONE" })
 hi("CursorColumn", { ctermbg = bg - 1 })
@@ -93,20 +94,25 @@ hi("WarningMsg",   { ctermfg = 88 })
 hi("MoreMsg",      { ctermfg = 173 })
 hi("ModeMsg",      { ctermfg = 173 })
 
+-- Quickfix
+hi("QuickFixLine", { ctermfg = 23,  ctermbg = 109, cterm = "bold" })
+
 -- Search
 hi("Search",       { ctermfg = 255, ctermbg = 74 })
 hi("IncSearch",    { ctermfg = 220, ctermbg = 238 })
 
 -- Popup menu
-hi("Pmenu",        { ctermfg = fg,  ctermbg = bg - 2 })
+hi("Pmenu",        { ctermfg = fg, ctermbg = bg - 2 })
 hi("PmenuSel",     { ctermfg = 252, ctermbg = 95 })
+hi("PmenuMatch",   { ctermfg = fg, ctermbg = 168, cterm = "bold" })
+hi("PmenuMatchSel",{ ctermfg = 252, ctermbg = 168, cterm = "bold" })
 hi("PmenuSbar",    { ctermbg = 65 })
 hi("PmenuThumb",   { ctermbg = 23 })
 
 -- Statusline / tabline
-hi("StatusLine",     { ctermfg = 95,     ctermbg = 187 })
+hi("StatusLine",     { ctermfg = 95, ctermbg = 187 })
 hi("StatusLineNC",     { ctermfg = bg - 2, ctermbg = 238 })
-hi("StatusLineTerm",   { ctermfg = 95,     ctermbg = 187, cterm = "bold,reverse" })
+hi("StatusLineTerm",   { ctermfg = 95, ctermbg = 187, cterm = "bold,reverse" })
 hi("StatusLineTermNC", { ctermfg = bg - 2, ctermbg = 238, cterm = "bold,reverse" })
 hi("TabLineFill",      { ctermfg = bg - 2 })
 hi("TabLineSel",     { ctermfg = 187, ctermbg = 66 })
@@ -163,7 +169,6 @@ hi("SpellRare",  { ctermfg = 96,  cterm = "underline", guisp = rgb[96] })
 
 -- Extra whitespace
 hi("ExtraWhitespace", { ctermbg = bg - 2 })
-
 
 -- Treesitter overrides (only where we differ from Neovim defaults)
 vim.cmd("hi! link @variable Normal")
