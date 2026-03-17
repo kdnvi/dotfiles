@@ -18,7 +18,10 @@ function M.get_active_lsp_client(lsname)
     return client, buf
 end
 
+local _session_path_cache = nil
 function M.get_session_filepath()
+    if _session_path_cache then return _session_path_cache end
+
     local result = vim.system({ "git", "rev-parse", "--abbrev-ref", "HEAD" }, { text = true }):wait()
     local branch = vim.trim(result.stdout or "")
     if result.code ~= 0 or #branch == 0 then
@@ -31,7 +34,8 @@ function M.get_session_filepath()
         vim.uv.fs_mkdir(sessions_dir, 493) -- 0755
     end -- first run only
 
-    return string.format("%s/%s.vim", sessions_dir, name)
+    _session_path_cache = string.format("%s/%s.vim", sessions_dir, name)
+    return _session_path_cache
 end
 
 return M
