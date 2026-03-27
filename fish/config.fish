@@ -22,10 +22,11 @@ if status is-interactive
     abbr -a -- gp 'git pull'
     abbr -a -- gP 'git push'
     abbr -a -- ga 'git add'
+    abbr -a -- gaa 'git add --all'
+    abbr -a -- gap 'git add --patch'
     abbr -a -- gc 'git commit -m'
     abbr -a -- gr 'git restore'
     abbr -a -- gR 'git reset'
-    abbr -a -- gS 'git stash'
     abbr -a -- gco 'git checkout'
 
     alias vi=nvim
