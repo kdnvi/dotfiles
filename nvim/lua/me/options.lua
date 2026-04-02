@@ -16,7 +16,7 @@ set.list = true
 set.showbreak = "+++ "
 set.visualbell = true
 set.cursorline = true
-set.termguicolors = false
+set.number = true
 vim.filetype.add({
     extension = { psql = "sql", mdc = "markdown" },
     pattern = { [".*%.log.*"] = "messages" }
