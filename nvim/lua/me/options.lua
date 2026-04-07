@@ -16,7 +16,6 @@ set.list = true
 set.showbreak = "+++ "
 set.visualbell = true
 set.cursorline = true
-set.number = true
 require("vim._core.ui2").enable({
     enable = true,
     msg = { target = "cmd" }
