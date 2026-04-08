@@ -2,15 +2,16 @@ set -gx XDG_CONFIG_HOME "$HOME/.config"
 set -gx XDG_DATA_HOME "$HOME/.local/share"
 set -gx XDG_CACHE_HOME "$HOME/.cache"
 
+fish_add_path "$HOME/.local/bin"
+set -gx RIPGREP_CONFIG_PATH "$HOME/.ripgreprc"
+
 if status is-interactive
     set -l age (machine_age)
     set -l age_str (test -n "$age" -a "$age" != unknown; and echo " — it's been $age — the warranty is gone but the bugs remain"; or echo "")
     set -gx fish_greeting (date '+%A, %B %d, %Y at %H:%M')$age_str
 
-    fish_add_path "$HOME/.local/bin"
     set -gx EDITOR nvim
     set -gx VISUAL nvim
-    set -gx RIPGREP_CONFIG_PATH "$HOME/.ripgreprc"
 
     set __fish_git_prompt_showdirtystate 'yes'
     set __fish_git_prompt_showstashstate 'yes'

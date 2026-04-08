@@ -1,5 +1,5 @@
 local api = vim.api
-local user_command = api.nvim_create_user_command
+local buf_user_command = api.nvim_buf_create_user_command
 local map = vim.keymap.set
 local fs = vim.fs
 local fn = vim.fn
@@ -10,7 +10,7 @@ if fs.find("pom.xml", { upward = true, path = "." })[1] then
     setl.errorformat = "[ERROR] %f:[%l\\,%v] %m"
     setl.makeprg = "mvn compile"
 
-    user_command("RunTests", function(opts)
+    buf_user_command(0, "RunTests", function(opts)
         local fpath = api.nvim_buf_get_name(0):sub(#cwd + 2) -- relative path
         local basename = fs.basename(fpath)
         local fname = basename:match("(.+)%.") or basename
@@ -58,7 +58,7 @@ if fs.find("pom.xml", { upward = true, path = "." })[1] then
         table.insert(test_cmd, " -Dtest=")
         table.insert(test_cmd, test_class)
 
-        local method_arg = (opts.args and vim.trim(opts.args))
+        local method_arg = vim.trim(opts.args or "")
         if #method_arg > 0 then
             table.insert(test_cmd, "\\#")
             table.insert(test_cmd, method_arg)
@@ -138,13 +138,13 @@ local function jdb_toggle_breakpoint()
     end
 end
 
-user_command("Debug", jdb_attach, { nargs = 0, desc = "start debugger" })
-user_command("Breakpoint", jdb_toggle_breakpoint, { nargs = 0, desc = "toggle breakpoint" })
-user_command("Jdb", function(opts) jdb_send(opts.args) end, { nargs = "+", desc = "run jdb command" })
+buf_user_command(0, "Debug", jdb_attach, { nargs = 0, desc = "start debugger" })
+buf_user_command(0, "Breakpoint", jdb_toggle_breakpoint, { nargs = 0, desc = "toggle breakpoint" })
+buf_user_command(0, "Jdb", function(opts) jdb_send(opts.args) end, { nargs = "+", desc = "run jdb command" })
 
 map({ "n", "v" }, "<Up>", [[:Jdb cont<CR>]], { buffer = 0 })
 map({ "n", "v" }, "<Right>", [[:Jdb next<CR>]], { buffer = 0 })
 map({ "n", "v" }, "<Down>", [[:Jdb step<CR>]], { buffer = 0 })
 map({ "n", "v" }, "<Left>", [[:Jdb step up<CR>]], { buffer = 0 })
-map("n", "<C-j>", [[:Jdb dump <C-r><C-w>]], { buffer = 0 })
-map("v", "<C-j>", [["0y:Jdb dump <C-r>0]], { buffer = 0 })
+map("n", "<Space>d", [[:Jdb dump <C-r><C-w>]], { buffer = 0 })
+map("v", "<Space>d", [["0y:Jdb dump <C-r>0]], { buffer = 0 })
