@@ -4,27 +4,23 @@ local cmd = vim.cmd
 local map = vim.keymap.set
 local common = require("me.common")
 
--- close some windows quicker using [q] instead of typing :bd<CR>
 autocmd("FileType", {
     pattern = { "help", "qf", "messages", "checkhealth" },
     callback = function() map("n", "q", cmd.bdelete, { buffer = 0 }) end
-})
+}) -- close some windows quicker using [q] instead of typing :bd<CR>
 
--- open the quickfix window whenever a qf command is executed
 autocmd("QuickFixCmdPost", {
     pattern = "[^l]*",
     callback = function() cmd.cwindow() end
-})
+}) -- open the quickfix window whenever a qf command is executed
 
--- know what has been yanked
 autocmd("TextYankPost", {
     pattern = "*",
     callback = function()
         vim.hl.on_yank({ higroup = "IncSearch", timeout = 128, silent = true })
     end
-})
+}) -- know what has been yanked
 
--- open jdt:// uri and load them into the buffer
 autocmd("BufReadCmd", {
     group = augroup("jdtls_class_file_content", { clear = true }),
     pattern = "jdt://*",
@@ -52,25 +48,8 @@ autocmd("BufReadCmd", {
         client:request("java/classFileContents", { uri = uri }, handler, buf)
         vim.wait(5000, function() return content ~= nil end)
     end
-})
+}) -- open jdt:// uri and load them into the buffer
 
--- language server progress
-vim.api.nvim_create_autocmd("LspProgress", {
-    group = augroup("lsp_progress", { clear = true }),
-    callback = function(e)
-        local value = e.data.params.value or {}
-        vim.api.nvim_echo({ { value.message or "done" } }, false, {
-            id = "lsp." .. e.data.client_id,
-            kind = "progress",
-            source = "vim.lsp",
-            title = value.title,
-            status = value.kind ~= "end" and "running" or "success",
-            percent = value.percentage,
-        })
-    end
-})
-
--- don't do sessionize stuff if opening specific files
 if #vim.fn.argv() == 0 then
     autocmd("BufWritePost", {
         group = augroup("session_auto_save", { clear = true }),
@@ -90,4 +69,4 @@ if #vim.fn.argv() == 0 then
             if sfile and vim.uv.fs_stat(sfile) then cmd.source(sfile) end
         end
     })
-end
+end -- don't do sessionize stuff if opening specific files
