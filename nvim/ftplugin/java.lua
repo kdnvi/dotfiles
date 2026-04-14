@@ -8,7 +8,7 @@ local cwd = vim.uv.cwd()
 
 if fs.find("pom.xml", { upward = true, path = "." })[1] then
     setl.errorformat = "[ERROR] %f:[%l\\,%v] %m"
-    setl.makeprg = "mvn compile"
+    setl.makeprg = "mvn package -T 1C -am -DskipTests"
 
     buf_user_command(0, "RunTests", function(opts)
         local fpath = api.nvim_buf_get_name(0):sub(#cwd + 2) -- relative path
