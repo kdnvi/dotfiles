@@ -1,9 +1,8 @@
 vim9script
-
 set nocompatible regexpengine=2 noswapfile nobackup
 set ignorecase smartcase hlsearch incsearch updatetime=512
 set showmatch ruler title visualbell cursorline autoread
-set shiftwidth=2 tabstop=2 softtabstop=2 expandtab shiftround
+set shiftwidth=4 tabstop=4 softtabstop=4 expandtab shiftround
 set wildoptions=pum,tagfile,fuzzy
 set autocomplete completeopt+=fuzzy
 &undodir = $HOME .. '/.vim/undo'
@@ -141,3 +140,4 @@ command! Blame {
 }
 
 defcompile
+# vim: sw=2 ts=2 sts=2

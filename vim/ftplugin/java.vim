@@ -52,3 +52,4 @@ enddef
 command! -buffer Breakpoint BreakpointCopy()
 
 defcompile
+# vim: sw=2 ts=2 sts=2

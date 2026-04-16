@@ -153,3 +153,4 @@ autocmd User LspAttached {
 }
 
 defcompile
+# vim: sw=2 ts=2 sts=2
