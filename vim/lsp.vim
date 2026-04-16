@@ -29,14 +29,14 @@ var lsp_servers: list<dict<any>> = [{
   rootSearch: ['tsconfig.json', 'jsconfig.json', 'package.json', '.git/'],
 }]
 
+# use [mvn eclipse:clean eclipse:eclipse] or [./gradlew eclipse] to regenerate
 def JdtlsConfig(): dict<any>
   var jdtls_dir = $'{$XDG_DATA_HOME}/eclipse.jdt.ls/org.eclipse.jdt.ls.product/target/repository'
   var launcher_jar = glob($'{jdtls_dir}/plugins/org.eclipse.equinox.launcher_*.jar')
   if empty(launcher_jar)
     return {}
   endif
-  var java_debug_dir = $'{$XDG_DATA_HOME}/java-debug/com.microsoft.java.debug.plugin/target/'
-  var debug_jar = glob($'{java_debug_dir}com.microsoft.java.debug.plugin-*.jar')
+  var debug_jar = glob($'{$XDG_DATA_HOME}/java-debug/com.microsoft.java.debug.plugin/target/com.microsoft.java.debug.plugin-*.jar')
   return {
     name: 'jdtls',
     filetype: 'java',
@@ -105,6 +105,7 @@ def LoadClassFile(uri: string, bnr: number)
   setbufvar(bnr, '&modifiable', true)
   setbufvar(bnr, '&swapfile', false)
   setbufvar(bnr, '&buftype', 'nofile')
+  setbufvar(bnr, '&bufhidden', 'wipe')
   setbufvar(bnr, '&filetype', 'java')
 
   lsp#lsp#AddFile(bnr)
