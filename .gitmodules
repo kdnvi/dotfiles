@@ -1,6 +1,6 @@
 [submodule "vim/pack/plugins/opt/lsp"]
 	path = vim/pack/plugins/opt/lsp
-	url = https://github.com/yegappan/lsp
+	url = git@github.com:kdnvi/lsp.git
 [submodule "vim/pack/plugins/opt/vim-highlightedyank"]
 	path = vim/pack/plugins/opt/vim-highlightedyank
 	url = https://github.com/machakann/vim-highlightedyank
