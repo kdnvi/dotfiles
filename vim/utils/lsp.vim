@@ -151,6 +151,7 @@ autocmd User LspAttached {
   nnoremap <buffer> [d <Cmd>LspDiagPrev<CR>
   nnoremap <buffer> <C-w>d <Cmd>LspDiagCurrent<CR>
   nnoremap <buffer> <C-w>a <Cmd>LspCodeAction<CR>
+  nnoremap <buffer> <C-h> <Cmd>LspDocumentSymbol<CR>
   inoremap <buffer> <C-h> <Cmd>LspShowSignature<CR>
 }
 

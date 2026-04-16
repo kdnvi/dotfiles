@@ -37,7 +37,7 @@ if !empty(findfile('pom.xml', '.;'))
   command! -buffer -nargs=? -bang RunTests RunTests(<q-args>, <bang>false)
 endif
 
-def BreakpointCopy()
+def Breakpoint()
   const fpath = expand('%:p')
   var class = matchstr(fpath, '/src/[^/]\+/java/\zs.\+\ze\.java$')
   if empty(class)
@@ -49,6 +49,6 @@ def BreakpointCopy()
   setreg('+', bp)
   echo bp
 enddef
-command! -buffer Breakpoint BreakpointCopy()
+command! -buffer Bp Breakpoint()
 
 defcompile
