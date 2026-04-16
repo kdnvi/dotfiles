@@ -1,48 +1,23 @@
 vim9script
+
 set nocompatible regexpengine=2 noswapfile nobackup
 set ignorecase smartcase hlsearch incsearch updatetime=512
 set showmatch ruler title visualbell cursorline autoread
 set shiftwidth=4 tabstop=4 softtabstop=4 expandtab shiftround
-set wildoptions=pum,tagfile,fuzzy
-set autocomplete completeopt+=fuzzy
-&undodir = $HOME .. '/.vim/undo'
-if !isdirectory(&undodir) | mkdir(&undodir, 'p') | endif
-set undofile wildcharm=<C-z>
+set wildoptions=pum,tagfile,fuzzy wildcharm=<C-z>
+set autocomplete completeopt+=fuzzy sessionoptions-=options
 set list listchars=tab:>\ ,trail:-,nbsp:+
 &showbreak = '+++ '
 set autoindent smartindent
-set laststatus=2 background=dark
-colorscheme retrobox
 filetype plugin on
 filetype indent on
 syntax enable
-g:netrw_dirhistmax = 0
 
-# extend find/vimgrep with ripgrep
-if executable('rg')
-  def g:RgFindFunc(cmdarg: string, _is_completion: bool): list<string>
-    var result = systemlist('rg --files --hidden')
-    if v:shell_error != 0
-      return []
-    endif
-    return empty(cmdarg) ? result : matchfuzzy(result, cmdarg)
-  enddef
-  set findfunc=g:RgFindFunc
-  nnoremap <Space>f :find 
-  nnoremap <Space>F :find <C-r><C-w><C-z>
-  # add [--hidden --no-ignore] for wildcard
-  set grepprg=rg\ --vimgrep\ $*
-  set grepformat=%f:%l:%c:%m
-  nnoremap <Space>g :grep! ''<Left>
-  vnoremap <Space>g "0y:grep! '<C-r>0'<Left>
-  nnoremap <Space>G :grep! '<C-r><C-w>'<CR>
-else
-  nnoremap <Space>f :find **
-  nnoremap <Space>F :find **<C-r><C-w><C-z>
-  nnoremap <Space>g :vimgrep //j **<S-Left><Left><Left><Left>
-  vnoremap <Space>g "0y:vimgrep /<C-r>0/j **<S-Left><Left><Left><Left>
-  nnoremap <Space>G :vimgrep /<C-r><C-w>/j **<CR>
-endif
+nnoremap <Space>f :find **
+nnoremap <Space>F :find **<C-r><C-w><C-z>
+nnoremap <Space>g :vimgrep //j **<S-Left><Left><Left><Left>
+vnoremap <Space>g "0y:vimgrep /<C-r>0/j **<S-Left><Left><Left><Left>
+nnoremap <Space>G :vimgrep /<C-r><C-w>/j **<CR>
 
 # terminal emulators historically map C-Space to the null byte (\0, ASCII 0)
 # which VIM represents as <NUL>
@@ -51,6 +26,7 @@ nnoremap - :edit %:.:h<C-z><C-z>
 
 # redraw + clear search highlight
 nnoremap <C-l> <Cmd>nohlsearch<Bar>diffupdate<Bar>redraw!<CR>
+g:netrw_dirhistmax = 0
 
 # clipboard
 # all motions after [<Space>y] work the same as normal [y]
@@ -72,7 +48,49 @@ tnoremap <C-w><C-j> <C-w>j
 tnoremap <C-w><C-k> <C-w>k
 tnoremap <C-w><C-l> <C-w>l
 
-# keep things simple, only essentials
+autocmd BufNewFile,BufRead *.log* setfiletype messages
+autocmd BufNewFile,BufRead *.psql setfiletype sql
+autocmd BufNewFile,BufRead *.mdc  setfiletype markdown
+autocmd FileType help,qf,messages nnoremap <buffer> q <Cmd>bdelete<CR>
+autocmd TerminalWinOpen * nnoremap <buffer> q <Cmd>bdelete!<CR>
+autocmd QuickFixCmdPost [^l]* cwindow
+
+# local-specific config
+&undodir = $'{$XDG_STATE_HOME}/vim/undo'
+if !isdirectory(&undodir) | mkdir(&undodir, 'p') | endif
+set undofile background=dark
+colorscheme retrobox
+
+# extend find/vimgrep with ripgrep
+if executable('rg')
+  def g:RgFindFunc(cmdarg: string, _is_completion: bool): list<string>
+    var result = systemlist('rg --files --hidden')
+    if v:shell_error != 0
+      return []
+    endif
+    return empty(cmdarg) ? result : matchfuzzy(result, cmdarg)
+  enddef
+  set findfunc=g:RgFindFunc
+  nnoremap <Space>f :find 
+  nnoremap <Space>F :find <C-r><C-w><C-z>
+  # add [--hidden --no-ignore] for wildcard
+  set grepprg=rg\ --vimgrep\ $*
+  set grepformat=%f:%l:%c:%m
+  nnoremap <Space>g :grep! ''<Left>
+  vnoremap <Space>g "0y:grep! '<C-r>0'<Left>
+  nnoremap <Space>G :grep! '<C-r><C-w>'<CR>
+endif
+
+# sessionize
+source <sfile>:h/utils/session.vim
+
+command! Blame {
+  const start = line('.')
+  const finish = start + 10
+  execute $'!git blame -L {start},{finish} %'
+}
+
+# keep things simple here, only essentials
 # plugins are managed as git submodules under vim/pack/plugins/opt/
 #   add:    git submodule add <url> vim/pack/plugins/opt/<name>
 #   init:   git submodule update --init
@@ -80,64 +98,6 @@ tnoremap <C-w><C-l> <C-w>l
 packadd vim-signify
 packadd vim-highlightedyank
 g:highlightedyank_highlight_duration = 128
-packadd lsp
-source <sfile>:h/lsp.vim
-
-autocmd BufNewFile,BufRead *.psql setfiletype sql
-autocmd BufNewFile,BufRead *.log* setfiletype messages
-autocmd BufNewFile,BufRead *.mdc  setfiletype markdown
-autocmd FileType help,qf,messages nnoremap <buffer> q <Cmd>bdelete<CR>
-autocmd QuickFixCmdPost [^l]* cwindow
-
-def GetSessionFilepath(): string
-  var result = systemlist('git rev-parse --abbrev-ref HEAD')
-  if v:shell_error != 0 || empty(result) || empty(result[0])
-    return ''
-  endif # returns empty as we want silent exit
-  var branch = result[0]->trim()
-  var hash = sha256(getcwd() .. '_' .. branch)
-  var sessions_dir = $HOME .. '/.vim/sessions'
-  if !isdirectory(sessions_dir)
-    mkdir(sessions_dir, 'p')
-  endif # first run only
-  return $'{sessions_dir}/{hash}.vim'
-enddef
-
-command! ClearSession {
-  var sfile = GetSessionFilepath()
-  if empty(sfile) || !filereadable(sfile)
-    echoerr 'no session found'
-  elseif delete(sfile) != 0
-    echoerr $'failed to remove session file: {sfile}'
-  else
-    echo $'removed session file: {sfile}'
-  endif
-} # clear current repo session
-
-# don't do sessionize stuff if opening specific files
-if !argc()
-  augroup session_management
-    autocmd!
-    autocmd BufWritePost * {
-      var sfile = GetSessionFilepath()
-      if !empty(sfile)
-        execute $'mksession! {sfile}'
-      endif
-    }
-    autocmd VimEnter * ++nested {
-      var sfile = GetSessionFilepath()
-      if !empty(sfile) && filereadable(sfile)
-        execute $'source {sfile}'
-      endif
-    }
-  augroup END
-endif
-
-command! Blame {
-  var start = line('.')
-  var finish = line + 9
-  execute $'!git blame -L {start},{finish} %'
-}
+source <sfile>:h/utils/lsp.vim
 
 defcompile
-# vim: sw=2 ts=2 sts=2

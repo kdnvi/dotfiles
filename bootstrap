@@ -3,12 +3,15 @@ set -euo pipefail
 
 readonly XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 readonly XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+readonly XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
 readonly ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 create_directories() {
     echo 'creating essential files/directories'
     mkdir -p "$XDG_DATA_HOME"
     mkdir -p "$XDG_CONFIG_HOME"
+    mkdir -p "$XDG_STATE_HOME"
+    mkdir -p "$XDG_CACHE_HOME"
     mkdir -p "$HOME/personal"
     mkdir -p "$HOME/repos"
     touch "$HOME/.env.local"

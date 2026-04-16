@@ -1,5 +1,6 @@
 vim9script
 
+packadd lsp
 var lsp_servers: list<dict<any>> = [{
   name: 'clangd',
   filetype: ['c', 'cpp'],
@@ -31,12 +32,12 @@ var lsp_servers: list<dict<any>> = [{
 
 # use [mvn eclipse:clean eclipse:eclipse] or [./gradlew eclipse] to regenerate
 def JdtlsConfig(): dict<any>
-  var jdtls_dir = $'{$XDG_DATA_HOME}/eclipse.jdt.ls/org.eclipse.jdt.ls.product/target/repository'
-  var launcher_jar = glob($'{jdtls_dir}/plugins/org.eclipse.equinox.launcher_*.jar')
+  const jdtls_dir = $'{$XDG_DATA_HOME}/eclipse.jdt.ls/org.eclipse.jdt.ls.product/target/repository'
+  const launcher_jar = glob($'{jdtls_dir}/plugins/org.eclipse.equinox.launcher_*.jar')
   if empty(launcher_jar)
     return {}
   endif
-  var debug_jar = glob($'{$XDG_DATA_HOME}/java-debug/com.microsoft.java.debug.plugin/target/com.microsoft.java.debug.plugin-*.jar')
+  const debug_jar = glob($'{$XDG_DATA_HOME}/java-debug/com.microsoft.java.debug.plugin/target/com.microsoft.java.debug.plugin-*.jar')
   return {
     name: 'jdtls',
     filetype: 'java',
@@ -94,12 +95,6 @@ def JdtlsConfig(): dict<any>
     },
   }
 enddef
-if !empty($JDK25)
-  var jdtls = JdtlsConfig()
-  if !empty(jdtls)
-    lsp_servers->add(jdtls)
-  endif
-endif # requires $JDK25
 
 def LoadClassFile(uri: string, bnr: number)
   setbufvar(bnr, '&modifiable', true)
@@ -120,11 +115,18 @@ def LoadClassFile(uri: string, bnr: number)
       echoerr $'jdtls: no content returned for {uri}'
       return
     endif
-    var lines = split(result->substitute('\r\n', '\n', 'g'), '\n', true)
+    const lines = split(result->substitute('\r\n', '\n', 'g'), '\n', true)
     setbufline(bnr, 1, lines)
     setbufvar(bnr, '&modifiable', false)
   })
 enddef
+
+if !empty($JDK25)
+  var jdtls = JdtlsConfig()
+  if !empty(jdtls)
+    lsp_servers->add(jdtls)
+  endif
+endif # requires $JDK25
 
 augroup jdtls_class_file
   autocmd!
@@ -135,6 +137,7 @@ call LspAddServer(lsp_servers)
 call LspOptionsSet({
   ignoreMissingServer: true,
   omniComplete: true,
+  showDiagOnStatusLine: true,
 })
 
 autocmd User LspAttached {
@@ -153,4 +156,3 @@ autocmd User LspAttached {
 }
 
 defcompile
-# vim: sw=2 ts=2 sts=2
