@@ -10,8 +10,8 @@ if status is-interactive
     set -l age_str (test -n "$age" -a "$age" != unknown; and echo " — it's been $age — the warranty is gone but the bugs remain"; or echo "")
     set -gx fish_greeting (date '+%A, %B %d, %Y at %H:%M')$age_str
 
-    set -gx EDITOR nvim
-    set -gx VISUAL nvim
+    set -gx EDITOR vim
+    set -gx VISUAL vim
 
     set __fish_git_prompt_showdirtystate 'yes'
     set __fish_git_prompt_showstashstate 'yes'
@@ -30,6 +30,5 @@ if status is-interactive
     abbr -a -- gR 'git reset'
     abbr -a -- gco 'git checkout'
 
-    alias vi=nvim
     alias myip='echo (dig +short txt ch whoami.cloudflare @1.0.0.1)'
 end

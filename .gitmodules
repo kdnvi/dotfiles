@@ -1,0 +1,9 @@
+[submodule "vim/pack/plugins/opt/lsp"]
+	path = vim/pack/plugins/opt/lsp
+	url = https://github.com/yegappan/lsp
+[submodule "vim/pack/plugins/opt/vim-highlightedyank"]
+	path = vim/pack/plugins/opt/vim-highlightedyank
+	url = https://github.com/machakann/vim-highlightedyank
+[submodule "vim/pack/plugins/opt/vim-signify"]
+	path = vim/pack/plugins/opt/vim-signify
+	url = https://github.com/mhinz/vim-signify
