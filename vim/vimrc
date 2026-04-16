@@ -58,7 +58,7 @@ autocmd QuickFixCmdPost [^l]* cwindow
 # local-specific config
 &undodir = $'{$XDG_STATE_HOME}/vim/undo'
 if !isdirectory(&undodir) | mkdir(&undodir, 'p') | endif
-set undofile background=dark
+set undofile laststatus=2 background=dark
 colorscheme retrobox
 
 # extend find/vimgrep with ripgrep

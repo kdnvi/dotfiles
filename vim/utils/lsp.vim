@@ -146,7 +146,6 @@ autocmd User LspAttached {
   nnoremap <buffer> gi <Cmd>LspGotoImpl<CR>
   nnoremap <buffer> gr <Cmd>LspShowReferences<CR>
   nnoremap <buffer> gR <Cmd>LspRename<CR>
-  nnoremap <buffer> gu <Cmd>LspShowReferences<CR>
   nnoremap <buffer> K <Cmd>LspHover<CR>
   nnoremap <buffer> ]d <Cmd>LspDiagNext<CR>
   nnoremap <buffer> [d <Cmd>LspDiagPrev<CR>

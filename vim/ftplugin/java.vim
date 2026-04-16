@@ -45,9 +45,9 @@ def BreakpointCopy()
   endif
   if empty(class) | throw 'could not derive class name from path' | endif
   class = class->substitute('/', '.', 'g')
-    const bp = $'stop at {class}:{line(".")}'
-    setreg('+', bp)
-    echo bp
+  const bp = $'stop at {class}:{line(".")}'
+  setreg('+', bp)
+  echo bp
 enddef
 command! -buffer Breakpoint BreakpointCopy()
 
