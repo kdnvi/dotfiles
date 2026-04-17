@@ -95,6 +95,39 @@ def JdtlsConfig(): dict<any>
     },
   }
 enddef
+if !empty($JDK25)
+  var jdtls = JdtlsConfig()
+  if !empty(jdtls)
+    lsp_servers->add(jdtls)
+  endif
+endif # requires $JDK25
+
+call LspAddServer(lsp_servers)
+call LspOptionsSet({
+  diagSignErrorText: '?',
+  diagSignHintText: '#',
+  diagSignInfoText: '@',
+  diagSignWarningText: '!',
+  ignoreMissingServer: true,
+  omniComplete: true,
+  showDiagOnStatusLine: true,
+  showInlayHints: true,
+})
+
+autocmd User LspAttached {
+  setlocal formatexpr=lsp#lsp#FormatExpr()
+  nnoremap <buffer> gd <Cmd>LspGotoDefinition<CR>
+  nnoremap <buffer> gi <Cmd>LspGotoImpl<CR>
+  nnoremap <buffer> gr <Cmd>LspShowReferences<CR>
+  nnoremap <buffer> gR <Cmd>LspRename<CR>
+  nnoremap <buffer> K <Cmd>LspHover<CR>
+  nnoremap <buffer> ]d <Cmd>LspDiagNext<CR>
+  nnoremap <buffer> [d <Cmd>LspDiagPrev<CR>
+  nnoremap <buffer> <C-w>d <Cmd>LspDiagCurrent<CR>
+  nnoremap <buffer> <C-w>a <Cmd>LspCodeAction<CR>
+  nnoremap <buffer> <C-h> <Cmd>LspDocumentSymbol<CR>
+  inoremap <buffer> <C-h> <Cmd>LspShowSignature<CR>
+}
 
 def LoadClassFile(uri: string, bnr: number)
   setbufvar(bnr, '&modifiable', true)
@@ -120,39 +153,18 @@ def LoadClassFile(uri: string, bnr: number)
     setbufvar(bnr, '&modifiable', false)
   })
 enddef
-
-if !empty($JDK25)
-  var jdtls = JdtlsConfig()
-  if !empty(jdtls)
-    lsp_servers->add(jdtls)
-  endif
-endif # requires $JDK25
-
 augroup jdtls_class_file
   autocmd!
   autocmd BufReadCmd jdt://* LoadClassFile(bufname(), bufnr())
 augroup END
 
-call LspAddServer(lsp_servers)
-call LspOptionsSet({
-  ignoreMissingServer: true,
-  omniComplete: true,
-  showDiagOnStatusLine: true,
-})
-
-autocmd User LspAttached {
-  setlocal formatexpr=lsp#lsp#FormatExpr()
-  nnoremap <buffer> gd <Cmd>LspGotoDefinition<CR>
-  nnoremap <buffer> gi <Cmd>LspGotoImpl<CR>
-  nnoremap <buffer> gr <Cmd>LspShowReferences<CR>
-  nnoremap <buffer> gR <Cmd>LspRename<CR>
-  nnoremap <buffer> K <Cmd>LspHover<CR>
-  nnoremap <buffer> ]d <Cmd>LspDiagNext<CR>
-  nnoremap <buffer> [d <Cmd>LspDiagPrev<CR>
-  nnoremap <buffer> <C-w>d <Cmd>LspDiagCurrent<CR>
-  nnoremap <buffer> <C-w>a <Cmd>LspCodeAction<CR>
-  nnoremap <buffer> <C-h> <Cmd>LspDocumentSymbol<CR>
-  inoremap <buffer> <C-h> <Cmd>LspShowSignature<CR>
-}
+def LspProgressInfo()
+  for [_, info] in g:LspProgress->items()
+    const pct = info.percentage >= 0 ? $'({info.percentage}%)' : ''
+    const detail = !empty(info.message) ? $'{info.message}' : ''
+    echom $'[{info.serverName}] {info.title}: {detail} {pct}'
+  endfor
+enddef
+autocmd User LspProgressUpdate LspProgressInfo()
 
 defcompile
