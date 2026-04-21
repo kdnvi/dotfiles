@@ -95,8 +95,9 @@ command! Blame {
 #   add:    git submodule add <url> vim/pack/plugins/opt/<name>
 #   init:   git submodule update --init
 #   update: git submodule update --remote vim/pack/plugins/opt/<name>
-packadd vim-signify
-packadd vim-highlightedyank
+packadd commentary
+packadd signify
+packadd highlightedyank
 g:highlightedyank_highlight_duration = 128
 source <sfile>:h/utils/lsp.vim
 
