@@ -89,16 +89,13 @@ command! Blame {
   execute $'!git blame -L {start},{finish} %'
 }
 
+# enable optional packages
+packadd comment
+packadd hlyank
+g:hlyank_duration = 128
+
 # keep things simple here, only essentials
 # plugins are managed as git submodules under vim/pack/plugins/opt/
-#   add:    git submodule add <url> vim/pack/plugins/opt/<name>
-#   init:   git submodule update --init
-#   update: git submodule update --remote vim/pack/plugins/opt/<name>
-packadd commentary
-packadd surround
-packadd signify
-packadd highlightedyank
-g:highlightedyank_highlight_duration = 128
 source <sfile>:h/utils/lsp.vim
 
 defcompile

@@ -8,9 +8,14 @@ install_jdtls() {
     if [[ ! -d $jdtls_dir ]]; then
         git clone https://github.com/eclipse-jdtls/eclipse.jdt.ls "$jdtls_dir"
     else
-        git -C "$jdtls_dir" pull --rebase
+        git -C "$jdtls_dir" fetch --tags
     fi
-    "$jdtls_dir/mvnw" -f "$jdtls_dir/pom.xml" clean verify -U -DskipTests=true
+
+    local latest_tag
+    latest_tag=$(git -C "$jdtls_dir" tag --sort=-version:refname | head -1)
+    git -C "$jdtls_dir" checkout "$latest_tag"
+
+    "$jdtls_dir/mvnw" -f "$jdtls_dir/pom.xml" clean verify -DskipTests=true
 }
 
 if [[ $(uname -s) == Darwin ]]; then

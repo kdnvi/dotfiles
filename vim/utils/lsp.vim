@@ -103,14 +103,9 @@ endif # requires $JDK25
 
 call LspAddServer(lsp_servers)
 call LspOptionsSet({
-  diagSignErrorText: '?',
-  diagSignHintText: '#',
-  diagSignInfoText: '@',
-  diagSignWarningText: '!',
   ignoreMissingServer: true,
   omniComplete: true,
   showDiagOnStatusLine: true,
-  showInlayHints: true,
 })
 
 autocmd User LspAttached {

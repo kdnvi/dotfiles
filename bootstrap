@@ -4,6 +4,7 @@ set -euo pipefail
 readonly XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 readonly XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 readonly XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
+readonly XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
 readonly ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 create_directories() {
@@ -68,7 +69,7 @@ setup_macos() {
     brew update
 
     local -a packages=(
-        wget git fish watch cmake ninja tmux tree ncdu ripgrep jq ghostty font-ubuntu-sans-mono
+        git fish watch tmux tree ncdu ripgrep jq ghostty font-ubuntu-sans-mono
     )
     brew install "${packages[@]}"
 }
@@ -78,8 +79,7 @@ setup_linux() {
     sudo apt-get update && sudo apt-get upgrade -y
 
     local -a packages=(
-        curl wget zip git fish gcc clang clangd cmake make ninja-build xxd
-        watch tree vim vim-gtk3 tmux gdb ripgrep ncdu parallel jq wl-clipboard
+        curl git fish watch tmux vim tree ncdu ripgrep jq wl-clipboard
     )
     sudo apt-get install -y "${packages[@]}"
     sudo snap install ghostty --classic
