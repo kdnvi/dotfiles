@@ -3,10 +3,13 @@
 	url = git@github.com:kdnvi/lsp.git
 [submodule "vim/pack/plugins/opt/highlightedyank"]
 	path = vim/pack/plugins/opt/highlightedyank
-	url = https://github.com/machakann/vim-highlightedyank
+	url = https://github.com/machakann/vim-highlightedyank.git
 [submodule "vim/pack/plugins/opt/signify"]
 	path = vim/pack/plugins/opt/signify
-	url = https://github.com/mhinz/vim-signify
+	url = https://github.com/mhinz/vim-signify.git
 [submodule "vim/pack/plugins/opt/commentary"]
 	path = vim/pack/plugins/opt/commentary
 	url = https://github.com/tpope/vim-commentary.git
+[submodule "vim/pack/plugins/opt/surround"]
+	path = vim/pack/plugins/opt/surround
+	url = https://github.com/tpope/vim-surround.git

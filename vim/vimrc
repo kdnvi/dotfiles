@@ -83,7 +83,6 @@ endif
 
 # sessionize
 source <sfile>:h/utils/session.vim
-
 command! Blame {
   const start = line('.')
   const finish = start + 10
@@ -96,6 +95,7 @@ command! Blame {
 #   init:   git submodule update --init
 #   update: git submodule update --remote vim/pack/plugins/opt/<name>
 packadd commentary
+packadd surround
 packadd signify
 packadd highlightedyank
 g:highlightedyank_highlight_duration = 128
