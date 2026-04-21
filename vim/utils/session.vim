@@ -32,13 +32,13 @@ if !argc()
     autocmd BufWritePost * {
       const sfile = GetFilepath()
       if !empty(sfile)
-        execute $'mksession! {sfile}'
+        execute $'mksession! {fnameescape(sfile)}'
       endif
     }
     autocmd VimEnter * ++nested {
       const sfile = GetFilepath()
       if !empty(sfile) && filereadable(sfile)
-        execute $'source {sfile}'
+        execute $'source {fnameescape(sfile)}'
       endif
     }
   augroup END

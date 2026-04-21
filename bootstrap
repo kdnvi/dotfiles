@@ -15,7 +15,6 @@ create_directories() {
     mkdir -p "$XDG_CACHE_HOME"
     mkdir -p "$HOME/personal"
     mkdir -p "$HOME/repos"
-    touch "$HOME/.env.local"
 }
 
 link_dotfiles() {

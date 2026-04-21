@@ -6,7 +6,7 @@ set showmatch ruler title visualbell cursorline autoread
 set shiftwidth=4 tabstop=4 softtabstop=4 expandtab shiftround
 set wildoptions=pum,tagfile,fuzzy wildcharm=<C-z>
 set autocomplete completeopt+=fuzzy sessionoptions-=options
-set autoindent smartindent number
+set autoindent smartindent number nomodeline
 set list listchars=tab:>\ ,trail:-,nbsp:+
 &showbreak = '+++ '
 filetype plugin on
@@ -86,7 +86,7 @@ source <sfile>:h/utils/session.vim
 command! Blame {
   const start = line('.')
   const finish = start + 10
-  execute $'!git blame -L {start},{finish} %'
+  execute $'!git blame -L {start},{finish} {shellescape(expand("%"))}'
 }
 
 # enable optional packages
