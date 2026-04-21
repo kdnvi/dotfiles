@@ -37,13 +37,13 @@ def JdtlsConfig(): dict<any>
   if empty(launcher_jar)
     return {}
   endif
-  const debug_jar = glob($'{$XDG_DATA_HOME}/java-debug/com.microsoft.java.debug.plugin/target/com.microsoft.java.debug.plugin-*.jar')
   return {
     name: 'jdtls',
     filetype: 'java',
     path: $'{$JDK25}/bin/java',
     args: [
       '-XX:+UseG1GC', '-Xms1G', '-Xmx4G',
+      '-Djdk.xml.maxGeneralEntitySizeLimit=0', '-Djdk.xml.totalEntitySizeLimit=0',
       '-Declipse.application=org.eclipse.jdt.ls.core.id1',
       '-Dosgi.bundles.defaultStartLevel=4',
       '-Declipse.product=org.eclipse.jdt.ls.core.product',
@@ -65,7 +65,6 @@ def JdtlsConfig(): dict<any>
         overrideMethodsPromptSupport: true,
         executeClientCommandSupport: true,
       },
-      bundles: empty(debug_jar) ? [] : [debug_jar],
       settings: {
         java: {
           autobuild: { enabled: false },

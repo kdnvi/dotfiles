@@ -31,5 +31,9 @@ if status is-interactive
     abbr -a -- gR 'git reset'
     abbr -a -- gco 'git checkout'
 
+    alias xdgconfig='cd $XDG_CONFIG_HOME'
+    alias xdgdata='cd $XDG_DATA_HOME'
+    alias xdgstate='cd $XDG_STATE_HOME'
+    alias xdgcache='cd $XDG_CACHE_HOME'
     alias myip='echo (dig +short txt ch whoami.cloudflare @1.0.0.1)'
 end

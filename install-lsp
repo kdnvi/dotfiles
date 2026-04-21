@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+readonly XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
+
+install_jdtls() {
+    local jdtls_dir="$XDG_DATA_HOME/eclipse.jdt.ls"
+    if [[ ! -d $jdtls_dir ]]; then
+        git clone https://github.com/eclipse-jdtls/eclipse.jdt.ls "$jdtls_dir"
+    else
+        git -C "$jdtls_dir" pull --rebase
+    fi
+    "$jdtls_dir/mvnw" -f "$jdtls_dir/pom.xml" clean verify -U -DskipTests=true
+}
+
+if [[ $(uname -s) == Darwin ]]; then
+    brew install pipx node
+else
+    sudo apt-get update
+    sudo apt-get install -y clangd pipx nodejs npm
+fi
+
+pipx install pyright
+npm install -g typescript-language-server
+
+install_jdtls
+# vim: ft=bash
