@@ -1,4 +1,0 @@
---glob=!{.git,.svn}
---smart-case
---follow
---line-number

@@ -12,11 +12,24 @@ filetype plugin on
 filetype indent on
 syntax enable
 
-nnoremap <Space>f :find **
-nnoremap <Space>F :find **<C-r><C-w><C-z>
-nnoremap <Space>g :vimgrep //j **<S-Left><Left><Left><Left>
-vnoremap <Space>g "0y:vimgrep /<C-r>0/j **<S-Left><Left><Left><Left>
-nnoremap <Space>G :vimgrep /<C-r><C-w>/j **<CR>
+# extend find with [git ls-files]
+def g:FindFunc(cmdarg: string, _is_completion: bool): list<string>
+  var result = systemlist('git ls-files --cached --others --exclude-standard 2>/dev/null')
+  if v:shell_error != 0
+    result = systemlist('find . -type f')
+  endif
+  return empty(cmdarg) ? result : matchfuzzy(result, cmdarg)
+enddef
+set findfunc=g:FindFunc
+nnoremap <Space>f :find 
+nnoremap <Space>F :find <C-r><C-w><C-z>
+
+# [grep/git grep] recursive by default
+system('git rev-parse --is-inside-work-tree 2>/dev/null')
+&grepprg = v:shell_error != 0 ? 'grep -rn $*' : 'git grep -n $*'
+nnoremap <Space>g :grep! -i ''<Left>
+vnoremap <Space>g "0y:grep! '<C-r>0'<Left>
+nnoremap <Space>G :grep! '<C-r><C-w>'<CR>
 
 # terminal emulators historically map C-Space to the null byte (\0, ASCII 0)
 # which VIM represents as <NUL>
@@ -62,26 +75,6 @@ if !isdirectory(&undodir) | mkdir(&undodir, 'p') | endif
 set undofile number cursorline
 set laststatus=2 background=dark
 colorscheme retrobox
-
-# extend find/grep with rg
-if executable('rg')
-  def g:RgFindFunc(cmdarg: string, _is_completion: bool): list<string>
-    var result = systemlist('rg --files --hidden')
-    if v:shell_error != 0
-      return []
-    endif
-    return empty(cmdarg) ? result : matchfuzzy(result, cmdarg)
-  enddef
-  set findfunc=g:RgFindFunc
-  nnoremap <Space>f :find 
-  nnoremap <Space>F :find <C-r><C-w><C-z>
-  # add [--hidden --no-ignore] for wildcard
-  set grepprg=rg\ --vimgrep\ $*
-  set grepformat=%f:%l:%c:%m
-  nnoremap <Space>g :grep! ''<Left>
-  vnoremap <Space>g "0y:grep! '<C-r>0'<Left>
-  nnoremap <Space>G :grep! '<C-r><C-w>'<CR>
-endif
 
 # sessionize
 source <sfile>:h/utils/session.vim

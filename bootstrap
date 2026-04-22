@@ -26,7 +26,6 @@ link_dotfiles() {
         ghostty
         .tmux.conf
         .psqlrc
-        .ripgreprc
         .gitignore
         .bashrc
     )
@@ -68,7 +67,7 @@ setup_macos() {
     brew update
 
     local -a packages=(
-        git fish watch tmux tree ncdu ripgrep jq ghostty font-ubuntu-sans-mono
+        git fish watch tmux tree ncdu jq ghostty font-ubuntu-sans-mono
     )
     brew install "${packages[@]}"
 }
@@ -78,7 +77,7 @@ setup_linux() {
     sudo apt-get update && sudo apt-get upgrade -y
 
     local -a packages=(
-        curl git fish watch tmux vim tree ncdu ripgrep jq wl-clipboard
+        curl git fish watch tmux vim tree ncdu jq wl-clipboard
     )
     sudo apt-get install -y "${packages[@]}"
     sudo snap install ghostty --classic
