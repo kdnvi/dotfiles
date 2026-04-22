@@ -25,7 +25,7 @@ command! ClearSession {
   endif
 } # clear current repo session
 
-# don't do sessionize stuff if opening specific files
+# don't do sessionize stuff if opening specific file
 if !argc()
   augroup session_management
     autocmd!

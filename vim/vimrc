@@ -1,44 +1,42 @@
 vim9script
-
 set nocompatible noswapfile nobackup
-set ignorecase smartcase hlsearch incsearch
-set showmatch ruler title visualbell autoread
-set shiftwidth=4 tabstop=4 softtabstop=4 expandtab shiftround
-set wildoptions=pum,tagfile,fuzzy wildcharm=<C-z>
 set autoindent smartindent nomodeline
+set showmatch ruler title visualbell autoread
+set ignorecase smartcase hlsearch incsearch
+set shiftwidth=4 tabstop=4 softtabstop=4 expandtab
+set wildoptions=pum,tagfile,fuzzy wildcharm=<C-z>
 set list listchars=tab:>\ ,trail:-,nbsp:+
 &showbreak = '+++ '
 filetype plugin on
 filetype indent on
 syntax enable
 
-# extend find with [git ls-files]
-def g:FindFunc(cmdarg: string, _is_completion: bool): list<string>
+# extend find with git-ls-files
+def g:FuzzyFind(cmdarg: string, cmdcomplete: bool): list<string>
   var result = systemlist('git ls-files --cached --others --exclude-standard 2>/dev/null')
   if v:shell_error != 0
     result = systemlist('find . -type f')
   endif
   return empty(cmdarg) ? result : matchfuzzy(result, cmdarg)
 enddef
-set findfunc=g:FindFunc
+set findfunc=g:FuzzyFind
 nnoremap <Space>f :find 
-nnoremap <Space>F :find <C-r><C-w><C-z>
 
-# [grep/git grep] recursive by default
+# grep/git-grep recursive by default
 system('git rev-parse --is-inside-work-tree 2>/dev/null')
 &grepprg = v:shell_error != 0 ? 'grep -rn $*' : 'git grep -n $*'
 nnoremap <Space>g :grep! -i ''<Left>
 vnoremap <Space>g "0y:grep! '<C-r>0'<Left>
 nnoremap <Space>G :grep! '<C-r><C-w>'<CR>
 
-# terminal emulators historically map C-Space to the null byte (\0, ASCII 0)
-# which VIM represents as <NUL>
-nnoremap <NUL> :ls t<CR>:buffer 
+# terminal emulators historically map C-Space to the null byte
+# (\0, ASCII 0) which VIM represents as <NUL>
+nnoremap <Nul> :ls t<CR>:buffer 
 nnoremap - :edit %:.:h<C-z><C-z>
 
 # redraw + clear search highlight
-nnoremap <C-l> <Cmd>nohlsearch<Bar>diffupdate<Bar>redraw!<CR>
-g:netrw_dirhistmax = 0
+nnoremap <C-l> <Cmd>noh<Bar>dif<Bar>redr!<CR>
+g:netrw_dirhistmax = 0 # zero to suppress history
 
 # clipboard
 # all motions work the same as normal [y]
@@ -48,26 +46,12 @@ nnoremap <Space>p "+p
 vnoremap <Space>p "+p
 nnoremap <Space>P "+P
 
-# command mode navigation
-cnoremap <C-a> <Home>
-cnoremap <C-e> <End>
-cnoremap <C-b> <Left>
-cnoremap <C-f> <Right>
-
-# terminal window navigation
-tnoremap <C-w><C-h> <C-w>h
-tnoremap <C-w><C-j> <C-w>j
-tnoremap <C-w><C-k> <C-w>k
-tnoremap <C-w><C-l> <C-w>l
-
 autocmd BufNewFile,BufRead *.log* setf messages
 autocmd BufNewFile,BufRead *.psql setf sql
 autocmd BufNewFile,BufRead *.mdc  setf markdown
-autocmd FileType help,qf,messages nnoremap <buffer> q <Cmd>bdelete<CR>
-autocmd TerminalWinOpen * nnoremap <buffer> q <Cmd>bdelete!<CR>
 autocmd QuickFixCmdPost [^l]* cwindow
 
-# local-specific config
+# LOCAL-specific
 set autocomplete regexpengine=2 updatetime=512
 set completeopt+=fuzzy sessionoptions-=options
 &undodir = $'{$XDG_STATE_HOME}/vim/undo'
@@ -84,7 +68,7 @@ command! Blame {
   execute $'!git blame -L {start},{finish} {shellescape(expand("%"))}'
 }
 
-# enable optional packages
+# useful packages
 packadd comment
 packadd hlyank
 g:hlyank_duration = 128
@@ -92,5 +76,4 @@ g:hlyank_duration = 128
 # keep things simple here, only essentials
 # plugins are managed as git submodules under vim/pack/plugins/opt/
 source <sfile>:h/utils/lsp.vim
-
 defcompile

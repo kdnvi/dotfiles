@@ -43,8 +43,6 @@ def JdtlsConfig(): dict<any>
     path: $'{$JDK25}/bin/java',
     args: [
       '-XX:+UseG1GC', '-Xms1G', '-Xmx4G',
-      # '-Djdk.xml.maxGeneralEntitySizeLimit=0',
-      # '-Djdk.xml.totalEntitySizeLimit=0',
       '-Declipse.application=org.eclipse.jdt.ls.core.id1',
       '-Dosgi.bundles.defaultStartLevel=4',
       '-Declipse.product=org.eclipse.jdt.ls.core.product',
@@ -110,7 +108,6 @@ call LspOptionsSet({
 })
 
 autocmd User LspAttached {
-  setlocal formatexpr=lsp#lsp#FormatExpr()
   nnoremap <buffer> gd <Cmd>LspGotoDefinition<CR>
   nnoremap <buffer> gi <Cmd>LspGotoImpl<CR>
   nnoremap <buffer> gr <Cmd>LspShowReferences<CR>
@@ -122,6 +119,7 @@ autocmd User LspAttached {
   nnoremap <buffer> <C-w>a <Cmd>LspCodeAction<CR>
   nnoremap <buffer> <C-h> <Cmd>LspDocumentSymbol<CR>
   inoremap <buffer> <C-h> <Cmd>LspShowSignature<CR>
+  setl formatexpr=lsp#lsp#FormatExpr()
 }
 
 def LoadClassFile(uri: string, bnr: number)
@@ -132,7 +130,7 @@ def LoadClassFile(uri: string, bnr: number)
   setbufvar(bnr, '&filetype', 'java')
 
   lsp#lsp#AddFile(bnr)
-  var server = lsp#buffer#BufLspServerGet(bnr)
+  const server = lsp#buffer#BufLspServerGet(bnr)
   if empty(server)
     echoerr 'jdtls: server not found for buffer'
     return
@@ -154,7 +152,6 @@ augroup jdtls_class_file
 augroup END
 
 var lsp_progress_timer: number = -1
-
 def LspProgressInfo()
   lsp_progress_timer = -1
   for [_, info] in g:LspProgress->items()
@@ -163,7 +160,6 @@ def LspProgressInfo()
     echo $'[{info.serverName}] {info.title}:{detail}{pct}'
   endfor
 enddef
-
 autocmd User LspProgressUpdate {
   if lsp_progress_timer != -1
     timer_stop(lsp_progress_timer)
