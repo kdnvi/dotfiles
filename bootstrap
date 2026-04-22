@@ -121,7 +121,7 @@ configure_shell() {
     fi
 
     echo 'changing default shell to fish'
-    local fish_path=$(command -v fish)
+    readonly fish_path=$(command -v fish)
     if [[ -z $fish_path ]]; then
         echo 'fish not found in path' >&2
         return 1

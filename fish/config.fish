@@ -4,8 +4,6 @@ set -gx XDG_CACHE_HOME "$HOME/.cache"
 set -gx XDG_STATE_HOME "$HOME/.local/state"
 
 fish_add_path "$HOME/.local/bin"
-set -gx RIPGREP_CONFIG_PATH "$HOME/.ripgreprc"
-
 if status is-interactive
     set -l age (machine_age)
     set -l age_str (test -n "$age" -a "$age" != unknown; and echo " — it's been $age — the warranty is gone but the bugs remain"; or echo "")
@@ -31,9 +29,9 @@ if status is-interactive
     abbr -a -- gR 'git reset'
     abbr -a -- gco 'git checkout'
 
-    alias xdgconfig='cd $XDG_CONFIG_HOME'
-    alias xdgdata='cd $XDG_DATA_HOME'
-    alias xdgstate='cd $XDG_STATE_HOME'
-    alias xdgcache='cd $XDG_CACHE_HOME'
+    abbr -a -- xdgconfig 'cd $XDG_CONFIG_HOME'
+    abbr -a -- xdgdata 'cd $XDG_DATA_HOME'
+    abbr -a -- xdgstate 'cd $XDG_STATE_HOME'
+    abbr -a -- xdgcache 'cd $XDG_CACHE_HOME'
     alias myip='echo (dig +short txt ch whoami.cloudflare @1.0.0.1)'
 end
