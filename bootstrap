@@ -45,10 +45,11 @@ link_dotfiles() {
 
 configure_git() {
     echo 'configuring git'
-    git config --global core.excludesFile "$HOME/.gitignore"
+    git config --global diff.tool vimdiff
+    git config --global merge.tool vimdiff
+    git config --global mergetool.keepBackup false
     git config --global pull.rebase true
-    git config --global merge.tool vimdiff2
-    git config --global diff.tool vimdiff2
+    git config --global core.excludesFile "$HOME/.gitignore"
 }
 
 setup_macos() {
