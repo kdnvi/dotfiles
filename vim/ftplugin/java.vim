@@ -1,8 +1,8 @@
 vim9script
 
 if !empty(findfile('pom.xml', '.;'))
-  setlocal errorformat=[ERROR]\ %f:[%l\\,%v]\ %m
-  setlocal makeprg=mvn\ package\ -T\ 1C\ -am\ -DskipTests
+  setl errorformat=[ERROR]\ %f:[%l\\,%v]\ %m
+  setl makeprg=mvn\ package\ -T\ 1C\ -am\ -DskipTests
 
   def RunTests(method_arg: string, bang: bool)
     const fpath = expand('%') # relative path

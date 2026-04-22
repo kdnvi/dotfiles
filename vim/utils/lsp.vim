@@ -157,7 +157,7 @@ def LspProgressInfo()
   for [_, info] in g:LspProgress->items()
     const pct = info.percentage >= 0 ? $'({info.percentage}%)' : ''
     const detail = !empty(info.message) ? $'{info.message}' : ''
-    echom $'[{info.serverName}] {info.title}: {detail} {pct}'
+    echo $'[{info.serverName}] {info.title}: {detail} {pct}'
   endfor
 enddef
 autocmd User LspProgressUpdate LspProgressInfo()

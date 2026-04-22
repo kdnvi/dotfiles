@@ -1,12 +1,11 @@
 vim9script
 
-set nocompatible regexpengine=2 noswapfile nobackup
-set ignorecase smartcase hlsearch incsearch updatetime=512
-set showmatch ruler title visualbell cursorline autoread
+set nocompatible noswapfile nobackup
+set ignorecase smartcase hlsearch incsearch
+set showmatch ruler title visualbell autoread
 set shiftwidth=4 tabstop=4 softtabstop=4 expandtab shiftround
 set wildoptions=pum,tagfile,fuzzy wildcharm=<C-z>
-set autocomplete completeopt+=fuzzy sessionoptions-=options
-set autoindent smartindent number nomodeline
+set autoindent smartindent nomodeline
 set list listchars=tab:>\ ,trail:-,nbsp:+
 &showbreak = '+++ '
 filetype plugin on
@@ -29,7 +28,7 @@ nnoremap <C-l> <Cmd>nohlsearch<Bar>diffupdate<Bar>redraw!<CR>
 g:netrw_dirhistmax = 0
 
 # clipboard
-# all motions after [<Space>y] work the same as normal [y]
+# all motions work the same as normal [y]
 nnoremap <Space>y "+y
 vnoremap <Space>y "+y
 nnoremap <Space>p "+p
@@ -48,20 +47,23 @@ tnoremap <C-w><C-j> <C-w>j
 tnoremap <C-w><C-k> <C-w>k
 tnoremap <C-w><C-l> <C-w>l
 
-autocmd BufNewFile,BufRead *.log* setfiletype messages
-autocmd BufNewFile,BufRead *.psql setfiletype sql
-autocmd BufNewFile,BufRead *.mdc  setfiletype markdown
+autocmd BufNewFile,BufRead *.log* setf messages
+autocmd BufNewFile,BufRead *.psql setf sql
+autocmd BufNewFile,BufRead *.mdc  setf markdown
 autocmd FileType help,qf,messages nnoremap <buffer> q <Cmd>bdelete<CR>
 autocmd TerminalWinOpen * nnoremap <buffer> q <Cmd>bdelete!<CR>
 autocmd QuickFixCmdPost [^l]* cwindow
 
 # local-specific config
+set autocomplete regexpengine=2 updatetime=512
+set completeopt+=fuzzy sessionoptions-=options
 &undodir = $'{$XDG_STATE_HOME}/vim/undo'
 if !isdirectory(&undodir) | mkdir(&undodir, 'p') | endif
-set undofile laststatus=2 background=dark
+set undofile number cursorline
+set laststatus=2 background=dark
 colorscheme retrobox
 
-# extend find/vimgrep with ripgrep
+# extend find/grep with rg
 if executable('rg')
   def g:RgFindFunc(cmdarg: string, _is_completion: bool): list<string>
     var result = systemlist('rg --files --hidden')
