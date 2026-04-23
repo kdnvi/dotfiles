@@ -1,5 +1,4 @@
 vim9script
-
 packadd lsp
 var lsp_servers: list<dict<any>> = [{
   name: 'clangd',
@@ -166,5 +165,4 @@ autocmd User LspProgressUpdate {
   endif
   lsp_progress_timer = timer_start(200, (_) => LspProgressInfo())
 }
-
 defcompile

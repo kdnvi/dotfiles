@@ -58,15 +58,14 @@ set autocomplete regexpengine=2 updatetime=512
 set completeopt+=fuzzy sessionoptions-=options
 &undodir = $'{$XDG_STATE_HOME}/vim/undo'
 if !isdirectory(&undodir) | mkdir(&undodir, 'p') | endif
-set undofile number cursorline
-set laststatus=2 background=dark
+set undofile cursorline laststatus=2 background=dark
 colorscheme retrobox
 
 # sessionize
 source <sfile>:h/utils/session.vim
 command! Blame {
-  const start = line('.')
-  const finish = start + 10
+  const start = max([line('.') - 2, 1])
+  const finish = start + 9
   execute $'!git blame -L {start},{finish} {shellescape(expand("%"))}'
 }
 
@@ -76,6 +75,9 @@ packadd hlyank
 g:hlyank_duration = 128
 
 # keep things simple here, only essentials
-# plugins are managed as git submodules under vim/pack/plugins/opt/
+# plugins are managed as git submodules under vim/pack/plugins/opt
+packadd signify
+packadd undotree
+nn <Space>u <Cmd>UndotreeToggle<CR>
 source <sfile>:h/utils/lsp.vim
 defcompile

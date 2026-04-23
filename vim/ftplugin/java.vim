@@ -1,5 +1,4 @@
 vim9script
-
 if !empty(findfile('pom.xml', '.;'))
   setl errorformat=[ERROR]\ %f:[%l\\,%v]\ %m
   setl makeprg=mvn\ package\ -T\ 1C\ -am\ -DskipTests
@@ -50,5 +49,4 @@ def Breakpoint()
   echo bp
 enddef
 command! -buffer Bp Breakpoint()
-
 defcompile

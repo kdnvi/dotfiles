@@ -1,5 +1,4 @@
 vim9script
-
 def GetFilepath(): string
   const result = systemlist('git rev-parse --abbrev-ref HEAD')
   if v:shell_error != 0 || empty(result) || empty(result[0])
@@ -23,9 +22,9 @@ command! ClearSession {
   else
     echo $'removed session file: {sfile}'
   endif
-} # clear current repo session
+} # clear current session
 
-# don't do sessionize stuff if opening specific file
+# don't source session when opening specific file
 if !argc()
   augroup session_management
     autocmd!
@@ -43,5 +42,4 @@ if !argc()
     }
   augroup END
 endif
-
 defcompile
