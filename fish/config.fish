@@ -7,7 +7,8 @@ fish_add_path "$HOME/.local/bin"
 
 if status is-interactive
     set -l age (machine_age)
-    set -l age_str (test -n "$age" -a "$age" != unknown; and echo " — it's been $age — the warranty is gone but the bugs remain"; or echo "")
+    set -l ok $status
+    set -l age_str (test $ok -eq 0; and echo " — it's been $age — the warranty is gone but the bugs remain"; or echo "")
     set -gx fish_greeting (date '+%A, %B %d, %Y at %H:%M')$age_str
 
     set -gx EDITOR vim
@@ -31,4 +32,4 @@ if status is-interactive
     abbr -a -- gco 'git checkout'
 
     alias myip='echo (dig +short txt ch whoami.cloudflare @1.0.0.1)'
-end
+end # only what are reasonable for interactive use-cases
