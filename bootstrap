@@ -5,10 +5,10 @@ readonly XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 readonly XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 readonly XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
 readonly XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
-readonly ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 create_directories() {
-    echo 'creating essential files/directories'
+    echo '> creating essential directories/files'
     mkdir -p "$XDG_DATA_HOME"
     mkdir -p "$XDG_CONFIG_HOME"
     mkdir -p "$XDG_STATE_HOME"
@@ -19,7 +19,6 @@ create_directories() {
 
 link_dotfiles() {
     echo 'linking dotfiles'
-
     local -a dotfiles=(
         fish
         vim
@@ -31,15 +30,15 @@ link_dotfiles() {
     )
 
     for file in "${dotfiles[@]}"; do
-        if [[ -d $ROOT_DIR/$file ]]; then
-            ln -sfn "$ROOT_DIR/$file" "$XDG_CONFIG_HOME/$file"
+        if [[ -d $SCRIPT_DIR/$file ]]; then
+            ln -sfn "$SCRIPT_DIR/$file" "$XDG_CONFIG_HOME/$file"
             continue
-        fi
-        if [[ -f $ROOT_DIR/$file ]]; then
-            ln -sfn "$ROOT_DIR/$file" "$HOME/$file"
+        fi # dir symlink should be under ~/.config
+        if [[ -f $SCRIPT_DIR/$file ]]; then
+            ln -sfn "$SCRIPT_DIR/$file" "$HOME/$file"
             continue
-        fi
-        echo "file not found: $ROOT_DIR/$file" >&2
+        fi # file symlink should be under ~
+        echo "file not found: $SCRIPT_DIR/$file" >&2
     done
 }
 
@@ -67,9 +66,7 @@ setup_macos() {
     echo 'installing essential packages'
     brew update
 
-    local -a packages=(
-        git fish watch tmux tree ncdu jq ghostty font-ubuntu-sans-mono
-    )
+    local -a packages=(git fish watch tmux tree ncdu jq ghostty font-ubuntu-sans-mono)
     brew install "${packages[@]}"
 }
 
@@ -77,30 +74,31 @@ setup_linux() {
     echo 'installing essential packages'
     sudo apt-get update && sudo apt-get upgrade -y
 
-    local -a packages=(
-        curl git fish watch tmux vim tree ncdu jq wl-clipboard
-    )
+    local -a packages=(curl git fish watch tmux vim tree ncdu jq wl-clipboard)
     sudo apt-get install -y "${packages[@]}"
     sudo snap install ghostty --classic
 
     if command -v gsettings &> /dev/null; then
         echo 'disable dash to dock hot-keys on ubuntu'
         gsettings set org.gnome.shell.extensions.dash-to-dock hot-keys false
-    fi
+    fi # to switch workspace using Super+number instead of application
 }
 
 install_lsp() {
-    echo 'installing lsp servers'
-
+    echo 'installing language runtime'
     if [[ $(uname -s) == Darwin ]]; then
         brew install pipx node
     else
         sudo apt-get install -y clangd pipx nodejs npm
     fi
 
+    echo 'installing pyright language server'
     pipx install pyright
+
+    echo 'installing typescript language server'
     npm install -g typescript-language-server
 
+    echo 'installing eclipse jdt language server'
     local jdtls_dir="$XDG_DATA_HOME/eclipse.jdt.ls"
     if [[ ! -d $jdtls_dir ]]; then
         git clone https://github.com/eclipse-jdtls/eclipse.jdt.ls "$jdtls_dir"
@@ -108,10 +106,16 @@ install_lsp() {
         git -C "$jdtls_dir" fetch --tags
     fi
 
-    local latest_tag
+    local current_tag latest_tag
+    current_tag=$(git -C "$jdtls_dir" describe --tags --exact-match 2>/dev/null || true)
     latest_tag=$(git -C "$jdtls_dir" tag --sort=-version:refname | head -1)
-    git -C "$jdtls_dir" checkout "$latest_tag"
 
+    if [[ $latest_tag == $current_tag ]]; then
+        echo "jdtls already at $current_tag, skipping build"
+        return 0
+    fi
+
+    git -C "$jdtls_dir" checkout "$latest_tag"
     "$jdtls_dir/mvnw" -f "$jdtls_dir/pom.xml" clean verify -DskipTests=true
 }
 

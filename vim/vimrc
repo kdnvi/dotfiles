@@ -23,7 +23,7 @@ set findfunc=g:FuzzyFind
 nnoremap <Space>f :find 
 
 # grep/git-grep recursive by default
-system('git rev-parse --is-inside-work-tree 2>/dev/null')
+system('git rev-parse --is-inside-work-tree &>/dev/null')
 &grepprg = v:shell_error != 0 ? 'grep -rn $*' : 'git grep -n $*'
 nnoremap <Space>g :grep! -i ''<Left>
 vnoremap <Space>g "0y:grep! '<C-r>0'<Left>
@@ -49,6 +49,8 @@ nnoremap <Space>P "+P
 autocmd BufNewFile,BufRead *.log* setf messages
 autocmd BufNewFile,BufRead *.psql setf sql
 autocmd BufNewFile,BufRead *.mdc  setf markdown
+autocmd FileType help,qf nn <buffer> q <Cmd>bd<CR>
+autocmd TerminalWinOpen * nn <buffer> q <Cmd>bd!<CR>
 autocmd QuickFixCmdPost [^l]* cwindow
 
 # LOCAL-specific
