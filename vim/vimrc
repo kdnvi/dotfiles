@@ -1,6 +1,6 @@
 vim9script
 set nocompatible noswapfile nobackup
-set autoindent smartindent nomodeline
+set autoindent shiftround smartindent nomodeline
 set showmatch ruler title visualbell autoread
 set ignorecase smartcase hlsearch incsearch
 set shiftwidth=4 tabstop=4 softtabstop=4 expandtab
@@ -58,7 +58,7 @@ set autocomplete regexpengine=2 updatetime=512
 set completeopt+=fuzzy sessionoptions-=options
 &undodir = $'{$XDG_STATE_HOME}/vim/undo'
 if !isdirectory(&undodir) | mkdir(&undodir, 'p') | endif
-set undofile cursorline laststatus=2 background=dark
+set undofile number cursorline laststatus=2 background=dark
 colorscheme retrobox
 
 # sessionize
@@ -76,8 +76,5 @@ g:hlyank_duration = 128
 
 # keep things simple here, only essentials
 # plugins are managed as git submodules under vim/pack/plugins/opt
-packadd signify
-packadd undotree
-nn <Space>u <Cmd>UndotreeToggle<CR>
 source <sfile>:h/utils/lsp.vim
 defcompile

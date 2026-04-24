@@ -1,9 +1,3 @@
 [submodule "vim/pack/plugins/opt/lsp"]
 	path = vim/pack/plugins/opt/lsp
 	url = git@github.com:kdnvi/lsp.git
-[submodule "vim/pack/plugins/opt/signify"]
-	path = vim/pack/plugins/opt/signify
-	url = https://github.com/mhinz/vim-signify.git
-[submodule "vim/pack/plugins/opt/undotree"]
-	path = vim/pack/plugins/opt/undotree
-	url = https://github.com/mbbill/undotree.git
