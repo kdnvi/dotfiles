@@ -1,4 +1,5 @@
 vim9script
+setl formatexpr=lsp#lsp#FormatExpr()
 if !empty(findfile('pom.xml', '.;'))
   setl errorformat=[ERROR]\ %f:[%l\\,%v]\ %m
   setl makeprg=mvn\ package\ -T\ 1C\ -am\ -DskipTests

@@ -118,9 +118,6 @@ autocmd User LspAttached {
   nnoremap <buffer> <C-w>a <Cmd>LspCodeAction<CR>
   nnoremap <buffer> <C-h> <Cmd>LspDocumentSymbol<CR>
   inoremap <buffer> <C-h> <Cmd>LspShowSignature<CR>
-  if &ft == 'java'
-    setl formatexpr=lsp#lsp#FormatExpr()
-  endif
 }
 
 def LoadClassFile(uri: string, bnr: number)
