@@ -76,5 +76,8 @@ g:hlyank_duration = 128
 
 # keep things simple here, only essentials
 # plugins are managed as git submodules under vim/pack/plugins/opt
+packadd signify
+packadd undotree
+nn <Space>u <Cmd>UndotreeToggle<CR>
 source <sfile>:h/utils/lsp.vim
 defcompile
