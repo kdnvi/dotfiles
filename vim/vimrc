@@ -21,6 +21,7 @@ def g:FuzzyFind(cmdarg: string, cmdcomplete: bool): list<string>
 enddef
 set findfunc=g:FuzzyFind
 nnoremap <Space>f :find 
+nnoremap <Space>F :find <C-r><C-w><C-z>
 
 # grep/git-grep recursive by default
 system('git rev-parse --is-inside-work-tree &>/dev/null')
@@ -40,17 +41,17 @@ g:netrw_dirhistmax = 0 # zero to suppress history
 
 # clipboard
 # all motions work the same as normal [y]
-nnoremap <Space>y "+y
-vnoremap <Space>y "+y
-nnoremap <Space>p "+p
-vnoremap <Space>p "+p
-nnoremap <Space>P "+P
+nnoremap <C-w>y "+y
+vnoremap <C-w>y "+y
+nnoremap <C-w>p "+p
+vnoremap <C-w>p "+p
+nnoremap <C-w>P "+P
 
 autocmd BufNewFile,BufRead *.log* setf messages
 autocmd BufNewFile,BufRead *.psql setf sql
 autocmd BufNewFile,BufRead *.mdc  setf markdown
-autocmd FileType help,qf nn <buffer> q <Cmd>bd<CR>
-autocmd TerminalWinOpen * nn <buffer> q <Cmd>bd!<CR>
+autocmd FileType help,qf nnoremap <buffer> q <Cmd>bd<CR>
+autocmd TerminalWinOpen * nnoremap <buffer> q <Cmd>bd!<CR>
 autocmd QuickFixCmdPost [^l]* cwindow
 
 # LOCAL-specific
@@ -78,6 +79,6 @@ g:hlyank_duration = 128
 # plugins are managed as git submodules under vim/pack/plugins/opt
 packadd signify
 packadd undotree
-nn <Space>u <Cmd>UndotreeToggle<CR>
+nnoremap <C-w>u <Cmd>UndotreeToggle<CR>
 source <sfile>:h/utils/lsp.vim
 defcompile
