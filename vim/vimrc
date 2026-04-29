@@ -1,5 +1,6 @@
 vim9script
-set nocompatible noswapfile nobackup
+set nocompatible encoding=utf-8 fileencoding=utf-8
+set noswapfile nobackup mouse=niv nrformats=bin,hex
 set autoindent shiftround smartindent nomodeline
 set showmatch ruler title visualbell autoread
 set ignorecase smartcase hlsearch incsearch
@@ -11,21 +12,29 @@ filetype plugin on
 filetype indent on
 syntax enable
 
-# extend find with git-ls-files
+# use git utils if possible
+system('git rev-parse --is-inside-work-tree &>/dev/null')
+var find_cmd = 'find . -type f'
+if v:shell_error != 0
+  &grepprg = 'grep -rn $*'
+else
+  &grepprg = 'git grep -n $*'
+  find_cmd = 'git ls-files --cached --others --exclude-standard 2>/dev/null'
+endif
+
+# :find command should search files
 def g:FuzzyFind(cmdarg: string, cmdcomplete: bool): list<string>
-  var result = systemlist('git ls-files --cached --others --exclude-standard 2>/dev/null')
+  var result = systemlist(find_cmd)
   if v:shell_error != 0
-    result = systemlist('find . -type f')
-  endif
+    return []
+  endif # fallback to empty list
   return empty(cmdarg) ? result : matchfuzzy(result, cmdarg)
 enddef
 set findfunc=g:FuzzyFind
 nnoremap <Space>f :find 
 nnoremap <Space>F :find <C-r><C-w><C-z>
 
-# grep/git-grep recursive by default
-system('git rev-parse --is-inside-work-tree &>/dev/null')
-&grepprg = v:shell_error != 0 ? 'grep -rn $*' : 'git grep -n $*'
+# grep/git-grep recursive within cwd by default
 nnoremap <Space>g :grep! -i ''<Left>
 vnoremap <Space>g "0y:grep! '<C-r>0'<Left>
 nnoremap <Space>G :grep! '<C-r><C-w>'<CR>
@@ -55,7 +64,7 @@ autocmd TerminalWinOpen * nnoremap <buffer> q <Cmd>bd!<CR>
 autocmd QuickFixCmdPost [^l]* cwindow
 
 # LOCAL-specific
-set autocomplete number updatetime=512
+set autocomplete number updatetime=512 history=10000
 set completeopt+=fuzzy sessionoptions-=options
 &undodir = $'{$XDG_STATE_HOME}/vim/undo'
 if !isdirectory(&undodir) | mkdir(&undodir, 'p') | endif
@@ -71,6 +80,7 @@ command! Blame {
 }
 
 # useful packages
+packadd! editorconfig
 packadd comment
 packadd hlyank
 g:hlyank_duration = 128
