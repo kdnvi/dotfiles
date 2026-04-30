@@ -18,35 +18,44 @@ system('git rev-parse --is-inside-work-tree &>/dev/null')
 if v:shell_error != 0
   &grepprg = 'grep -rn $*'
   find_cmd = 'find . -type f'
-endif # use git-grep/git-ls-files if possible
+endif # when not in a git repo
 
 # :find command should search files
-def g:FuzzyFind(cmdarg: string, cmdcomplete: bool): list<string>
-  var result = systemlist(find_cmd)
+def g:FindFiles(cmd_arg: string, _cmd_comp: bool): list<string>
+  var out = systemlist(find_cmd)
   if v:shell_error != 0
     return []
-  endif # fallback to empty list
-  return empty(cmdarg) ? result : matchfuzzy(result, cmdarg)
+  endif # don't do anything on error
+  return empty(cmd_arg) ? out : matchfuzzy(out, cmd_arg)
 enddef
-set findfunc=g:FuzzyFind
+set findfunc=g:FindFiles
+# !intentional trailing space below!
 nnoremap <Space>f :find 
-nnoremap <Space>F :find <C-r><C-w><C-z>
+nnoremap <Space>F :find <C-r><C-w>
 
 # :grep recursive within cwd by default
 nnoremap <Space>g :grep! -i ''<Left>
 vnoremap <Space>g "0y:grep! '<C-r>0'<Left>
 nnoremap <Space>G :grep! '<C-r><C-w>'<CR>
 
-# terminal emulators historically map C-Space to the null byte
-# (\0, ASCII 0) which VIM represents as <NUL>
+# terminal emulators historically map <C-Space> to the ASCII NUL (0x00, \0)
+# which VIM represents as <Nul> or ^@ in buffers - this occurs because
+# <C-Space> behaves as ^@ in many terminal emulators, sending a single zero byte
 nnoremap <Nul> :ls t<CR>:buffer 
+# !intentional trailing space  ^!
 nnoremap - :edit %:.:h<C-z><C-z>
 
 # redraw + clear search highlight
 nnoremap <C-l> <Cmd>noh<Bar>dif<Bar>redr!<CR>
 g:netrw_dirhistmax = 0 # zero to suppress history
 
-# clipboard
+# moving in command mode
+cnoremap <C-a> <Home>
+cnoremap <C-e> <End>
+cnoremap <C-f> <Right>
+cnoremap <C-b> <Left>
+
+# yank/paste to/from system clipboard
 # all motions work the same as normal [y]
 nnoremap <C-w>y "+y
 vnoremap <C-w>y "+y
@@ -56,13 +65,11 @@ nnoremap <C-w>P "+P
 
 autocmd BufNewFile,BufRead *.log* setf messages
 autocmd BufNewFile,BufRead *.psql setf sql
-autocmd BufNewFile,BufRead *.mdc  setf markdown
 autocmd FileType help,qf nnoremap <buffer> q <Cmd>bd<CR>
-autocmd TerminalWinOpen * nnoremap <buffer> q <Cmd>bd!<CR>
 autocmd QuickFixCmdPost [^l]* cwindow
 
-# LOCAL-specific
-set autocomplete number updatetime=512 history=10000
+# LOCAL-specific config
+set autocomplete number updatetime=512
 set completeopt+=fuzzy sessionoptions-=options
 &undodir = $'{$XDG_STATE_HOME}/vim/undo'
 if !isdirectory(&undodir) | mkdir(&undodir, 'p') | endif
@@ -73,15 +80,15 @@ colorscheme retrobox
 source <sfile>:h/utils/session.vim
 command! Blame {
   const start = max([line('.') - 2, 1])
-  const finish = start + 9
-  execute $'!git blame -L {start},{finish} {shellescape(expand("%"))}'
-}
+  const end = start + 9
+  execute $'!git blame -L {start},{end} {shellescape(expand("%"))}'
+} # show what revision and author of the last modified
 
-# useful packages
-packadd! editorconfig
+# useful optional packages
 packadd comment
 packadd hlyank
 g:hlyank_duration = 128
+packadd! editorconfig # need to be loaded during startup
 
 # keep things simple here, only essentials
 # plugins are managed as git submodules under vim/pack/plugins/opt

@@ -1,26 +1,26 @@
 vim9script
 def GetFilepath(): string
-  const result = systemlist('git rev-parse --abbrev-ref HEAD')
-  if v:shell_error != 0 || empty(result) || empty(result[0])
+  const out = systemlist('git rev-parse --abbrev-ref HEAD 2>/dev/null')
+  if v:shell_error != 0 || empty(out) || empty(out[0])
     return ''
   endif # returns empty as we want silent exit
-  const branch = result[0]->trim()
+  const branch = out[0]->trim()
   const hash = sha256($'{getcwd()}_{branch}')
-  const sessions_dir = $'{$XDG_STATE_HOME}/vim/sessions'
-  if !isdirectory(sessions_dir)
-    mkdir(sessions_dir, 'p')
-  endif # first run only
-  return $'{sessions_dir}/{hash}.vim'
+  const dir = $'{$XDG_STATE_HOME}/vim/sessions'
+  if !isdirectory(dir)
+    mkdir(dir, 'p')
+  endif # first start only
+  return $'{dir}/{hash}.vim'
 enddef
 
 command! ClearSession {
-  const sfile = GetFilepath()
-  if empty(sfile) || !filereadable(sfile)
+  const f = GetFilepath()
+  if empty(f) || !filereadable(f)
     echoerr 'no session found'
-  elseif delete(sfile) != 0
-    echoerr $'failed to remove session file: {sfile}'
+  elseif delete(f) != 0
+    echoerr $'failed to remove session: {f}'
   else
-    echo $'removed session file: {sfile}'
+    echo $'removed session: {f}'
   endif
 } # clear current session
 
@@ -29,15 +29,15 @@ if !argc()
   augroup session_management
     autocmd!
     autocmd BufWritePost * {
-      const sfile = GetFilepath()
-      if !empty(sfile)
-        execute $'mksession! {fnameescape(sfile)}'
+      const f = GetFilepath()
+      if !empty(f)
+        execute $'mksession! {fnameescape(f)}'
       endif
     }
     autocmd VimEnter * ++nested {
-      const sfile = GetFilepath()
-      if !empty(sfile) && filereadable(sfile)
-        execute $'source {fnameescape(sfile)}'
+      const f = GetFilepath()
+      if !empty(f) && filereadable(f)
+        execute $'source {fnameescape(f)}'
       endif
     }
   augroup END

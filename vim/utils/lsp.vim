@@ -96,8 +96,8 @@ if !empty($JDK25)
   var jdtls = JdtlsConfig()
   if !empty(jdtls)
     lsp_servers->add(jdtls)
-  endif
-endif # requires $JDK25
+  endif # keep this optional due to heavy config
+endif # TODO: required JDK version might be changed in the future
 
 call LspAddServer(lsp_servers)
 call LspOptionsSet({
