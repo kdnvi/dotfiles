@@ -33,9 +33,7 @@ var lsp_servers: list<dict<any>> = [{
 def JdtlsConfig(): dict<any>
   const jdtls_dir = $'{$XDG_DATA_HOME}/eclipse.jdt.ls/org.eclipse.jdt.ls.product/target/repository'
   const launcher_jar = glob($'{jdtls_dir}/plugins/org.eclipse.equinox.launcher_*.jar')
-  if empty(launcher_jar)
-    return {}
-  endif
+  if empty(launcher_jar) | return {} | endif
   return {
     name: 'jdtls',
     filetype: 'java',
@@ -94,9 +92,7 @@ def JdtlsConfig(): dict<any>
 enddef
 if !empty($JDK25)
   var jdtls = JdtlsConfig()
-  if !empty(jdtls)
-    lsp_servers->add(jdtls)
-  endif # keep this optional due to heavy config
+  if !empty(jdtls) | lsp_servers->add(jdtls) | endif
 endif # TODO: required JDK version might be changed in the future
 
 call LspAddServer(lsp_servers)
@@ -130,16 +126,14 @@ def LoadClassFile(uri: string, bnr: number)
   lsp#lsp#AddFile(bnr)
   const server = lsp#buffer#BufLspServerGet(bnr)
   if empty(server)
-    echoerr 'jdtls: server not found for buffer'
-    return
+    throw $'jdtls: server not found for buffer {bnr}'
   endif
 
-  server.rpc_a('java/classFileContents', {uri: uri}, (_, result: any) => {
-    if typename(result) != 'string' || empty(result)
-      echoerr $'jdtls: no content returned for {uri}'
-      return
+  server.rpc_a('java/classFileContents', {uri: uri}, (_, content: any) => {
+    if typename(content) != 'string' || empty(content)
+      throw $'jdtls: no content returned for {uri}'
     endif
-    const lines = split(result->substitute('\r\n', '\n', 'g'), '\n', true)
+    const lines = split(content->substitute('\r\n', '\n', 'g'), '\n', true)
     setbufline(bnr, 1, lines)
     setbufvar(bnr, '&modifiable', false)
   })
@@ -159,9 +153,7 @@ def LspProgressInfo()
   endfor
 enddef
 autocmd User LspProgressUpdate {
-  if lsp_progress_timer != -1
-    timer_stop(lsp_progress_timer)
-  endif
+  if lsp_progress_timer != -1 | timer_stop(lsp_progress_timer) | endif
   lsp_progress_timer = timer_start(200, (_) => LspProgressInfo())
 }
 defcompile

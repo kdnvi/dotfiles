@@ -23,9 +23,7 @@ endif # when not in a git repo
 # :find command should search files
 def g:FindFiles(cmd_arg: string, _cmd_comp: bool): list<string>
   var out = systemlist(find_cmd)
-  if v:shell_error != 0
-    return []
-  endif # don't do anything on error
+  if v:shell_error != 0 | return [] | endif
   return empty(cmd_arg) ? out : matchfuzzy(out, cmd_arg)
 enddef
 set findfunc=g:FindFiles
@@ -92,8 +90,5 @@ packadd! editorconfig # need to be loaded during startup
 
 # keep things simple here, only essentials
 # plugins are managed as git submodules under vim/pack/plugins/opt
-packadd signify
-packadd undotree
-nnoremap <C-w>u <Cmd>UndotreeToggle<CR>
 source <sfile>:h/utils/lsp.vim
 defcompile
