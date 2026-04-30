@@ -129,7 +129,10 @@ def LoadClassFile(uri: string, bnr: number)
     throw $'jdtls: server not found for buffer {bnr}'
   endif
 
-  server.rpc_a('java/classFileContents', {uri: uri}, (_, content: any) => {
+  server.rpc_a('java/classFileContents', {uri: uri}, (_, content: any, err: dict<any>) => {
+    if !empty(err)
+      throw $'jdtls: server error for {uri}: {err.message}'
+    endif
     if typename(content) != 'string' || empty(content)
       throw $'jdtls: no content returned for {uri}'
     endif
@@ -143,17 +146,12 @@ augroup jdtls_class_file
   autocmd BufReadCmd jdt://* LoadClassFile(bufname(), bufnr())
 augroup END
 
-var lsp_progress_timer: number = -1
 def LspProgressInfo()
-  lsp_progress_timer = -1
   for [_, info] in g:LspProgress->items()
     const pct = info.percentage >= 0 ? $' ({info.percentage}%)' : ''
     const detail = !empty(info.message) ? $' {info.message}' : ''
     echo $'[{info.serverName}] {info.title}:{detail}{pct}'
   endfor
 enddef
-autocmd User LspProgressUpdate {
-  if lsp_progress_timer != -1 | timer_stop(lsp_progress_timer) | endif
-  lsp_progress_timer = timer_start(200, (_) => LspProgressInfo())
-}
+autocmd User LspProgressUpdate LspProgressInfo()
 defcompile
