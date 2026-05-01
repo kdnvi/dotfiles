@@ -9,6 +9,10 @@ export PATH="$PATH:$HOME/.local/bin"
 # exit on non-interactive use
 [[ $- != *i* ]] && return
 
+HISTSIZE=-1
+HISTFILESIZE=-1
+HISTCONTROL=ignoredups:erasedups:ignorespace
+
 export EDITOR=vim
 export VISUAL=vim
 
