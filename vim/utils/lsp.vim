@@ -99,8 +99,8 @@ call LspAddServer(lsp_servers)
 call LspOptionsSet({
   ignoreMissingServer: true,
   omniComplete: true,
-  showDiagOnStatusLine: true,
 })
+hi! SignColumn ctermbg=NONE
 
 autocmd User LspAttached {
   nnoremap <buffer> gd <Cmd>LspGotoDefinition<CR>

@@ -8,7 +8,7 @@ readonly XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 create_directories() {
-    echo '> creating essential directories/files'
+    echo 'creating essential directories/files'
     mkdir -p "$XDG_DATA_HOME"
     mkdir -p "$XDG_CONFIG_HOME"
     mkdir -p "$XDG_STATE_HOME"
@@ -20,12 +20,11 @@ create_directories() {
 link_dotfiles() {
     echo 'linking dotfiles'
     local -a dotfiles=(
-        fish
         vim
-        ghostty
         .tmux.conf
         .psqlrc
         .gitignore
+        .bash_profile
         .bashrc
     )
 
@@ -40,6 +39,11 @@ link_dotfiles() {
         fi # file symlink should be under ~
         echo "file not found: $SCRIPT_DIR/$file" >&2
     done
+
+    echo 'linking bin scripts'
+    for script in "$SCRIPT_DIR/bin/"*; do
+        ln -sfn "$script" "$HOME/.local/bin/$(basename "$script")"
+    done
 }
 
 configure_git() {
@@ -49,15 +53,20 @@ configure_git() {
     git config --global mergetool.keepBackup false
     git config --global pull.rebase true
     git config --global core.excludesFile "$HOME/.gitignore"
+
+    echo 'downloading git-prompt.sh'
+    curl -fsSL \
+        https://raw.githubusercontent.com/git/git/refs/heads/master/contrib/completion/git-prompt.sh \
+        -o "$HOME/.git-prompt.sh"
 }
 
 setup_macos() {
-    if ! xcode-select -p &> /dev/null; then
+    if ! xcode-select -p &/dev/null; then
         echo 'installing xcode command line tools'
         xcode-select --install
     fi
 
-    if ! command -v brew &> /dev/null; then
+    if ! command -v brew &/dev/null; then
         echo "installing homebrew"
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
         eval "$(/opt/homebrew/bin/brew shellenv)"
@@ -66,7 +75,7 @@ setup_macos() {
     echo 'installing essential packages'
     brew update
 
-    local -a packages=(git fish watch tmux tree ncdu jq ghostty font-ubuntu-sans-mono)
+    local -a packages=(bash git watch tmux tree ncdu jq font-ubuntu-sans-mono)
     brew install "${packages[@]}"
 }
 
@@ -74,11 +83,10 @@ setup_linux() {
     echo 'installing essential packages'
     sudo apt-get update && sudo apt-get upgrade -y
 
-    local -a packages=(curl git fish watch tmux vim tree ncdu jq wl-clipboard)
+    local -a packages=(curl git watch tmux vim tree ncdu jq wl-clipboard)
     sudo apt-get install -y "${packages[@]}"
-    sudo snap install ghostty --classic
 
-    if command -v gsettings &> /dev/null; then
+    if command -v gsettings &/dev/null; then
         echo 'disable dash to dock hot-keys on ubuntu'
         gsettings set org.gnome.shell.extensions.dash-to-dock hot-keys false
     fi # to switch workspace using Super+number instead of application
@@ -120,24 +128,25 @@ install_lsp() {
 }
 
 configure_shell() {
-    if [[ $SHELL == */fish ]]; then
-        echo 'default shell is already fish'
+    if [[ $SHELL == */bash ]]; then
+        echo 'default shell is already bash'
         return 0
     fi
 
-    echo 'changing default shell to fish'
-    readonly fish_path=$(command -v fish)
-    if [[ -z $fish_path ]]; then
-        echo 'fish not found in path' >&2
+    echo 'changing default shell to bash'
+    local bash_path
+    bash_path=$(command -v bash)
+    if [[ -z $bash_path ]]; then
+        echo 'bash not found in path' >&2
         return 1
     fi
 
-    if ! grep -q "^$fish_path$" /etc/shells; then
-        echo "adding $fish_path to /etc/shells"
-        echo "$fish_path" | sudo tee -a /etc/shells
+    if ! grep -q "^${bash_path}$" /etc/shells; then
+        echo "adding ${bash_path} to /etc/shells"
+        echo "$bash_path" | sudo tee -a /etc/shells
     fi
 
-    chsh -s "$fish_path"
+    chsh -s "$bash_path"
     echo 'please log out and log back in for shell change to take effect'
 }
 
@@ -151,6 +160,7 @@ main() {
     else
         setup_linux
     fi
+
     install_lsp || echo 'warning: install_lsp failed, continuing' >&2
     configure_shell
 }

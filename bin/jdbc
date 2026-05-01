@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# jdb connect to target vm
+read -r -p "host (localhost): " host
+[[ -z $host ]] && host=localhost
+read -r -p "port (5005): " port
+[[ -z $port ]] && port=5005
+exec jdb -connect "com.sun.jdi.SocketAttach:hostname=${host},port=${port}"
+# vim: ft=bash
