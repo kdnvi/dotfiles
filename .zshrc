@@ -4,14 +4,18 @@ export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
 export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
 
 export PATH="$PATH:$HOME/.local/bin"
-[[ -f $HOME/.bashrc.local ]] && source "$HOME/.bashrc.local"
+[[ -f $HOME/.zshrc.local ]] && source "$HOME/.zshrc.local"
 
-# exit on non-interactive use
-[[ $- != *i* ]] && return
+HISTSIZE=100000
+SAVEHIST=100000
+HISTFILE="$HOME/.zsh_history"
+setopt HIST_IGNORE_DUPS HIST_IGNORE_SPACE HIST_EXPIRE_DUPS_FIRST SHARE_HISTORY
 
-HISTSIZE=-1
-HISTFILESIZE=-1
-HISTCONTROL=ignoredups:erasedups:ignorespace
+autoload -Uz compinit && compinit
+setopt MENU_COMPLETE AUTO_LIST CORRECT
+bindkey '^R' history-incremental-search-backward
+bindkey '^P' history-search-backward
+bindkey '^N' history-search-forward
 
 export EDITOR=vim
 export VISUAL=vim
@@ -22,9 +26,9 @@ if [[ -f $_git_prompt_sh ]]; then
     export GIT_PS1_SHOWSTASHSTATE=1
     export GIT_PS1_SHOWUPSTREAM=auto
     source "$_git_prompt_sh"
-    PROMPT_COMMAND='__git_ps1 "\[\e[32m\]\u@\h\[\e[0m\]:\[\e[34m\]\w\[\e[0m\]" "\\\$ " " (%s)"'
+    precmd() { __git_ps1 "%F{green}%n@%m%f:%F{blue}%~%f" $'%# ' ' (%s)' }
 else
-    PS1='\[\e[32m\]\u@\h\[\e[0m\]:\[\e[34m\]\w\[\e[0m\]\$ '
+    PS1='%F{green}%n@%m%f:%F{blue}%~%f%# '
 fi
 unset _git_prompt_sh
 

@@ -24,8 +24,7 @@ link_dotfiles() {
         .tmux.conf
         .psqlrc
         .gitignore
-        .bash_profile
-        .bashrc
+        .zshrc
     )
 
     for file in "${dotfiles[@]}"; do
@@ -61,12 +60,12 @@ configure_git() {
 }
 
 setup_macos() {
-    if ! xcode-select -p &/dev/null; then
+    if ! xcode-select -p &>/dev/null; then
         echo 'installing xcode command line tools'
         xcode-select --install
     fi
 
-    if ! command -v brew &/dev/null; then
+    if ! command -v brew &>/dev/null; then
         echo "installing homebrew"
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
         eval "$(/opt/homebrew/bin/brew shellenv)"
@@ -75,7 +74,7 @@ setup_macos() {
     echo 'installing essential packages'
     brew update
 
-    local -a packages=(bash git watch tmux tree ncdu jq font-ubuntu-sans-mono)
+    local -a packages=(git watch tmux tree ncdu jq font-ubuntu-sans-mono)
     brew install "${packages[@]}"
 }
 
@@ -83,7 +82,7 @@ setup_linux() {
     echo 'installing essential packages'
     sudo apt-get update && sudo apt-get upgrade -y
 
-    local -a packages=(curl git watch tmux vim tree ncdu jq wl-clipboard)
+    local -a packages=(curl zsh git watch tmux vim tree ncdu jq wl-clipboard)
     sudo apt-get install -y "${packages[@]}"
 
     if command -v gsettings &/dev/null; then
@@ -128,25 +127,25 @@ install_lsp() {
 }
 
 configure_shell() {
-    if [[ $SHELL == */bash ]]; then
-        echo 'default shell is already bash'
+    if [[ $SHELL == */zsh ]]; then
+        echo 'default shell is already zsh'
         return 0
     fi
 
-    echo 'changing default shell to bash'
-    local bash_path
-    bash_path=$(command -v bash)
-    if [[ -z $bash_path ]]; then
-        echo 'bash not found in path' >&2
+    echo 'changing default shell to zsh'
+    local zsh_path
+    zsh_path=$(command -v zsh)
+    if [[ -z $zsh_path ]]; then
+        echo 'zsh not found in path' >&2
         return 1
     fi
 
-    if ! grep -q "^${bash_path}$" /etc/shells; then
-        echo "adding ${bash_path} to /etc/shells"
-        echo "$bash_path" | sudo tee -a /etc/shells
+    if ! grep -q "^${zsh_path}$" /etc/shells; then
+        echo "adding ${zsh_path} to /etc/shells"
+        echo "$zsh_path" | sudo tee -a /etc/shells
     fi
 
-    chsh -s "$bash_path"
+    chsh -s "$zsh_path"
     echo 'please log out and log back in for shell change to take effect'
 }
 
