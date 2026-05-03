@@ -13,6 +13,7 @@ setopt HIST_IGNORE_DUPS HIST_IGNORE_SPACE HIST_EXPIRE_DUPS_FIRST SHARE_HISTORY
 
 autoload -Uz compinit && compinit
 setopt MENU_COMPLETE AUTO_LIST CORRECT
+bindkey -e
 bindkey '^R' history-incremental-search-backward
 bindkey '^P' history-search-backward
 bindkey '^N' history-search-forward

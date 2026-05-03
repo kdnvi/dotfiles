@@ -1,10 +1,9 @@
 vim9script
 set nocompatible encoding=utf-8 fileencoding=utf-8
-set noswapfile nobackup mouse=niv nrformats=bin,hex
-set autoindent shiftround smartindent nomodeline
+set noswapfile nobackup nomodeline nrformats=bin,hex
 set showmatch ruler title visualbell autoread
 set ignorecase smartcase hlsearch incsearch
-set shiftwidth=4 tabstop=4 softtabstop=4 expandtab
+set shiftwidth=2 tabstop=2 expandtab shiftround
 set wildoptions=pum,tagfile,fuzzy wildcharm=<C-z>
 set list listchars=tab:>\ ,trail:-,nbsp:+
 &showbreak = '+++ '
@@ -16,8 +15,8 @@ syntax enable
 var find_cmd = 'git ls-files --cached --others --exclude-standard 2>/dev/null'
 system('git rev-parse --is-inside-work-tree &>/dev/null')
 if v:shell_error != 0
-  &grepprg = 'grep -rn $*'
   find_cmd = 'find . -type f'
+  &grepprg = 'grep -rn $*'
 endif # when not in a git repo
 
 # :find command should search files
@@ -61,17 +60,18 @@ nnoremap <C-w>p "+p
 vnoremap <C-w>p "+p
 nnoremap <C-w>P "+P
 
+autocmd QuickFixCmdPost [^l]* cwindow
 autocmd BufNewFile,BufRead *.log* setf messages
 autocmd BufNewFile,BufRead *.psql setf sql
 autocmd FileType help,qf nnoremap <buffer> q <Cmd>bd<CR>
-autocmd QuickFixCmdPost [^l]* cwindow
+autocmd FileType sh,bash,zsh setl shiftwidth=4 tabstop=4
 
 # LOCAL-specific config
-set autocomplete updatetime=512
+set autoindent smartindent autocomplete
 set completeopt+=fuzzy sessionoptions-=options
 &undodir = $'{$XDG_STATE_HOME}/vim/undo'
 if !isdirectory(&undodir) | mkdir(&undodir, 'p') | endif
-set undofile background=dark
+set undofile background=dark updatetime=512
 
 # sessionize
 source <sfile>:h/utils/session.vim
