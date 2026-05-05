@@ -1,30 +1,27 @@
 local M = {}
-
-function M.get_active_lsp_client(lsname)
-    local lsp = vim.lsp
-    local buf = vim.api.nvim_get_current_buf()
-    local filters = { name = lsname }
-    local client = lsp.get_clients(filters)[1]
+function M.get_active_lsp_client(name)
+    local bufnr = vim.api.nvim_get_current_buf()
+    local filters = { name = name }
+    local client = vim.lsp.get_clients(filters)[1]
 
     if not client then
-        filters["bufnr"] = buf
-        vim.wait(5000, function() return next(lsp.get_clients(filters)) ~= nil end)
-        client = lsp.get_clients(filters)[1]
-    else
-        lsp.buf_attach_client(buf, client.id)
+        filters["bufnr"] = bufnr
+        vim.wait(5000, function() return next(vim.lsp.get_clients(filters)) ~= nil end)
+        client = vim.lsp.get_clients(filters)[1]
     end
 
-    assert(client, string.format("must have a [%s] client configured", lsname))
-    return client, buf
+    assert(client, string.format("must have a [%s] client configured", name))
+    return client, bufnr
 end
 
-local _session_path_cache = nil
+local _session_path_cache
 function M.get_session_filepath()
+    if vim.fn.argc() > 0 then return nil end
     if _session_path_cache then return _session_path_cache end
 
-    local result = vim.system({ "git", "rev-parse", "--abbrev-ref", "HEAD" }, { text = true }):wait()
-    local branch = vim.trim(result.stdout or "")
-    if result.code ~= 0 or #branch == 0 then
+    local out = vim.system({ "git", "rev-parse", "--abbrev-ref", "HEAD" }, { stdout = true }):wait()
+    local branch = vim.trim(out.stdout or "")
+    if out.code ~= 0 or #branch == 0 then
         return nil
     end -- returns nil as we want silent exit
 
@@ -32,10 +29,9 @@ function M.get_session_filepath()
     local sessions_dir = vim.fn.stdpath("state") .. "/sessions"
     if not vim.uv.fs_stat(sessions_dir) then
         vim.uv.fs_mkdir(sessions_dir, 493) -- 0755
-    end -- first run only
+    end -- first start only
 
     _session_path_cache = string.format("%s/%s.vim", sessions_dir, name)
     return _session_path_cache
 end
-
 return M

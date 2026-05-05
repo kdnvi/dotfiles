@@ -1,25 +1,11 @@
 local jdtls_jdk = os.getenv("JDK25")
-if not jdtls_jdk then
-    return
-end
+if not jdtls_jdk then return end -- TODO: required JDK version might be changed in the future
 
 local jdtls_dir = os.getenv("XDG_DATA_HOME") .. "/eclipse.jdt.ls/org.eclipse.jdt.ls.product/target/repository"
-local project_name = vim.fs.basename(vim.uv.cwd())
-local workspace_dir = os.getenv("XDG_CACHE_HOME") .. "/jdtls/ws/" .. project_name
-local java_debug_dir = os.getenv("XDG_DATA_HOME") .. "/java-debug/com.microsoft.java.debug.plugin/target/"
-
 local launcher_jar = vim.fs.find(function(name)
     return name:match("^org%.eclipse%.equinox%.launcher_.+%.jar$")
 end, { path = jdtls_dir .. "/plugins", limit = 1 })[1]
-
-if not launcher_jar then
-    vim.notify("jdtls: equinox launcher jar not found", vim.log.levels.WARN)
-    return
-end
-
-local debug_jar = vim.fs.find(function(name)
-    return name:match("^com%.microsoft%.java%.debug%.plugin%-.+%.jar$")
-end, { path = java_debug_dir, limit = 1 })[1]
+assert(launcher_jar, "jdtls: equinox launcher jar not found")
 
 -- use [mvn eclipse:clean eclipse:eclipse] or [./gradlew eclipse] to regenerate
 vim.lsp.config("jdtls", {
@@ -35,7 +21,7 @@ vim.lsp.config("jdtls", {
         "--add-opens=java.base/java.lang=ALL-UNNAMED",
         "-jar", launcher_jar,
         "-configuration", jdtls_dir .. "/" .. (vim.uv.os_uname().sysname == "Darwin" and "config_mac_arm" or "config_linux"),
-        "-data", workspace_dir
+        "-data", os.getenv("XDG_CACHE_HOME") .. "/jdtls/ws/" .. vim.fs.basename(vim.uv.cwd())
     },
     filetypes = { "java" },
     -- root_markers = {
@@ -103,6 +89,6 @@ vim.lsp.config("jdtls", {
             overrideMethodsPromptSupport = true,
             executeClientCommandSupport = true
         },
-        bundles = debug_jar and { debug_jar } or {}
+        bundles = {}
     }
 })

@@ -1,38 +1,32 @@
-local augroup = vim.api.nvim_create_augroup
-local autocmd = vim.api.nvim_create_autocmd
-local cmd = vim.cmd
-local map = vim.keymap.set
-local common = require("me.common")
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = { "help", "qf", "checkhealth" },
+    callback = function() vim.keymap.set("n", "q", vim.cmd.bdelete, { buffer = 0 }) end
+}) -- close some windows quicker using [q] instead of typing :bd<CR> out
 
-autocmd("FileType", {
-    pattern = { "help", "qf", "messages", "checkhealth" },
-    callback = function() map("n", "q", cmd.bdelete, { buffer = 0 }) end
-}) -- close some windows quicker using [q] instead of typing :bd<CR>
-
-autocmd("QuickFixCmdPost", {
-    pattern = "[^l]*",
-    callback = function() cmd.cwindow() end
-}) -- open the quickfix window whenever a qf command is executed
-
-autocmd("TextYankPost", {
+vim.api.nvim_create_autocmd("TextYankPost", {
     pattern = "*",
-    callback = function()
-        vim.hl.on_yank({ higroup = "IncSearch", timeout = 128, silent = true })
-    end
+    callback = function() vim.hl.on_yank() end
 }) -- know what has been yanked
 
-autocmd("BufReadCmd", {
-    group = augroup("jdtls_class_file_content", { clear = true }),
+vim.api.nvim_create_autocmd("QuickFixCmdPost", {
+    pattern = "[^l]*",
+    callback = function() vim.cmd.cwindow() end
+}) -- open the quickfix window whenever a qf command is executed
+
+local common = require("me.common")
+-- fetch jdt:// content and load it into a buffer
+vim.api.nvim_create_autocmd("BufReadCmd", {
+    group = vim.api.nvim_create_augroup("jdtls_class_file_content", { clear = true }),
     pattern = "jdt://*",
     callback = function(args)
-        local client, buf = common.get_active_lsp_client("jdtls")
+        local client, bufnr = common.get_active_lsp_client("jdtls")
         local uri = args.match
-        local bo = vim.bo
 
-        bo[buf].modifiable = true
-        bo[buf].swapfile = false
-        bo[buf].buftype = "nofile"
-        bo[buf].filetype = "java"
+        vim.bo[bufnr].modifiable = true
+        vim.bo[bufnr].swapfile = false
+        vim.bo[bufnr].buftype = "nofile"
+        vim.bo[bufnr].bufhidden = "wipe"
+        vim.bo[bufnr].filetype = "java"
 
         local content
         local function handler(err, result)
@@ -41,32 +35,25 @@ autocmd("BufReadCmd", {
             content = result
             local normalized = string.gsub(result, "\r\n", "\n")
             local source_lines = vim.split(normalized, "\n", { plain = true })
-            vim.api.nvim_buf_set_lines(buf, 0, -1, false, source_lines)
-            bo[buf].modifiable = false
+            vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, source_lines)
+            vim.bo[bufnr].modifiable = false
         end
 
-        client:request("java/classFileContents", { uri = uri }, handler, buf)
+        client:request("java/classFileContents", { uri = uri }, handler, bufnr)
         vim.wait(5000, function() return content ~= nil end)
     end
-}) -- open jdt:// uri and load them into the buffer
+})
 
-if #vim.fn.argv() == 0 then
-    autocmd("BufWritePost", {
-        group = augroup("session_auto_save", { clear = true }),
+local session = common.get_session_filepath()
+if session and vim.uv.fs_stat(session) then
+    vim.api.nvim_create_autocmd("BufWritePost", {
+        group = vim.api.nvim_create_augroup("session_auto_save", { clear = true }),
         pattern = "*",
-        callback = function()
-            local sfile = common.get_session_filepath()
-            if sfile then cmd.mksession({ args = { sfile }, bang = true }) end
-        end
+        callback = function() vim.cmd.mksession({ args = { session }, bang = true }) end
     })
-
-    autocmd("VimEnter", {
-        group = augroup("session_auto_load", { clear = true }),
-        pattern = "*",
-        nested = true,
-        callback = function()
-            local sfile = common.get_session_filepath()
-            if sfile and vim.uv.fs_stat(sfile) then cmd.source(sfile) end
-        end
+    vim.api.nvim_create_autocmd("VimEnter", {
+        group = vim.api.nvim_create_augroup("session_auto_load", { clear = true }),
+        pattern = "*", nested = true,
+        callback = function() vim.cmd.source(session) end
     })
-end -- don't do sessionize stuff if opening specific files
+end -- don't sessionize when opening specific file

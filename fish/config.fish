@@ -1,17 +1,18 @@
 set -gx XDG_CONFIG_HOME "$HOME/.config"
 set -gx XDG_DATA_HOME "$HOME/.local/share"
 set -gx XDG_CACHE_HOME "$HOME/.cache"
+set -gx XDG_STATE_HOME "$HOME/.local/state"
 
 fish_add_path "$HOME/.local/bin"
-set -gx RIPGREP_CONFIG_PATH "$HOME/.ripgreprc"
 
 if status is-interactive
     set -l age (machine_age)
-    set -l age_str (test -n "$age" -a "$age" != unknown; and echo " — it's been $age — the warranty is gone but the bugs remain"; or echo "")
+    set -l ok $status
+    set -l age_str (test $ok -eq 0; and echo " — it's been $age — the warranty is gone but the bugs remain"; or echo "")
     set -gx fish_greeting (date '+%A, %B %d, %Y at %H:%M')$age_str
 
-    set -gx EDITOR nvim
-    set -gx VISUAL nvim
+    set -gx EDITOR vim
+    set -gx VISUAL vim
 
     set __fish_git_prompt_showdirtystate 'yes'
     set __fish_git_prompt_showstashstate 'yes'
@@ -32,4 +33,4 @@ if status is-interactive
 
     alias vi=nvim
     alias myip='echo (dig +short txt ch whoami.cloudflare @1.0.0.1)'
-end
+end # only what are reasonable for interactive use-cases
