@@ -12,4 +12,4 @@ copy-on-select = clipboard
 adjust-underline-thickness = 10%
 adjust-cursor-thickness = 10%
 macos-option-as-alt = true
-theme = Gruvbox Dark Hard
+theme = Adwaita Dark
