@@ -1,3 +1,4 @@
+vim.opt.laststatus = 1
 vim.opt.swapfile = false
 vim.opt.showmatch = true
 vim.opt.ignorecase = true
@@ -24,9 +25,11 @@ vim.g.loaded_perl_provider = 0
 vim.g.loaded_python3_provider = 0
 vim.g.loaded_ruby_provider = 0
 vim.g.loaded_netrwPlugin = 0
+vim.opt.termguicolors = false
+vim.opt.background = "light"
+vim.cmd.colorscheme("wildcharm")
+vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
 require("vim._core.ui2").enable({
     enable = true,
     msg = { targets = "cmd" }
 })
-vim.opt.termguicolors = false
-vim.cmd.colorscheme("unokai")
