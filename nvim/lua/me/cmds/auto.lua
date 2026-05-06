@@ -13,38 +13,7 @@ vim.api.nvim_create_autocmd("QuickFixCmdPost", {
     callback = function() vim.cmd.cwindow() end
 }) -- open the quickfix window whenever a qf command is executed
 
-local common = require("me.common")
--- fetch jdt:// content and load it into a buffer
-vim.api.nvim_create_autocmd("BufReadCmd", {
-    group = vim.api.nvim_create_augroup("jdtls_class_file_content", { clear = true }),
-    pattern = "jdt://*",
-    callback = function(args)
-        local client, bufnr = common.get_active_lsp_client("jdtls")
-        local uri = args.match
-
-        vim.bo[bufnr].modifiable = true
-        vim.bo[bufnr].swapfile = false
-        vim.bo[bufnr].buftype = "nofile"
-        vim.bo[bufnr].bufhidden = "wipe"
-        vim.bo[bufnr].filetype = "java"
-
-        local content
-        local function handler(err, result)
-            assert(not err, vim.inspect(err))
-            assert(result, "jdtls client must return result for java/classFileContents")
-            content = result
-            local normalized = string.gsub(result, "\r\n", "\n")
-            local source_lines = vim.split(normalized, "\n", { plain = true })
-            vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, source_lines)
-            vim.bo[bufnr].modifiable = false
-        end
-
-        client:request("java/classFileContents", { uri = uri }, handler, bufnr)
-        vim.wait(5000, function() return content ~= nil end)
-    end
-})
-
-local session = common.get_session_filepath()
+local session = require("me.common").get_session_filepath()
 if session then
     vim.api.nvim_create_autocmd("BufWritePost", {
         group = vim.api.nvim_create_augroup("session_auto_save", { clear = true }),

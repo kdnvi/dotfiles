@@ -12,8 +12,8 @@ if status is-interactive
     set -l age_str (test $ok -eq 0; and echo " — it's been $age — the warranty is gone but the bugs remain"; or echo "")
     set -gx fish_greeting (date '+%A, %B %d, %Y at %H:%M')$age_str
 
-    set -gx EDITOR vim
-    set -gx VISUAL vim
+    set -gx EDITOR nvim
+    set -gx VISUAL nvim
 
     set __fish_git_prompt_showdirtystate 'yes'
     set __fish_git_prompt_showstashstate 'yes'
@@ -25,11 +25,8 @@ if status is-interactive
     abbr -a -- gp 'git pull'
     abbr -a -- gP 'git push'
     abbr -a -- ga 'git add'
-    abbr -a -- gaa 'git add --all'
-    abbr -a -- gap 'git add --patch'
     abbr -a -- gc 'git commit -m'
     abbr -a -- gr 'git restore'
-    abbr -a -- gR 'git reset'
     abbr -a -- gco 'git checkout'
 
     alias vi=nvim

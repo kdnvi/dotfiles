@@ -24,11 +24,10 @@ vim.lsp.config("jdtls", {
         "-data", os.getenv("XDG_CACHE_HOME") .. "/jdtls/ws/" .. vim.fs.basename(vim.uv.cwd())
     },
     filetypes = { "java" },
-    -- root_markers = {
-    --     { "mvnw",      "gradlew", "settings.gradle", "settings.gradle.kts", ".git" },
-    --     { "build.xml", "pom.xml", "build.gradle",    "build.gradle.kts" }
-    -- },
-    root_dir = vim.uv.cwd(),
+    root_markers = {
+        { "mvnw", "gradlew", "settings.gradle", "settings.gradle.kts", ".git" },
+        { "build.xml", "pom.xml", "build.gradle", "build.gradle.kts" }
+    },
     settings = {
         -- see https://github.com/eclipse-jdtls/eclipse.jdt.ls/wiki/Running-the-JAVA-LS-server-from-the-command-line#initialize-request
         java = {
@@ -44,10 +43,6 @@ vim.lsp.config("jdtls", {
                     updateSnapshots = true
                 },
                 runtimes = {
-                    {
-                        name = "JavaSE-11",
-                        path = os.getenv("JDK11")
-                    },
                     {
                         name = "JavaSE-17",
                         path = os.getenv("JDK17"),
@@ -88,7 +83,36 @@ vim.lsp.config("jdtls", {
             moveRefactoringSupport = true,
             overrideMethodsPromptSupport = true,
             executeClientCommandSupport = true
-        },
-        bundles = {}
+        }
     }
+})
+
+-- fetch jdt:// content and load it into a buffer
+vim.api.nvim_create_autocmd("BufReadCmd", {
+    group = vim.api.nvim_create_augroup("jdtls_class_file_content", { clear = true }),
+    pattern = "jdt://*",
+    callback = function(args)
+        local client, bufnr = require("me.common").get_active_lsp("jdtls")
+        assert(bufnr, "invalid buffer")
+        local uri = args.match
+
+        vim.bo[bufnr].modifiable = true
+        vim.bo[bufnr].swapfile = false
+        vim.bo[bufnr].buftype = "nofile"
+        vim.bo[bufnr].bufhidden = "wipe"
+        vim.bo[bufnr].filetype = "java"
+
+        local content
+        local function handler(err, response)
+            assert(not err, vim.inspect(err))
+            assert(response, "java/classFileContents must has response")
+            content = response
+            local normalized = string.gsub(response, "\r\n", "\n")
+            local source_lines = vim.split(normalized, "\n", { plain = true })
+            vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, source_lines)
+            vim.bo[bufnr].modifiable = false
+        end
+        client:request("java/classFileContents", { uri = uri }, handler, bufnr)
+        vim.wait(5000, function() return content ~= nil end)
+    end
 })

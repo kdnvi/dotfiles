@@ -4,14 +4,14 @@ if vim.fn.executable("rg") > 0 then
     vim.opt.grepprg = "rg --vimgrep $*"
     -- add [--hidden --no-ignore] for wildcard
     vim.keymap.set("n", "<Space>g", [[:silent grep! ''<Left>]])
-    vim.keymap.set("v", "<Space>g", [["0y:silent grep! '<C-r>0'<Left>]])
-    vim.keymap.set("n", "<Space>G", [[:silent grep! '<C-r><C-w>'<CR>]])
+    vim.keymap.set("v", "<Space>g", [["0y:silent grep! --case-sensitive '<C-r>0'<Left>]])
+    vim.keymap.set("n", "<Space>G", [[:silent grep! --case-sensitive '<C-r><C-w>'<CR>]])
 end -- result can be accessible through qf list
 
 -- browse/search files/buffers
 vim.keymap.set("n", "<Space>f", [[:find ]])
 vim.keymap.set("n", "<Space>F", [[:find <C-r><C-w><C-z>]])
-vim.keymap.set("n", "<C-Space>", [[:ls t<CR>:buffer ]])
+vim.keymap.set("n", "<Space>s", [[:ls t<CR>:buffer ]])
 vim.keymap.set("n", "-", [[:edit %:.:h<C-z><C-z>]])
 
 -- copy to system clipboard
