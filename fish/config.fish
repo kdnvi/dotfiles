@@ -19,10 +19,13 @@ if status is-interactive
 
     abbr -a -- gs 'git status'
     abbr -a -- gd 'git diff'
+    abbr -a -- gds 'git diff --staged'
     abbr -a -- gf 'git fetch'
     abbr -a -- gp 'git pull'
     abbr -a -- gP 'git push'
     abbr -a -- ga 'git add'
+    abbr -a -- gaa 'git add --all'
+    abbr -a -- gap 'git add --patch'
     abbr -a -- gc 'git commit -m'
     abbr -a -- gr 'git restore'
     abbr -a -- gco 'git checkout'

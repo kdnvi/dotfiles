@@ -1,18 +1,3 @@
-vim.api.nvim_create_autocmd("FileType", {
-    pattern = { "help", "qf", "checkhealth" },
-    callback = function() vim.keymap.set("n", "q", vim.cmd.bdelete, { buffer = 0 }) end
-}) -- close some windows quicker using [q] instead of typing :bd<CR> out
-
-vim.api.nvim_create_autocmd("TextYankPost", {
-    pattern = "*",
-    callback = function() vim.hl.on_yank() end
-}) -- know what has been yanked
-
-vim.api.nvim_create_autocmd("QuickFixCmdPost", {
-    pattern = "[^l]*",
-    callback = function() vim.cmd.cwindow() end
-}) -- open the quickfix window whenever a qf command is executed
-
 local session = require("me.common").get_session_filepath()
 if session then
     vim.api.nvim_create_autocmd("BufWritePost", {
@@ -26,3 +11,10 @@ if session then
         callback = function() if vim.uv.fs_stat(session) then vim.cmd.source(session) end end
     })
 end -- don't sessionize when opening specific file
+
+vim.api.nvim_create_user_command("ClearSession", function()
+    local f = require("me.common").get_session_filepath()
+    assert(f and vim.uv.fs_stat(f), "no session found")
+    assert(os.remove(f), "failed to remove session file: " .. f)
+    vim.notify("removed session file: " .. f, vim.log.levels.INFO)
+end, { nargs = 0, desc = "cleanup session file" })
