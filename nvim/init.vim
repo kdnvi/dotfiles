@@ -62,9 +62,8 @@ nnoremap <C-w>P "+P
 autocmd QuickFixCmdPost [^l]* cwindow
 autocmd TextYankPost * silent! lua vim.hl.on_yank()
 autocmd FileType help,qf,checkhealth nn <buffer> q <Cmd>bd<CR>
-autocmd FileType fish,bash,sh setl sw=4 ts=4
+autocmd FileType fish,bash,sh,lua setl sw=4 ts=4
 
-lua require'vim._core.ui2'.enable{enable=true,msg={targets='cmd'}}
-lua require('me.utils')
-lua require('me.session')
-lua require('me.lsp')
+lua require('utils')
+lua require('lsp')
+lua require('session')
