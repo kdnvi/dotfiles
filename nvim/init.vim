@@ -1,20 +1,14 @@
 set noswapfile showmatch
-set smartcase ignorecase
-set shiftwidth=2 tabstop=2
-set expandtab shiftround
-set nomodeline undofile
-set updatetime=512
-set wildoptions+=fuzzy
-set completeopt+=fuzzy
-set splitright relativenumber
-set cursorline title list
+set shiftwidth=2 tabstop=2 expandtab shiftround
+set smartcase ignorecase cursorline nomodeline
+set wildoptions+=fuzzy completeopt+=fuzzy
+set splitright updatetime=512 title undofile list
 let &showbreak = '+++ '
-set notermguicolors
-set background=light
+set notermguicolors background=light
 colorscheme wildcharm
 hi! Normal ctermbg=NONE
 
-" unload unused providers
+" unload redundant providers
 let g:loaded_node_provider = 0
 let g:loaded_perl_provider = 0
 let g:loaded_python3_provider = 0
@@ -38,8 +32,8 @@ nnoremap - :edit %:.:h<C-z><C-z>
 
 " extend vim grep abilities with ripgrep
 if executable('rg')
-  set grepformat^=%f:%l:%c:%m
   set grepprg=rg\ --vimgrep\ --line-number\ $*
+  set grepformat^=%f:%l:%c:%m
   " add [--hidden --no-ignore] for wildcard
   nnoremap <Space>g :silent grep! -S ''<Left>
   nnoremap <Space>G :silent grep! -s '<C-r><C-w>'<CR>

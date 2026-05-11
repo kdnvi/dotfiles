@@ -5,20 +5,20 @@ readonly XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 readonly XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 readonly XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
 readonly XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
-readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly DOTDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 create_directories() {
-    echo 'creating essential directories/files'
+    echo '> creating essential directories/files'
     mkdir -p "$XDG_DATA_HOME"
     mkdir -p "$XDG_CONFIG_HOME"
     mkdir -p "$XDG_STATE_HOME"
     mkdir -p "$XDG_CACHE_HOME"
-    mkdir -p "$HOME/personal"
     mkdir -p "$HOME/repos"
+    mkdir -p "$HOME/personal"
 }
 
 link_dotfiles() {
-    echo 'linking dotfiles'
+    echo '> linking dotfiles'
     local -a dotfiles=(
         fish
         nvim
@@ -28,20 +28,18 @@ link_dotfiles() {
     )
 
     for file in "${dotfiles[@]}"; do
-        if [[ -d $SCRIPT_DIR/$file ]]; then
-            ln -sfn "$SCRIPT_DIR/$file" "$XDG_CONFIG_HOME/$file"
-            continue
-        fi # dir symlink should be under ~/.config
-        if [[ -f $SCRIPT_DIR/$file ]]; then
-            ln -sfn "$SCRIPT_DIR/$file" "$HOME/$file"
-            continue
-        fi # file symlink should be under ~
-        echo "file not found: $SCRIPT_DIR/$file" >&2
+        if [[ -d $DOTDIR/$file ]]; then
+            ln -sfn "$DOTDIR/$file" "$XDG_CONFIG_HOME/$file"
+        elif [[ -f $DOTDIR/$file ]]; then
+            ln -sfn "$DOTDIR/$file" "$HOME/$file"
+        else # print out missing file
+            echo "! file not found: $DOTDIR/$file" >&2
+        fi # probably will never happen; should not be
     done
 }
 
 configure_git() {
-    echo 'configuring git'
+    echo '> configuring git'
     git config --global diff.tool nvimdiff
     git config --global merge.tool nvimdiff
     git config --global mergetool.keepBackup false
@@ -51,51 +49,73 @@ configure_git() {
 
 setup_macos() {
     if ! xcode-select -p &>/dev/null; then
-        echo 'installing xcode command line tools'
+        echo '> installing command line tools for xcode'
         xcode-select --install
     fi
 
     if ! command -v brew &>/dev/null; then
-        echo "installing homebrew"
+        echo '> installing homebrew'
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
         eval "$(/opt/homebrew/bin/brew shellenv)"
     fi
 
-    echo 'installing essential packages'
     brew update
+    local -a packages=(
+        git
+        fish
+        watch
+        tmux
+        neovim
+        tree
+        ncdu
+        ripgrep
+        jq
+        font-ubuntu-sans-mono
+    )
 
-    local -a packages=(git fish watch tmux neovim tree ncdu ripgrep jq font-ubuntu-sans-mono)
+    echo '> installing essential packages'
     brew install "${packages[@]}"
 }
 
 setup_linux() {
-    echo 'installing essential packages'
     sudo apt-get update && sudo apt-get upgrade -y
+    local -a packages=(
+        curl
+        git
+        fish
+        watch
+        tmux
+        neovim
+        tree
+        ncdu
+        ripgrep
+        jq
+    )
 
-    local -a packages=(curl git fish watch tmux neovim tree ncdu ripgrep jq wl-clipboard)
+    echo '> installing essential packages'
     sudo apt-get install -y "${packages[@]}"
 
     if command -v gsettings &> /dev/null; then
-        echo 'disable dash to dock hot-keys on ubuntu'
+        echo '> disable dash to dock hot-keys on ubuntu'
         gsettings set org.gnome.shell.extensions.dash-to-dock hot-keys false
     fi # to switch workspace using Super+number instead of application
 }
 
 install_lsp() {
-    echo 'installing language runtime'
+    echo '> installing language runtime/package-manager'
     if [[ $(uname -s) == Darwin ]]; then
         brew install pipx node
     else
         sudo apt-get install -y clangd pipx nodejs npm
     fi
 
-    echo 'installing pyright language server'
+    echo '> installing pyright language server'
     pipx install pyright
 
-    echo 'installing typescript language server'
+    echo '> installing typescript language server'
     npm install -g typescript-language-server
 
-    echo 'installing eclipse jdt language server'
+    echo '> installing eclipse jdt language server'
     local jdtls_dir="$XDG_DATA_HOME/eclipse.jdt.ls"
     if [[ ! -d $jdtls_dir ]]; then
         git clone https://github.com/eclipse-jdtls/eclipse.jdt.ls "$jdtls_dir"
@@ -108,7 +128,7 @@ install_lsp() {
     latest_tag=$(git -C "$jdtls_dir" tag --sort=-version:refname | head -1)
 
     if [[ $latest_tag == $current_tag ]]; then
-        echo "jdtls already at $current_tag, skipping build"
+        echo "* jdtls already at $current_tag, skipping build"
         return 0
     fi
 
@@ -118,24 +138,24 @@ install_lsp() {
 
 configure_shell() {
     if [[ $SHELL == */fish ]]; then
-        echo 'default shell is already fish'
+        echo '* default shell is already fish'
         return 0
     fi
 
-    echo 'changing default shell to fish'
+    echo '> changing default shell to fish'
     readonly fish_path=$(command -v fish)
     if [[ -z $fish_path ]]; then
-        echo 'fish not found in path' >&2
+        echo '! fish not found in path' >&2
         return 1
     fi
 
     if ! grep -q "^$fish_path$" /etc/shells; then
-        echo "adding $fish_path to /etc/shells"
+        echo "> adding $fish_path to /etc/shells"
         echo "$fish_path" | sudo tee -a /etc/shells
     fi
 
     chsh -s "$fish_path"
-    echo 'please log out and log back in for shell change to take effect'
+    echo '* please log out and log back in for shell change to take effect'
 }
 
 main() {
@@ -148,7 +168,7 @@ main() {
     else
         setup_linux
     fi
-    install_lsp || echo 'warning: install_lsp failed, continuing' >&2
+    install_lsp || echo '! install_lsp failed, continuing' >&2
     configure_shell
 }
 
