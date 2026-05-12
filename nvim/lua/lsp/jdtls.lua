@@ -21,12 +21,12 @@ vim.lsp.config('jdtls', {
         '--add-opens=java.base/java.lang=ALL-UNNAMED',
         '-jar', launcher_jar,
         '-configuration', jdtls_dir..'/' .. (vim.uv.os_uname().sysname=='Darwin' and 'config_mac_arm' or 'config_linux'),
-        '-data', os.getenv('XDG_CACHE_HOME')..'/jdtls/ws/'..vim.fs.basename(vim.uv.cwd())
+        '-data', os.getenv('XDG_CACHE_HOME')..'/jdtls/ws/'..vim.fs.basename(vim.uv.cwd()),
     },
     filetypes = {'java'},
     root_markers = {
         {'mvnw', 'gradlew', 'settings.gradle', 'settings.gradle.kts', '.git'},
-        {'build.xml', 'pom.xml', 'build.gradle', 'build.gradle.kts'}
+        {'build.xml', 'pom.xml', 'build.gradle', 'build.gradle.kts'},
     },
     -- see https://github.com/eclipse-jdtls/eclipse.jdt.ls/wiki/Running-the-JAVA-LS-server-from-the-command-line#initialize-request
     settings = {
@@ -36,7 +36,7 @@ vim.lsp.config('jdtls', {
             completion = {enabled=true, overwrite=true},
             configuration = {
                 maven = {downloadSources=true, updateSnapshots=true},
-                updateBuildConfiguration='disabled'
+                updateBuildConfiguration='disabled',
             },
             contentProvider = {preferred='fernflower'},
             compile = {nullAnalysis = {mode='automatic'}},
@@ -46,8 +46,8 @@ vim.lsp.config('jdtls', {
             saveActions = {organizeImports=true},
             sources = {organizeImports = {starThreshold=9999, staticStarThreshold=9999}},
             symbols = {includeSourceMethodDeclarations=true},
-            telemetry = {enabled=false}
-        }
+            telemetry = {enabled=false},
+        },
     },
     init_options = {
         extendedClientCapabilities = {
@@ -56,7 +56,7 @@ vim.lsp.config('jdtls', {
             hashCodeEqualsPromptSupport=true,
             moveRefactoringSupport=true,
             overrideMethodsPromptSupport=true,
-            executeClientCommandSupport=true
+            executeClientCommandSupport=true,
         }
     }
 })
