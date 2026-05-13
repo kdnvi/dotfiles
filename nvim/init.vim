@@ -1,15 +1,13 @@
-set nomodeline updatetime=512
-set noswapfile undofile
+set nomodeline title
 set shiftwidth=4 tabstop=4
 set expandtab smartcase
-set ignorecase showmatch
-set cursorline title
+set noswapfile undofile
+set cursorline updatetime=512
 set wildoptions+=fuzzy
 set completeopt+=fuzzy
-set laststatus=1 splitright
-set list
+set splitright list
 let &showbreak = '+++ '
-set notermguicolors
+set showmatch notermguicolors
 colorscheme unokai
 
 " unload redundant providers
@@ -17,7 +15,8 @@ let g:loaded_node_provider = 0
 let g:loaded_perl_provider = 0
 let g:loaded_python3_provider = 0
 let g:loaded_ruby_provider = 0
-let g:loaded_netrwPlugin = 0
+let g:loaded_netrw = 1
+let g:loaded_netrwPlugin = 1
 
 " :find command should search files
 func! s:findfiles(cmdarg, _cmdcomp) abort
