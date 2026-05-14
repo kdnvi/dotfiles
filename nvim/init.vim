@@ -1,10 +1,12 @@
 set nomodeline title
-set shiftwidth=4 tabstop=4
+set tabstop=4 shiftwidth=0
 set expandtab smartcase
 set noswapfile undofile
 set cursorline updatetime=512
 set wildoptions+=fuzzy
 set completeopt+=fuzzy
+set spelloptions=camel
+set spelllang=en_us
 set splitright list
 let &showbreak = '+++ '
 set showmatch notermguicolors
@@ -66,9 +68,10 @@ tnoremap <Esc> <C-\><C-n>
 
 " open the quickfix window whenever a qf command is executed
 autocmd QuickFixCmdPost [^l]* cwindow
-autocmd TextYankPost * silent! lua vim.hl.on_yank()
 autocmd FileType help,qf,checkhealth nn <buffer> q <Cmd>bd<CR>
-autocmd FileType vim setl sw=2 ts=2
+autocmd TextYankPost * silent! lua vim.hl.on_yank()
+autocmd FileType * silent! lua vim.treesitter.stop()
+autocmd FileType vim setl tabstop=2
 
 lua require('utils')
 lua require('lsp')

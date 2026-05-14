@@ -9,8 +9,3 @@ vim.api.nvim_create_user_command('Blame', function()
     local finish = line + 5
     vim.cmd(string.format('!git blame -L %d,%d %%', start, finish))
 end, {nargs=0, desc='git blame 10 lines surround'})
-
-vim.api.nvim_create_autocmd('FileType', {
-    pattern='*',
-    callback=function() vim.treesitter.stop() end
-}) -- disable treesitter
