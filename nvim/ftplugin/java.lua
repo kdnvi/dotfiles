@@ -67,57 +67,62 @@ end -- maven
 local ns = vim.api.nvim_create_namespace('jdb_bp')
 _G.jdb_ctx = _G.jdb_ctx or {chan=nil, breakpoints={}, ready=false}
 
-local function configure_jdb()
-    local function clear_breakpoints()
-        assert(#_G.jdb_ctx.breakpoints==0, 'no active breakpoint')
-        for _, bp in pairs(_G.jdb_ctx.breakpoints) do
-            vim.api.nvim_buf_del_extmark(bp.buf, ns, bp.mark)
-        end
-        _G.jdb_ctx.breakpoints = {}
-        vim.notify('clear all breakpoints', vim.log.levels.INFO)
+local function jdb_send(cmd)
+    assert(_G.jdb_ctx.chan, 'jdb not running')
+    vim.fn.chansend(_G.jdb_ctx.chan, cmd..'\n')
+end
+
+local function clear_breakpoints()
+    assert(#_G.jdb_ctx.breakpoints==0, 'no active breakpoint')
+    for k, v in pairs(_G.jdb_ctx.breakpoints) do
+        if _G.jdb_ctx.chan then jdb_send('clear '..k) end
+        vim.api.nvim_buf_del_extmark(v.buf, ns, v.mark)
+    end
+    _G.jdb_ctx.breakpoints = {}
+    vim.notify('clear all breakpoints', vim.log.levels.INFO)
+end
+
+local function toggle_breakpoint()
+    assert(_G.jdb_ctx.chan, 'jdb not running')
+
+    local class = extract_class_name()
+    local line = vim.api.nvim_win_get_cursor(0)[1]
+    local key = class .. ':' .. line
+    local bufnr = vim.api.nvim_get_current_buf()
+
+    if not _G.jdb_ctx.breakpoints[key] then
+        local mark_id = vim.api.nvim_buf_set_extmark(bufnr, ns, line-1, 0, {
+            sign_text='b*', sign_hl_group='ErrorMsg'
+        })
+        _G.jdb_ctx.breakpoints[key] = {buf=bufnr, mark=mark_id}
+        jdb_send('stop at '..key)
+        return
     end
 
+    vim.api.nvim_buf_del_extmark(_G.jdb_ctx.breakpoints[key].buf, ns, _G.jdb_ctx.breakpoints[key].mark)
+    _G.jdb_ctx.breakpoints[key] = nil
+    jdb_send('clear '..key)
+end
+
+local function configure_jdb()
     if _G.jdb_ctx.ready then
-        clear_breakpoints()
         _G.jdb_ctx.chan = nil
+        clear_breakpoints()
+
         vim.api.nvim_del_user_command('Jdb')
         vim.api.nvim_del_user_command('Bp')
         vim.api.nvim_del_user_command('ClearBps')
+
         vim.keymap.del({'n', 'v'}, '<Up>')
         vim.keymap.del({'n', 'v'}, '<Right>')
         vim.keymap.del({'n', 'v'}, '<Down>')
         vim.keymap.del({'n', 'v'}, '<Left>')
         vim.keymap.del('n', '<Space>d')
         vim.keymap.del('v', '<Space>d')
+
         _G.jdb_ctx.ready = false
     else
-        local function jdb_send(cmd)
-            assert(_G.jdb_ctx.chan, 'jdb not running')
-            vim.fn.chansend(_G.jdb_ctx.chan, cmd..'\n')
-        end
         vim.api.nvim_create_user_command('Jdb', function(opts) jdb_send(opts.args) end, {nargs='+', desc='run jdb command'})
-
-        local function toggle_breakpoint()
-            assert(_G.jdb_ctx.chan, 'jdb not running')
-
-            local class = extract_class_name()
-            local line = vim.api.nvim_win_get_cursor(0)[1]
-            local key = class .. ':' .. line
-            local bufnr = vim.api.nvim_get_current_buf()
-
-            if not _G.jdb_ctx.breakpoints[key] then
-                local mark_id = vim.api.nvim_buf_set_extmark(bufnr, ns, line-1, 0, {
-                    sign_text='b*', sign_hl_group='ErrorMsg'
-                })
-                _G.jdb_ctx.breakpoints[key] = {buf=bufnr, mark=mark_id}
-                jdb_send('stop at '..key)
-                return
-            end
-
-            vim.api.nvim_buf_del_extmark(_G.jdb_ctx.breakpoints[key].buf, ns, _G.jdb_ctx.breakpoints[key].mark)
-            _G.jdb_ctx.breakpoints[key] = nil
-            jdb_send('clear '..key)
-        end
         vim.api.nvim_create_user_command('Bp', toggle_breakpoint, {nargs=0, desc='toggle breakpoint'})
         vim.api.nvim_create_user_command('ClearBps', clear_breakpoints, {nargs=0, desc='clear breakpoints'})
 
