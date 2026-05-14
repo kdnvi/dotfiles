@@ -1,3 +1,10 @@
+local function extract_class_name()
+    local file_path = vim.api.nvim_buf_get_name(0)
+    local class = file_path:match('/src/[^/]+/java/(.+)%.java$') or file_path:match('/src/(.+)%.java$')
+    assert(class, 'could not derive fully qualified class name from path')
+    return class:gsub('/', '.')
+end -- extract fqcn
+
 if vim.fs.find('pom.xml', {upward=true, path='.'})[1] then
     vim.opt_local.errorformat = '[ERROR] %f:[%l\\,%v] %m'
     vim.opt_local.makeprg = 'mvn package -T 1C -am -DskipTests'
@@ -7,7 +14,7 @@ if vim.fs.find('pom.xml', {upward=true, path='.'})[1] then
         assert(vim.regex([[\(/test/\|[Tt]ests\?\.java\)]]):match_str(file_path), 'not a test file')
 
         -- generate test command
-        local height = math.floor(vim.o.lines*0.29)
+        local height = math.floor(vim.o.lines*0.2)
         local test_cmd = {'belowright '..height..'split | terminal mvn test -e -DskipTests=false'}
         table.insert(test_cmd, ' -Dgroups=medium,small')
         table.insert(test_cmd, ' -Dlogback.configurationFile=')
@@ -38,11 +45,8 @@ if vim.fs.find('pom.xml', {upward=true, path='.'})[1] then
         table.insert(test_cmd, config_path)
 
         -- extract test class name from current file
-        local dir_pattern = '/src/test/java/'
-        local pos = string.find(file_path, dir_pattern, 1, true)
-        assert(pos, 'could not extract test class name')
-
-        local test_class = file_path:sub(pos+#dir_pattern):gsub('/', '.'):gsub('%.java$', '')
+        local test_class = extract_class_name()
+        vim.notify(test_class, vim.log.levels.WARN)
         table.insert(test_cmd, ' -Dtest=')
         table.insert(test_cmd, test_class)
 
@@ -61,74 +65,88 @@ if vim.fs.find('pom.xml', {upward=true, path='.'})[1] then
 end -- maven
 
 local ns = vim.api.nvim_create_namespace('jdb_bp')
-_G._jdb = _G._jdb or {chan=nil, breakpoints={}}
-local jdb = _G._jdb
+_G.jdb_ctx = _G.jdb_ctx or {chan=nil, breakpoints={}, ready=false}
+
+local function configure_jdb()
+    local function clear_breakpoints()
+        assert(#_G.jdb_ctx.breakpoints==0, 'no active breakpoint')
+        for _, bp in pairs(_G.jdb_ctx.breakpoints) do
+            vim.api.nvim_buf_del_extmark(bp.buf, ns, bp.mark)
+        end
+        _G.jdb_ctx.breakpoints = {}
+        vim.notify('clear all breakpoints', vim.log.levels.INFO)
+    end
+
+    if _G.jdb_ctx.ready then
+        clear_breakpoints()
+        _G.jdb_ctx.chan = nil
+        vim.api.nvim_del_user_command('Jdb')
+        vim.api.nvim_del_user_command('Bp')
+        vim.api.nvim_del_user_command('ClearBps')
+        vim.keymap.del({'n', 'v'}, '<Up>')
+        vim.keymap.del({'n', 'v'}, '<Right>')
+        vim.keymap.del({'n', 'v'}, '<Down>')
+        vim.keymap.del({'n', 'v'}, '<Left>')
+        vim.keymap.del('n', '<Space>d')
+        vim.keymap.del('v', '<Space>d')
+        _G.jdb_ctx.ready = false
+    else
+        local function jdb_send(cmd)
+            assert(_G.jdb_ctx.chan, 'jdb not running')
+            vim.fn.chansend(_G.jdb_ctx.chan, cmd..'\n')
+        end
+        vim.api.nvim_create_user_command('Jdb', function(opts) jdb_send(opts.args) end, {nargs='+', desc='run jdb command'})
+
+        local function toggle_breakpoint()
+            assert(_G.jdb_ctx.chan, 'jdb not running')
+
+            local class = extract_class_name()
+            local line = vim.api.nvim_win_get_cursor(0)[1]
+            local key = class .. ':' .. line
+            local bufnr = vim.api.nvim_get_current_buf()
+
+            if not _G.jdb_ctx.breakpoints[key] then
+                local mark_id = vim.api.nvim_buf_set_extmark(bufnr, ns, line-1, 0, {
+                    sign_text='b*', sign_hl_group='ErrorMsg'
+                })
+                _G.jdb_ctx.breakpoints[key] = {buf=bufnr, mark=mark_id}
+                jdb_send('stop at '..key)
+                return
+            end
+
+            vim.api.nvim_buf_del_extmark(_G.jdb_ctx.breakpoints[key].buf, ns, _G.jdb_ctx.breakpoints[key].mark)
+            _G.jdb_ctx.breakpoints[key] = nil
+            jdb_send('clear '..key)
+        end
+        vim.api.nvim_create_user_command('Bp', toggle_breakpoint, {nargs=0, desc='toggle breakpoint'})
+        vim.api.nvim_create_user_command('ClearBps', clear_breakpoints, {nargs=0, desc='clear breakpoints'})
+
+        vim.keymap.set({'n', 'v'}, '<Up>', [[<Cmd>Jdb cont<CR>]])
+        vim.keymap.set({'n', 'v'}, '<Right>', [[<Cmd>Jdb next<CR>]])
+        vim.keymap.set({'n', 'v'}, '<Down>', [[<Cmd>Jdb step<CR>]])
+        vim.keymap.set({'n', 'v'}, '<Left>', [[<Cmd>Jdb step up<CR>]])
+        vim.keymap.set('n', '<Space>d', [[:Jdb dump <C-r><C-w>]])
+        vim.keymap.set('v', '<Space>d', [["0y:Jdb dump <C-r>0]])
+
+        _G.jdb_ctx.ready = true
+    end
+end -- if ready, del cmds/keymaps; otherwise, create
 
 local function jdb_attach()
-    if jdb.chan then return end
+    if _G.jdb_ctx.chan then return end
 
     local host = vim.fn.input('host: ', 'localhost')
     assert(host, 'host must be specified')
     local port = tonumber(vim.fn.input('port: ', '5005'))
     assert(port, 'port must be specified')
 
-    local width = math.floor(vim.o.columns*0.38)
+    configure_jdb()
+    local width = math.floor(vim.o.columns*0.5)
     vim.cmd('belowright '..width..'vsplit new')
-    jdb.chan = vim.fn.jobstart({
+
+    _G.jdb_ctx.chan = vim.fn.jobstart({
         'jdb', '-connect', string.format('com.sun.jdi.SocketAttach:hostname=%s,port=%d', host, port)
-    }, {
-        on_exit=function()
-            for _, bp in pairs(jdb.breakpoints) do vim.api.nvim_buf_del_extmark(bp.buf, ns, bp.mark) end
-            jdb.chan = nil
-            jdb.breakpoints = {}
-        end, term=true
-    })
+    }, {on_exit=function() configure_jdb() end, term=true})
     vim.cmd('normal! G')
 end -- simple jdb wrapper
-
-local function jdb_class_name()
-    local file_path = vim.api.nvim_buf_get_name(0)
-    local class = file_path:match('/src/[^/]+/java/(.+)%.java$')
-        or file_path:match('/src/(.+)%.java$')
-    assert(class, 'could not derive class name from path')
-    return class:gsub('/', '.')
-end
-
-local function jdb_send(cmd)
-    assert(jdb.chan, 'jdb not running')
-    vim.fn.chansend(jdb.chan, cmd..'\n')
-end
-
-local function jdb_toggle_breakpoint()
-    assert(jdb.chan, 'jdb not running')
-
-    local class = jdb_class_name()
-    local line = vim.api.nvim_win_get_cursor(0)[1]
-    local key = class .. ':' .. line
-    local bufnr = vim.api.nvim_get_current_buf()
-
-    if not jdb.breakpoints[key] then
-        local mark_id = vim.api.nvim_buf_set_extmark(bufnr, ns, line-1, 0, {
-            sign_text='B',
-            sign_hl_group='DiagnosticError',
-        })
-        jdb.breakpoints[key] = {buf=bufnr, mark=mark_id}
-        jdb_send('stop at '..key)
-        return
-    end
-
-    vim.api.nvim_buf_del_extmark(jdb.breakpoints[key].buf, ns, jdb.breakpoints[key].mark)
-    jdb.breakpoints[key] = nil
-    jdb_send('clear '..key)
-end
-
 vim.api.nvim_buf_create_user_command(0, 'Debug', jdb_attach, {nargs=0, desc='start debugger'})
-vim.api.nvim_buf_create_user_command(0, 'Bp', jdb_toggle_breakpoint, {nargs=0, desc='toggle breakpoint'})
-vim.api.nvim_buf_create_user_command(0, 'Jdb', function(opts) jdb_send(opts.args) end, {nargs='+', desc='run jdb command'})
-
-vim.keymap.set({'n', 'v'}, '<Up>', [[<Cmd>Jdb cont<CR>]], {buffer=0})
-vim.keymap.set({'n', 'v'}, '<Right>', [[<Cmd>Jdb next<CR>]], {buffer=0})
-vim.keymap.set({'n', 'v'}, '<Down>', [[<Cmd>Jdb step<CR>]], {buffer=0})
-vim.keymap.set({'n', 'v'}, '<Left>', [[<Cmd>Jdb step up<CR>]], {buffer=0})
-vim.keymap.set('n', '<Space>d', [[:Jdb dump <C-r><C-w>]], {buffer=0})
-vim.keymap.set('v', '<Space>d', [["0y:Jdb dump <C-r>0]], {buffer=0})
