@@ -7,9 +7,8 @@ set wildoptions+=fuzzy
 set completeopt+=fuzzy
 set spelloptions=camel
 set spelllang=en_us
-set splitright list
+set showmatch splitright list
 let &showbreak = '+++ '
-set showmatch notermguicolors
 colorscheme unokai
 
 " unload redundant providers
@@ -72,7 +71,7 @@ autocmd TextYankPost * silent! lua vim.hl.on_yank()
 autocmd FileType * silent! lua vim.treesitter.stop()
 autocmd FileType vim setl tabstop=2
 
-lua require('me.utils')
-lua require('me.lsp')
-lua require('me.session')
-lua require('me.pack')
+lua require('khoa.utils')
+lua require('khoa.lsp')
+lua require('khoa.session')
+lua require('khoa.pack')
