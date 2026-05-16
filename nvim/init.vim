@@ -67,11 +67,12 @@ tnoremap <Esc> <C-\><C-n>
 " open the quickfix window whenever a qf command is executed
 autocmd QuickFixCmdPost [^l]* cwindow
 autocmd FileType help,qf,checkhealth,dap-float nn <buffer> q <Cmd>bd<CR>
+autocmd TermOpen * nnoremap <buffer> q <Cmd>bd<CR>
 autocmd TextYankPost * silent! lua vim.hl.on_yank()
 autocmd FileType * silent! lua vim.treesitter.stop()
 autocmd FileType vim setl tabstop=2
 
-lua require('khoa.utils')
-lua require('khoa.lsp')
-lua require('khoa.session')
-lua require('khoa.pack')
+lua require'utils'
+lua require'lspc'
+lua require'sessionize'
+lua require'bundle'
