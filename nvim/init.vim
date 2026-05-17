@@ -31,6 +31,8 @@ nnoremap <Space>s :vert sfind
 nnoremap <Space>o :ls t<CR>:buffer 
 nnoremap - <Cmd>Explore<CR>
 au FileType netrw nn <buffer> <C-c> <Cmd>Rexplore<CR>
+" escape VT220/xterm terminal emulator buffer
+tnoremap <Esc> <C-\><C-n>
 
 " extend vim grep abilities with ripgrep
 if executable('rg')
@@ -54,14 +56,6 @@ nnoremap <C-w>P "+P
 nn <Space>n <Cmd>let @+=expand('%:t')<Bar>echo 'filename yanked'<CR>
 nn <Space>p <Cmd>let @+=expand('%')<Bar>echo 'filepath yanked'<CR>
 nn <Space>P <Cmd>let @+=expand('%:p')<Bar>echo 'fullpath yanked'<CR>
-
-" moving in command mode
-cnoremap <C-a> <Home>
-cnoremap <C-e> <End>
-cnoremap <C-b> <Up>
-cnoremap <C-f> <Down>
-" escape VT220/xterm terminal emulator buffer
-tnoremap <Esc> <C-\><C-n>
 
 " open the quickfix window whenever a qf command is executed
 autocmd QuickFixCmdPost [^l]* cwindow
