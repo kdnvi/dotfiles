@@ -4,12 +4,10 @@ set tabstop=4 shiftwidth=0 expandtab
 set nomodeline noswapfile undofile
 set ignorecase smartcase
 set cursorline updatetime=512
-set completeopt+=fuzzy
 set wildoptions=pum,tagfile,fuzzy
 set showmatch splitright list
 set listchars=tab:>\ ,trail:-,nbsp:+
 let &showbreak = '+++ '
-colorscheme unokai
 
 " unload redundant providers
 if has('nvim')
@@ -17,6 +15,7 @@ if has('nvim')
   let g:loaded_perl_provider = 0
   let g:loaded_python3_provider = 0
   let g:loaded_ruby_provider = 0
+  colorscheme unokai
 endif
 
 " :find command should search files
