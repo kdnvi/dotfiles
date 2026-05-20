@@ -29,9 +29,9 @@ func! s:findfiles(cmdarg, _cmdcomp) abort
   return empty(a:cmdarg) ? l:out : matchfuzzy(l:out, a:cmdarg)
 endfunc
 set findfunc=s:findfiles
-nnoremap <Space>f :find 
-nnoremap <Space>F :find <C-r><C-w><C-z>
-nnoremap <Space>s :vert sfind 
+nnoremap <Space>ff :find 
+nnoremap <Space>fw :find <C-r><C-w><C-z>
+nnoremap <Space>fs :vert sfind 
 
 " browse buffers/files
 nnoremap <Space>o :ls t<CR>:buffer 
@@ -45,14 +45,14 @@ if executable('rg')
   set grepprg=rg\ --vimgrep\ -n\ $*
   set grepformat^=%f:%l:%c:%m
   " add [--hidden --no-ignore] for wildcard
-  nnoremap <Space>g :silent grep! -S ''<Left>
-  vnoremap <Space>g "0y:silent grep! -s '<C-r>0'<Left>
-  nnoremap <Space>G :silent grep! -s '<C-r><C-w>'<CR>
+  nnoremap <Space>gg :silent grep! -S ''<Left>
+  vnoremap <Space>gg "0y:silent grep! -s '<C-r>0'<Left>
+  nnoremap <Space>gw :silent grep! -s '<C-r><C-w>'<CR>
 else
   set grepprg=grep\ -rn\ $*
-  nnoremap <Space>g :grep! -i ''<Left>
-  vnoremap <Space>g "0y:grep! '<C-r>0'<Left>
-  nnoremap <Space>G :grep! '<C-r><C-w>'<CR>
+  nnoremap <Space>gg :grep! -i ''<Left>
+  vnoremap <Space>gg "0y:grep! '<C-r>0'<Left>
+  nnoremap <Space>gw :grep! '<C-r><C-w>'<CR>
 endif
 
 " yank/paste to/from system clipboard
@@ -77,6 +77,22 @@ if has('nvim')
   autocmd TextYankPost * silent! lua vim.hl.on_yank()
   autocmd FileType * silent! lua vim.treesitter.stop()
 
+  " browse git modified/untracked files only
+  func! s:gitfiles(arglead) abort
+    let l:files = systemlist('git ls-files -m -o --exclude-standard 2>/dev/null')
+    if v:shell_error != 0 | return [] | endif
+    return empty(a:arglead) ? l:files : matchfuzzy(l:files, a:arglead)
+  endfunc
+  func! s:gitfilescomp(arglead, _cmdline, _cursorpos) abort
+    return s:gitfiles(a:arglead)
+  endfunc
+  func! s:gitfilesedit(file) abort
+    execute 'edit' fnameescape(a:file)
+  endfunc
+  command! -nargs=1 -complete=customlist,s:gitfilescomp GFiles call s:gitfilesedit(<q-args>)
+  nnoremap <Space>fg :GFiles <C-z>
+
+  " load lua stuff
   lua require'utils'
   lua require'lspc'
   lua require'sessionize'
