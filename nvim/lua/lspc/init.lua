@@ -2,7 +2,7 @@ vim.diagnostic.config{virtual_text=true, underline=true}
 vim.lsp.config('*', {
     on_attach = function(client, bufnr)
         vim.lsp.semantic_tokens.enable(false)
-        vim.lsp.completion.enable(true, client.id, bufnr, {autotrigger=false})
+        vim.lsp.completion.enable(true, client.id, bufnr, {autotrigger=true})
         vim.lsp.inlay_hint.enable(true)
 
         -- see [:help vim.lsp.*] for documentation

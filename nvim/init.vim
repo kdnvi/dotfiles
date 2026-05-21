@@ -15,6 +15,7 @@ if has('nvim')
   let g:loaded_perl_provider = 0
   let g:loaded_python3_provider = 0
   let g:loaded_ruby_provider = 0
+  set completeopt+=menuone,noselect
   colorscheme unokai
 endif
 
@@ -75,22 +76,18 @@ autocmd FileType vim setl tabstop=2
 if has('nvim')
   autocmd TermOpen * nnoremap <buffer> q <Cmd>bd<CR>
   autocmd TextYankPost * silent! lua vim.hl.on_yank()
-  autocmd FileType * silent! lua vim.treesitter.stop()
 
-  " browse git modified/untracked files only
+  " browse git modified/untracked files
   func! s:gitfiles(arglead) abort
     let l:files = systemlist('git ls-files -m -o --exclude-standard 2>/dev/null')
     if v:shell_error != 0 | return [] | endif
     return empty(a:arglead) ? l:files : matchfuzzy(l:files, a:arglead)
   endfunc
-  func! s:gitfilescomp(arglead, _cmdline, _cursorpos) abort
+  func! s:gfilescomp(arglead, _cmdline, _cursorpos) abort
     return s:gitfiles(a:arglead)
   endfunc
-  func! s:gitfilesedit(file) abort
-    execute 'edit' fnameescape(a:file)
-  endfunc
-  command! -nargs=1 -complete=customlist,s:gitfilescomp GFiles call s:gitfilesedit(<q-args>)
-  nnoremap <Space>fg :GFiles <C-z>
+  command! -nargs=1 -complete=customlist,s:gfilescomp Files exe 'edit' fnameescape(<q-args>)
+  nnoremap <Space>fg :Files <C-z>
 
   " load lua stuff
   lua require'utils'
