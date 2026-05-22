@@ -13,9 +13,10 @@ if status is-interactive
     set -gx EDITOR nvim
     set -gx VISUAL nvim
 
-    set __fish_git_prompt_showdirtystate 'yes'
-    set __fish_git_prompt_showstashstate 'yes'
-    set __fish_git_prompt_showupstream 'yes'
+    set -g __fish_git_prompt_show_informative_status 1
+    set -g __fish_git_prompt_showdirtystate 'yes'
+    set -g __fish_git_prompt_showstashstate 'yes'
+    set -g __fish_git_prompt_showupstream 'yes'
 
     abbr -a -- gs 'git status'
     abbr -a -- gd 'git diff'
