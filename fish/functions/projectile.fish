@@ -6,6 +6,10 @@ function projectile --description "switch to a tmux session/window matching patt
         return 1
     end # ensure pattern is specified
 
+    if not string match -qr '^[A-Za-z0-9._+-]+$' -- "$pattern"
+        echo "invalid pattern"; return 1
+    end # reject unsafe characters before grep/find/tmux
+
     set -l matched (tmux list-sessions -F '#{session_name}' 2>/dev/null | grep -iF "$pattern")
     if test -n "$matched"
         tmux switch-client -t (string split \n -- $matched)[1]
