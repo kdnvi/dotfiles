@@ -3,6 +3,11 @@ vim.filetype.add({
     extension = {psql='sql'},
 }) -- ft mapping
 
+vim.api.nvim_create_autocmd('FileType', {pattern = '*', callback = function(args)
+    local lang = vim.treesitter.language.get_lang(vim.bo[args.buf].filetype)
+    if lang and vim.treesitter.language.add(lang) then vim.treesitter.start(args.buf, lang) end
+end}) -- treesitter
+
 -- ui2 experimental
 require'vim._core.ui2'.enable{enable=true, msg={targets='cmd'}}
 

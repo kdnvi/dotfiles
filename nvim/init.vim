@@ -35,11 +35,10 @@ endif
 " open the quickfix window whenever a qf command is executed
 autocmd QuickFixCmdPost [^l]* cwindow
 autocmd FileType help,qf,checkhealth,dap-float nn <buffer> q <Cmd>bd<CR>
-autocmd FileType vim setl tabstop=2
 
 if has('nvim')
   autocmd TextYankPost * silent! lua vim.hl.on_yank()
-  autocmd FileType * silent! lua vim.treesitter.start()
+  autocmd FileType vim setl tabstop=2
 
   " yank/paste to/from system clipboard
   " all motions work the same as normal [y]
@@ -59,8 +58,7 @@ if has('nvim')
   let g:loaded_python3_provider = 0
   let g:loaded_ruby_provider = 0
   let g:loaded_matchit = 1
-  set completeopt+=menuone,noselect
-  set cursorline
+  set cursorline completeopt+=menuone,noselect
   colorscheme monokai
 
   " :find command should search files
@@ -79,10 +77,10 @@ if has('nvim')
     if v:shell_error != 0 | return [] | endif
     return empty(a:arglead) ? l:files : matchfuzzy(l:files, a:arglead)
   endfunc
-  func! s:gfilescomp(arglead, _cmdline, _cursorpos) abort
+  func! s:gfcomp(arglead, _cmdline, _cursorpos) abort
     return s:gitfiles(a:arglead)
   endfunc
-  command! -nargs=1 -complete=customlist,s:gfilescomp Files exe 'edit' fnameescape(<q-args>)
+  command! -nargs=1 -complete=customlist,s:gfcomp Files exe 'edit' fnameescape(<q-args>)
   nnoremap <Space>s :Files <C-z>
 
   " load lua stuff
