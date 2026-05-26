@@ -4,6 +4,7 @@ set nomodeline noswapfile undofile
 set ignorecase smartcase updatetime=512
 set wildoptions=pum,tagfile,fuzzy
 set incsearch hlsearch
+set number relativenumber
 set title showmatch splitright list
 set listchars=tab:>\ ,trail:-,nbsp:+
 let &showbreak = '+++ '

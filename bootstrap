@@ -77,11 +77,6 @@ setup_linux() {
     echo '> installing essential packages'
     sudo apt-get install -y "${packages[@]}"
     sudo snap install ghostty --classic
-
-    if command -v gsettings &> /dev/null; then
-        echo '> disable dash to dock hot-keys on ubuntu'
-        gsettings set org.gnome.shell.extensions.dash-to-dock hot-keys false
-    fi # to switch workspace using Super+number instead of application
 }
 
 configure_git() {
@@ -90,6 +85,7 @@ configure_git() {
     git config --global merge.tool nvimdiff
     git config --global mergetool.keepBackup false
     git config --global pull.rebase true
+    git config --global push.autoSetupRemote true
     git config --global core.excludesFile "$HOME/.gitignore"
 }
 
