@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# supported: macos (homebrew) and debian/ubuntu linux
+# linux server: ./bootstrap --minimal
 set -euo pipefail
 
 readonly XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
@@ -7,127 +9,125 @@ readonly XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
 readonly XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
 readonly DOTDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-create_directories() {
-    echo '> creating essential directories/files'
-    mkdir -p "$XDG_DATA_HOME"
-    mkdir -p "$XDG_CONFIG_HOME"
-    mkdir -p "$XDG_STATE_HOME"
-    mkdir -p "$XDG_CACHE_HOME"
-    mkdir -p "$HOME/repos"
-    mkdir -p "$HOME/personal"
+readonly -a _DESKTOP_PACKAGES=(fish watch neovim tree ncdu ripgrep jq)
+readonly -a _GIT_CONFIG=(
+    diff.tool:nvimdiff
+    merge.tool:nvimdiff
+    mergetool.keepBackup:false
+    pull.rebase:true
+    push.autoSetupRemote:true
+    core.excludesFile:$HOME/.gitignore
+)
+
+# fancy stuff skipped in minimal mode
+MINIMAL=0
+_minimal() { [[ $MINIMAL -eq 1 ]]; }
+
+parse_args() {
+    for arg in "$@"; do
+        case $arg in
+            --minimal) MINIMAL=1 ;;
+            *) echo "! unknown argument: $arg" >&2; exit 1 ;;
+        esac
+    done
 }
 
-# fancy stuff will not be available on server
-is_linux_server() {
-    [[ $(uname -s) != Linux ]] && return 1
-    [[ -z "${DISPLAY:-}" && -z "${WAYLAND_DISPLAY:-}" && -z "${XDG_CURRENT_DESKTOP:-}" ]]
+_install_dotfile() {
+    local rel=$1 dst=${2:-} src=$DOTDIR/$rel
+    if [[ -z $dst ]]; then
+        [[ -d $src ]] && dst=$XDG_CONFIG_HOME/$rel
+        [[ -f $src ]] && dst=$HOME/$rel
+    fi
+
+    [[ -n $dst ]] || { echo "! file not found: $src" >&2; return; }
+    if _minimal; then cp -fp "$src" "$dst"; else ln -sfn "$src" "$dst"; fi
+}
+
+mkdirs() {
+    echo '> creating essential dirs'
+    local -a xdg_dirs=("$XDG_DATA_HOME" "$XDG_CONFIG_HOME" "$XDG_STATE_HOME" "$XDG_CACHE_HOME")
+    local -a home_dirs=(repos personal)
+    mkdir -p "${xdg_dirs[@]}" "${home_dirs[@]/#/$HOME/}"
 }
 
 link_dotfiles() {
-    if is_linux_server; then
+    if _minimal; then
         echo '> copying config files'
-        cp -fp "$DOTDIR/.tmux.conf" "$HOME/.tmux.conf"
-        cp -fp "$DOTDIR/nvim/init.vim" "$HOME/.vimrc"
-        cp -fp "$DOTDIR/.psqlrc" "$HOME/.psqlrc"
-        return 0
+        _install_dotfile .tmux.conf
+        _install_dotfile nvim/init.vim "$HOME/.vimrc"
+        _install_dotfile .psqlrc
+        return
     fi
 
     echo '> linking dotfiles'
-    local -a dotfiles=(ghostty fish nvim .tmux.conf .psqlrc .gitignore)
-    for file in "${dotfiles[@]}"; do
-        if [[ -d $DOTDIR/$file ]]; then
-            ln -sfn "$DOTDIR/$file" "$XDG_CONFIG_HOME/$file"
-        elif [[ -f $DOTDIR/$file ]]; then
-            ln -sfn "$DOTDIR/$file" "$HOME/$file"
-        else # print out missing file
-            echo "! file not found: $DOTDIR/$file" >&2
-        fi # probably will never happen; should not be
+    local rel
+    for rel in ghostty fish nvim .tmux.conf .psqlrc .gitignore; do
+        _install_dotfile "$rel"
     done
 }
 
 setup_macos() {
-    if ! xcode-select -p &>/dev/null; then
-        echo '> installing command line tools for xcode'
-        xcode-select --install
-    fi
-
-    # only install if brew doesn't exist
-    if ! command -v brew &>/dev/null; then
+    xcode-select -p &>/dev/null || { echo '> installing command line tools for xcode'; xcode-select --install; }
+    command -v brew &>/dev/null || {
         echo '> installing homebrew'
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
         eval "$(/opt/homebrew/bin/brew shellenv)"
-    fi
+    }
 
-    brew update
-    local -a packages=(git fish watch tmux neovim tree ncdu ripgrep jq ghostty font-ubuntu-sans-mono)
+    local -a packages=(git tmux "${_DESKTOP_PACKAGES[@]}" ghostty font-ubuntu-sans-mono)
     echo '> installing essential packages'
-    brew install "${packages[@]}"
+    brew update && brew install "${packages[@]}"
 }
 
 setup_linux() {
     sudo apt-get update && sudo apt-get upgrade -y
-    if is_linux_server; then
-        local -a packages=(curl git tmux)
-        echo '> installing essential packages (server)'
-        sudo apt-get install -y "${packages[@]}"
-        return 0
-    fi
 
-    local -a packages=(curl git fish watch tmux neovim tree ncdu ripgrep jq)
-    echo '> installing essential packages'
+    local -a packages=(curl git tmux)
+    _minimal || packages+=("${_DESKTOP_PACKAGES[@]}")
+
+    echo "> installing essential packages$(_minimal && echo ' (minimal)')"
     sudo apt-get install -y "${packages[@]}"
-    sudo snap install ghostty --classic
+    _minimal || sudo snap install ghostty --classic
 }
 
 configure_git() {
+    _minimal && return 0
     echo '> configuring git'
-    git config --global diff.tool nvimdiff
-    git config --global merge.tool nvimdiff
-    git config --global mergetool.keepBackup false
-    git config --global pull.rebase true
-    git config --global push.autoSetupRemote true
-    git config --global core.excludesFile "$HOME/.gitignore"
+    local setting
+    for setting in "${_GIT_CONFIG[@]}"; do
+        git config --global "${setting%%:*}" "${setting#*:}"
+    done
 }
 
 configure_shell() {
-    if [[ $SHELL == */fish ]]; then
-        echo '* default shell is already fish'
-        return 0
-    fi
+    _minimal && return 0
+    [[ $SHELL == */fish ]] && { echo '* default shell is already fish'; return 0; }
+
+    local fish_path=$(command -v fish)
+    [[ -n $fish_path ]] || { echo '! fish not found in path' >&2; return 1; }
 
     echo '> changing default shell to fish'
-    readonly fish_path=$(command -v fish)
-    if [[ -z $fish_path ]]; then
-        echo '! fish not found in path' >&2
-        return 1
-    fi
-
-    if ! grep -q "^$fish_path$" /etc/shells; then
-        echo "> adding $fish_path to /etc/shells"
-        echo "$fish_path" | sudo tee -a /etc/shells
-    fi
-
+    grep -qxF "$fish_path" /etc/shells || echo "$fish_path" | sudo tee -a /etc/shells
     chsh -s "$fish_path"
     echo '* please log out and log back in for shell change to take effect'
 }
 
 main() {
-    if ! is_linux_server; then
-        create_directories
+    parse_args "$@"
+    if _minimal && [[ $(uname -s) != Linux ]]; then
+        echo '! --minimal is only supported on linux' >&2
+        exit 1
     fi
 
-    link_dotfiles
+    mkdirs && link_dotfiles
+    case $(uname -s) in
+        Darwin) setup_macos ;;
+        Linux)  setup_linux ;;
+        *)      echo '! unsupported os: only macos and linux are supported' >&2; exit 1 ;;
+    esac
 
-    if [[ $(uname -s) == Darwin ]]; then
-        setup_macos
-    else
-        setup_linux
-    fi
-
-    if ! is_linux_server; then
-        configure_git
-        configure_shell
-    fi
+    configure_git
+    configure_shell
 }
 
 main "$@"
