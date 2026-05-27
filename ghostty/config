@@ -1,11 +1,10 @@
+font-feature=-calt,-liga,-dlig
 font-family=Ubuntu Sans Mono
+font-size=18
 font-style=Medium
 font-thicken=true
-font-feature=-calt,-liga,-dlig
-font-size=18
 maximize=true
 window-padding-x=0
 window-padding-y=0
-scrollback-limit=100000
 macos-option-as-alt=true
 theme=Monokai Classic
