@@ -5,26 +5,33 @@ local function changed_lines(buf, file)
     local lines = {}
     local line_count = vim.api.nvim_buf_line_count(buf)
     for line in out.stdout:gmatch('[^\n]+') do
-        local osta, ocnt, nsta, ncnt = line:match('^@@ %-(%d+),?(%d*) %+(%d+),?(%d*) @@')
-        if osta then
-            ocnt = tonumber(ocnt) or 1
-            nsta = tonumber(nsta)
-            ncnt = tonumber(ncnt) or 1
+        local ostart, ocount, nstart, ncount = line:match('^@@ %-(%d+),?(%d*) %+(%d+),?(%d*) @@')
+        if not ostart then goto continue end
 
-            if ocnt == 0 and ncnt > 0 then
-                for lnum = nsta, nsta+ncnt-1 do lines[#lines+1] = {1, lnum} end
-            elseif ncnt == 0 then -- 1 is add sign
-                lines[#lines+1] = {nsta==0 and 3 or 4, nsta==0 and 1 or math.min(nsta, line_count)}
-            elseif ocnt > 0 and ncnt > 0 then -- 3/4 is del above/below sign
-                for lnum = nsta, nsta+ncnt-1 do lines[#lines+1] = {2, lnum} end
-            end -- 2 is modify sign
-        end -- checkout sign definition below
-    end
+        ocount = tonumber(ocount) or 1
+        nstart = tonumber(nstart)
+        ncount = tonumber(ncount) or 1
+
+        if ncount == 0 then -- del
+            local sign = nstart==0 and 4 or 1
+            local lnum = nstart==0 and 1 or math.min(nstart, line_count)
+            lines[#lines+1] = {sign, lnum}
+        elseif ncount > 0 then -- add/mod
+            local sign = ocount==0 and 2 or 3
+            for lnum = nstart, nstart+ncount-1 do lines[#lines+1] = {sign, lnum} end
+        end -- {sign_index, line_number}
+        ::continue::
+    end -- e.g. @@ -12,3 +12,5 @@
     return lines
 end
 
-local signs = {{text='▌', hl='Added'}, {text='▌', hl='Changed'}, {text='▔', hl='Removed'}, {text='▁', hl='Removed'}}
 local ns = vim.api.nvim_create_namespace('diffsigns')
+local signs = {
+    {sign_text = '▁', sign_hl_group = 'Removed'},
+    {sign_text = '▌', sign_hl_group = 'Added'},
+    {sign_text = '▌', sign_hl_group = 'Changed'},
+    {sign_text = '▔', sign_hl_group = 'Removed'},
+} -- 1:delb 2:add 3:change 4:dela - just want to keep a nice shape
 local function refresh(buf)
     vim.api.nvim_buf_clear_namespace(buf, ns, 0, -1)
     local file = vim.api.nvim_buf_get_name(buf)
@@ -32,8 +39,7 @@ local function refresh(buf)
 
     local marks = changed_lines(buf, file)
     for _, mark in ipairs(marks) do
-        local def = signs[mark[1]] -- sign definition at index
-        vim.api.nvim_buf_set_extmark(buf, ns, mark[2]-1, 0, {sign_text=def.text, sign_hl_group=def.hl, priority=10})
+        vim.api.nvim_buf_set_extmark(buf, ns, mark[2]-1, 0, signs[mark[1]])
     end -- place signs
 end
 
