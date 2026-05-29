@@ -7,10 +7,6 @@ readonly XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
 readonly XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
 readonly DOTDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# fancy stuff skipped in minimal mode
-MINIMAL=0
-_minimal() { [[ $MINIMAL -eq 1 ]]; }
-
 mkdirs() {
     echo '> creating essential dirs'
     local -a xdg_dirs=("$XDG_DATA_HOME" "$XDG_CONFIG_HOME" "$XDG_STATE_HOME" "$XDG_CACHE_HOME")
@@ -18,30 +14,15 @@ mkdirs() {
     mkdir -p "${xdg_dirs[@]}" "${home_dirs[@]/#/$HOME/}"
 }
 
-_install_dotfile() {
-    local rel=$1 dst=${2:-} src=$DOTDIR/$rel
-    if [[ -z $dst ]]; then
-        [[ -d $src ]] && dst=$XDG_CONFIG_HOME/$rel
-        [[ -f $src ]] && dst=$HOME/$rel
-    fi
-
-    [[ -n $dst ]] || { echo "! file not found: $src" >&2; return; }
-    if _minimal; then cp -fp "$src" "$dst"; else ln -sfn "$src" "$dst"; fi
-}
-
 link_dotfiles() {
-    if _minimal; then
-        echo '> copying config files'
-        _install_dotfile .tmux.conf
-        _install_dotfile nvim/init.vim "$HOME/.vimrc"
-        _install_dotfile .psqlrc
-        return 0
-    fi
-
     echo '> linking dotfiles'
-    local rel
-    for rel in ghostty fish nvim .tmux.conf .psqlrc .gitignore; do
-        _install_dotfile "$rel"
+    local -a dotfiles=(ghostty fish nvim .tmux.conf .psqlrc .gitignore)
+    for file in "${dotfiles[@]}"; do
+        local src=$DOTDIR/$file dst
+        [[ -d $src ]] && dst=$XDG_CONFIG_HOME/$file
+        [[ -f $src ]] && dst=$HOME/$file
+        [[ -n $dst ]] || { echo "! file not found: $src" >&2; return; }
+        ln -sfn "$src" "$dst"
     done
 }
 
@@ -60,17 +41,13 @@ setup_macos() {
 
 setup_linux() {
     sudo apt-get update && sudo apt-get upgrade -y
-
-    local -a packages=(curl git tmux)
-    _minimal || packages+=(fish watch neovim tree ncdu ripgrep jq)
-
-    echo "> installing essential packages$(_minimal && echo ' (minimal)')"
+    local -a packages=(curl git tmux fish watch neovim tree ncdu ripgrep jq)
+    echo "> installing essential packages"
     sudo apt-get install -y "${packages[@]}"
-    _minimal || sudo snap install ghostty --classic
+    sudo snap install ghostty --classic
 }
 
 configure_git() {
-    _minimal && return 0
     echo '> configuring git'
     git config --global core.excludesFile "$HOME/.gitignore"
     git config --global push.autoSetupRemote true
@@ -81,9 +58,7 @@ configure_git() {
 }
 
 configure_shell() {
-    _minimal && return 0
     [[ $SHELL == */fish ]] && { echo '* default shell is already fish'; return 0; }
-
     local fish_path=$(command -v fish)
     [[ -n $fish_path ]] || { echo '! fish not found in path' >&2; return 1; }
 
@@ -93,32 +68,7 @@ configure_shell() {
     echo '* please log out and log back in for shell change to take effect'
 }
 
-parse_args() {
-    for arg in "$@"; do
-        case $arg in
-            --minimal|-m)
-                [[ $(uname -s) == Linux ]] || { echo '! --minimal is only supported on linux' >&2; exit 1; }
-                MINIMAL=1
-                ;;
-            --help|-h)
-                cat <<EOF >&2
-usage: $(basename "$0") [-m]
--m, --minimal   minimal linux setup (copy configs, base packages only)
--h, --help      show this help
-EOF
-                exit 0
-                ;;
-            *)
-                echo "! unknown argument: $arg" >&2
-                echo "try '$(basename "$0") --help'" >&2
-                exit 1
-                ;;
-        esac
-    done
-}
-
 main() {
-    parse_args "$@"
     mkdirs && link_dotfiles
     case $(uname -s) in
         Darwin) setup_macos ;;

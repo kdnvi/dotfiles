@@ -81,7 +81,7 @@ if has('nvim')
     return s:gitfiles(a:arglead)
   endfunc
   command! -nargs=1 -complete=customlist,s:gfcomp Files exe 'edit' fnameescape(<q-args>)
-  nnoremap <Space>s :Files <C-z>
+  nnoremap <Space>s :Files 
 
   " load lua stuff
   lua require'utils'
