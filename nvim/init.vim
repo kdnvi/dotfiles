@@ -4,7 +4,6 @@ set nomodeline noswapfile undofile
 set ignorecase smartcase updatetime=512
 set wildoptions=pum,tagfile,fuzzy
 set incsearch hlsearch
-set number relativenumber
 set title showmatch splitright list
 set listchars=tab:>\ ,trail:-,nbsp:+
 let &showbreak = '+++ '
@@ -13,7 +12,7 @@ syntax enable
 " browse buffers/files
 nnoremap <Space>o :ls t<CR>:buffer 
 nnoremap - <Cmd>Explore<CR>
-au FileType netrw nn <buffer> <C-c> <Cmd>Rexplore<CR>
+au FileType netrw nn <buffer> <C-c> <Cmd>Rex<CR>
 " escape VT220/xterm terminal emulator buffer
 tnoremap <Esc> <C-\><C-n>
 
@@ -35,10 +34,10 @@ endif
 " open the quickfix window whenever a qf command is executed
 autocmd QuickFixCmdPost [^l]* cwindow
 autocmd FileType help,qf,checkhealth,dap-float nn <buffer> q <Cmd>bd<CR>
-autocmd FileType qf setl nonumber norelativenumber
 
 if has('nvim')
   autocmd TextYankPost * silent! lua vim.hl.on_yank()
+  autocmd FileType * silent! lua vim.treesitter.stop()
   autocmd FileType vim setl tabstop=2
 
   " yank/paste to/from system clipboard
@@ -59,7 +58,7 @@ if has('nvim')
   let g:loaded_python3_provider = 0
   let g:loaded_ruby_provider = 0
   let g:loaded_matchit = 1
-  set cursorline completeopt+=menuone,noselect
+  set completeopt+=menuone,noselect cursorline
   colorscheme unokai
 
   " :find command should search files

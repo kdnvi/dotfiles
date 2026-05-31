@@ -1,55 +1,40 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-readonly XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
-readonly XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
-readonly XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
-readonly XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
-readonly DOTDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
-mkdirs() {
+link_dotfiles() {
     echo '> creating essential dirs'
-    local -a xdg_dirs=("$XDG_DATA_HOME" "$XDG_CONFIG_HOME" "$XDG_STATE_HOME" "$XDG_CACHE_HOME")
-    local -a home_dirs=(repos personal)
-    mkdir -p "${xdg_dirs[@]}" "${home_dirs[@]/#/$HOME/}"
+    mkdir -p "${XDG_CONFIG_HOME:-~/.config}"
+    mkdir -p ~/repos ~/personal
+
+    echo '> linking dotfiles'
+    ln -sfn $(pwd)/ghostty ~/.config/ghostty
+    ln -sfn $(pwd)/fish ~/.config/fish
+    ln -sfn $(pwd)/nvim ~/.config/nvim
+    ln -sfn $(pwd)/.tmux.conf ~/.tmux.conf
+    ln -sfn $(pwd)/.gitignore ~/.gitignore
+    ln -sfn $(pwd)/.psqlrc ~/.psqlrc
 }
 
-link_dotfiles() {
-    echo '> linking dotfiles'
-    local -a dotfiles=(ghostty fish nvim .tmux.conf .psqlrc .gitignore)
-    for file in "${dotfiles[@]}"; do
-        local src=$DOTDIR/$file dst
-        [[ -d $src ]] && dst=$XDG_CONFIG_HOME/$file
-        [[ -f $src ]] && dst=$HOME/$file
-        [[ -n $dst ]] || { echo "! file not found: $src" >&2; return 1; }
-        ln -sfn "$src" "$dst"
-    done
+setup_linux() {
+    echo "> installing essential packages"
+    sudo apt-get update && sudo apt-get install -y curl git tmux fish watch neovim tree ncdu ripgrep jq
+    sudo snap install ghostty --classic
 }
 
 setup_macos() {
     xcode-select -p &>/dev/null || { echo '> installing command line tools for xcode'; xcode-select --install; }
     command -v brew &>/dev/null || {
         echo '> installing homebrew'
-        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-        eval "$(/opt/homebrew/bin/brew shellenv)"
+            /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+            eval "$(/opt/homebrew/bin/brew shellenv)"
     }
-
-    local -a packages=(git tmux fish watch neovim tree ncdu ripgrep jq ghostty font-ubuntu-sans-mono)
     echo '> installing essential packages'
-    brew update && brew install "${packages[@]}"
+    brew update && brew install git tmux fish watch neovim tree ncdu ripgrep jq ghostty font-ubuntu-sans-mono
 }
 
-setup_linux() {
-    sudo apt-get update && sudo apt-get upgrade -y
-    local -a packages=(curl git tmux fish watch neovim tree ncdu ripgrep jq)
-    echo "> installing essential packages"
-    sudo apt-get install -y "${packages[@]}"
-    sudo snap install ghostty --classic
-}
-
-configure_git() {
+config_git() {
     echo '> configuring git'
-    git config --global core.excludesFile "$HOME/.gitignore"
+    git config --global core.excludesFile ~/.gitignore
     git config --global push.autoSetupRemote true
     git config --global pull.rebase true
     git config --global diff.tool nvimdiff
@@ -57,7 +42,7 @@ configure_git() {
     git config --global mergetool.keepBackup false
 }
 
-configure_shell() {
+config_shell() {
     [[ $SHELL == */fish ]] && { echo '* default shell is already fish'; return 0; }
     local fish_path=$(command -v fish)
     [[ -n $fish_path ]] || { echo '! fish not found in path' >&2; return 1; }
@@ -69,14 +54,14 @@ configure_shell() {
 }
 
 main() {
-    mkdirs && link_dotfiles
+    link_dotfiles
     case $(uname -s) in
-        Darwin) setup_macos ;;
         Linux)  setup_linux ;;
-        *)      echo '! unsupported os: only macos and linux' >&2; exit 1 ;;
+        Darwin) setup_macos ;;
+        *)      echo '! unsupported os: only linux and macos' >&2; exit 1 ;;
     esac
-    configure_git
-    configure_shell
+    config_git
+    config_shell
 }
 
 main "$@"
