@@ -27,6 +27,11 @@ if status is-interactive
     abbr -a -- gp 'git pull'
     abbr -a -- gP 'git push'
 
+    # don't uncomment, just notes for running java debug
+    # set -x JDK_JAVA_OPTIONS '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=localhost:5005'
+    # set -e JDK_JAVA_OPTIONS
+    # abbr -a --set-cursor -- mvntest 'mvn test -e -DskipTests=false -Dgroups=medium,small -Dic.configurationFile=(pwd)/configuration.properties -Dtest=%'
+
     alias vi=nvim
     alias myip='echo (dig +short txt ch whoami.cloudflare @1.0.0.1)'
 end # only what are reasonable for interactive use-cases
