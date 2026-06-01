@@ -5,7 +5,9 @@ end -- maven
 
 vim.api.nvim_buf_create_user_command(0, 'Fqcn', function()
     local file_path = vim.fs.relpath(vim.uv.cwd(), vim.api.nvim_buf_get_name(0))
-    local class = file_path:match[[/src/[^/]+/java/(.+)%.java$]]
+    local class = file_path:match[[^src/[^/]+/java/(.+)%.java$]]
+        or file_path:match[[/src/[^/]+/java/(.+)%.java$]]
+        or file_path:match[[^src/(.+)%.java$]]
         or file_path:match[[/src/(.+)%.java$]]
     assert(class, 'could not derive fully qualified class name from path')
     local class_name = class:gsub('/', '.')
