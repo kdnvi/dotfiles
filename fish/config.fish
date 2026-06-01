@@ -7,7 +7,7 @@ fish_add_path "$HOME/.local/bin"
 if status is-interactive
     set -l age (machine_age)
     set -l ok $status
-    set -gx fish_greeting (test $ok -eq 0; and echo "it's been $age — the warranty is gone but the bugs remain"; or echo "")
+    set -gx fish_greeting (test $ok -eq 0; and echo "it's been $age — the warranty is gone but the bugs remain"; or echo '')
 
     set -gx EDITOR nvim
     set -gx VISUAL nvim
@@ -21,7 +21,7 @@ if status is-interactive
     abbr -a -- ga 'git add'
     abbr -a -- gr 'git restore'
     abbr -a -- gR 'git reset'
-    abbr -a -- gc 'git commit -m'
+    abbr -a --set-cursor -- gc 'git commit -m "%"'
     abbr -a -- gco 'git checkout'
     abbr -a -- gf 'git fetch'
     abbr -a -- gp 'git pull'
