@@ -53,7 +53,7 @@ if has('nvim')
   let g:loaded_ruby_provider = 0
   let g:loaded_matchit = 1
   set completeopt+=menuone,noselect
-  set number cursorline
+  set inccommand=split cursorline
   colorscheme unokai
 
   " :find command should search files
