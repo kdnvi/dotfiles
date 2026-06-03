@@ -25,13 +25,14 @@ local function changed_lines(buf, file)
     return lines
 end
 
-local ns = vim.api.nvim_create_namespace('diffsigns')
+local ns = vim.api.nvim_create_namespace('diffsign')
 local signs = {
     {sign_text = '▁', sign_hl_group = 'Removed'},
     {sign_text = '▌', sign_hl_group = 'Added'},
     {sign_text = '▌', sign_hl_group = 'Changed'},
     {sign_text = '▔', sign_hl_group = 'Removed'},
-} -- 1:delb 2:add 3:change 4:dela - just want to keep a nice shape
+} -- just want to keep a nice shape
+
 local function refresh(buf)
     vim.api.nvim_buf_clear_namespace(buf, ns, 0, -1)
     local file = vim.api.nvim_buf_get_name(buf)
@@ -44,6 +45,6 @@ local function refresh(buf)
 end
 
 vim.api.nvim_create_autocmd({'BufEnter', 'BufWritePost'}, {
-    group = vim.api.nvim_create_augroup('diffsigns', {clear=true}),
+    group = vim.api.nvim_create_augroup('diffsign', {clear=true}),
     callback = function(args) refresh(args.buf) end,
 })
