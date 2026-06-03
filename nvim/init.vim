@@ -1,9 +1,9 @@
 set nocompatible encoding=utf-8
 set incsearch hlsearch autoindent autoread
-set nomodeline noswapfile title
+set nomodeline noswapfile nobackup
 set tabstop=4 shiftwidth=0 expandtab
 set ignorecase smartcase updatetime=512
-set hidden laststatus=2 belloff=all
+set title hidden belloff=all
 set mouse=nvi mousemodel=popup_setpos
 set showmatch splitright list
 set wildoptions=pum,tagfile,fuzzy
