@@ -4,17 +4,17 @@ set nomodeline noswapfile nobackup
 set tabstop=4 shiftwidth=0 expandtab
 set ignorecase smartcase updatetime=512
 set title hidden belloff=all
+set number relativenumber
 set mouse=nvi mousemodel=popup_setpos
 set showmatch splitright list
 set wildoptions=pum,tagfile,fuzzy
 set listchars=tab:>\ ,trail:-,nbsp:+
 let &showbreak = '+++ '
-syntax enable
 
 " browse buffers/files
 nnoremap <Space>o :ls t<CR>:buffer 
 nnoremap - <Cmd>Explore<CR>
-au FileType netrw nn <buffer> <C-c> <Cmd>Rexplore<CR>
+autocmd FileType netrw nnoremap <buffer> <C-c> <Cmd>Rexplore<CR>
 " escape VT220/xterm terminal emulator buffer
 tnoremap <Esc> <C-\><C-n>
 
@@ -35,7 +35,7 @@ endif
 
 " open the quickfix window whenever a qf command is executed
 autocmd QuickFixCmdPost [^l]* cwindow
-autocmd FileType help,qf,checkhealth nn <buffer> q <Cmd>bd<CR>
+autocmd FileType help,qf,checkhealth nnoremap <buffer> q <Cmd>bd<CR>
 
 if has('nvim')
   autocmd TextYankPost * silent! lua vim.hl.on_yank()
@@ -43,8 +43,8 @@ if has('nvim')
   autocmd FileType vim setl tabstop=2
 
   " quickly copy file name/path
-  nn <Space>n <Cmd>let @+=expand('%:t')<Bar>echo 'filename yanked'<CR>
-  nn <Space>N <Cmd>let @+=expand('%:p')<Bar>echo 'filepath yanked'<CR>
+  nnoremap <Space>n <Cmd>let @+=expand('%:t')<CR>
+  nnoremap <Space>N <Cmd>let @+=expand('%:p')<CR>
 
   " unload redundant providers
   let g:loaded_node_provider = 0

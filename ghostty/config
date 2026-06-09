@@ -1,10 +1,11 @@
+theme=Monokai Classic
 font-feature=-calt,-liga,-dlig
-font-thicken=true
 font-family=Ubuntu Sans Mono
-font-size=18
+font-thicken=true
 font-style=Medium
-maximize=true
+font-size=18
 window-padding-x=0
 window-padding-y=0
+maximize=true
+shell-integration-features=no-cursor
 macos-option-as-alt=true
-theme=Monokai Classic

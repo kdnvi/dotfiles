@@ -16,21 +16,25 @@ if status is-interactive
     set -g __fish_git_prompt_showstashstate 'yes'
     set -g __fish_git_prompt_showupstream 'yes'
 
-    abbr -a -- gs 'git status'
-    abbr -a -- gd 'git diff'
-    abbr -a -- ga 'git add'
-    abbr -a -- gr 'git restore'
-    abbr -a -- gR 'git reset'
-    abbr -a --set-cursor -- gc 'git commit -m "%"'
-    abbr -a -- gco 'git checkout'
-    abbr -a -- gf 'git fetch'
-    abbr -a -- gp 'git pull'
-    abbr -a -- gP 'git push'
+    abbr -a gs 'git status'
+    abbr -a gd 'git diff'
+    abbr -a gds 'git diff --staged'
+    abbr -a ga 'git add'
+    abbr -a gaa 'git add --all'
+    abbr -a gap 'git add --patch'
+    abbr -a gac 'git add .'
+    abbr -a gr 'git restore'
+    abbr -a gR 'git reset'
+    abbr -a --set-cursor gc 'git commit -m "%"'
+    abbr -a gco 'git checkout'
+    abbr -a gf 'git fetch'
+    abbr -a gp 'git pull'
+    abbr -a gP 'git push'
 
     # don't uncomment, just notes for running java debug
     # set -x JDK_JAVA_OPTIONS '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=localhost:5005'
     # set -e JDK_JAVA_OPTIONS
-    # abbr -a --set-cursor -- mvntest 'mvn test -e -DskipTests=false -Dgroups=medium,small -Dic.configurationFile=(pwd)/configuration.properties -Dtest=%'
+    # abbr -a --set-cursor mvntest 'mvn test -e -DskipTests=false -Dgroups=medium,small -Dic.configurationFile=(pwd)/configuration.properties -Dtest=%'
 
     alias vi=nvim
     alias myip='echo (dig +short txt ch whoami.cloudflare @1.0.0.1)'
