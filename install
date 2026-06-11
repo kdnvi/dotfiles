@@ -8,7 +8,6 @@ link_dotfiles() {
     echo '> linking dotfiles'
     ln -sfn $(pwd)/fish ~/.config/fish
     ln -sfn $(pwd)/nvim ~/.config/nvim
-    ln -sfn $(pwd)/ghostty ~/.config/ghostty
     ln -sfn $(pwd)/.gitignore ~/.gitignore
     ln -sfn $(pwd)/.psqlrc ~/.psqlrc
 }
@@ -16,7 +15,6 @@ link_dotfiles() {
 setup_linux() {
     echo '> installing essential packages'
     sudo apt-get update && sudo apt-get install -y curl git fish watch neovim tree ncdu htop ripgrep jq
-    sudo snap install ghostty --classic
 }
 
 setup_mac() {
@@ -27,7 +25,7 @@ setup_mac() {
         eval "$(/opt/homebrew/bin/brew shellenv)"
     }
     echo '> installing essential packages'
-    brew update && brew install fish watch neovim tree ncdu htop ripgrep jq ghostty font-ubuntu-sans-mono
+    brew update && brew install fish watch neovim tree ncdu htop ripgrep jq font-ubuntu-sans-mono
 }
 
 config_git() {
