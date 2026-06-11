@@ -6,10 +6,9 @@ link_dotfiles() {
     mkdir -p "${XDG_CONFIG_HOME:-"$HOME/.config"}"
 
     echo '> linking dotfiles'
-    ln -sfn $(pwd)/ghostty ~/.config/ghostty
     ln -sfn $(pwd)/fish ~/.config/fish
     ln -sfn $(pwd)/nvim ~/.config/nvim
-    ln -sfn $(pwd)/.tmux.conf ~/.tmux.conf
+    ln -sfn $(pwd)/ghostty ~/.config/ghostty
     ln -sfn $(pwd)/.gitignore ~/.gitignore
     ln -sfn $(pwd)/.psqlrc ~/.psqlrc
 }

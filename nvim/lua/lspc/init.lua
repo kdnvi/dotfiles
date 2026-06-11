@@ -34,6 +34,6 @@ vim.api.nvim_create_autocmd('LspProgress', {
             source='vim.lsp', title=value.title,
             status=value.kind~='end'and'running'or'success',
             percent=value.percentage,
-        }) -- only notify on normal mode for now
-    end -- report language server progress
+        }) -- report language server progress
+    end -- only notify on normal mode for now
 })
