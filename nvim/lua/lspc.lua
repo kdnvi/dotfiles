@@ -1,3 +1,37 @@
+vim.diagnostic.config{virtual_text=true, underline=true}
+vim.lsp.config('*', {
+    on_attach = function(client, bufnr)
+        vim.lsp.semantic_tokens.enable(false)
+        vim.lsp.completion.enable(true, client.id, bufnr, {autotrigger=true})
+        vim.lsp.inlay_hint.enable(true)
+
+        -- see [:help vim.lsp.*] for documentation
+        vim.keymap.set('n', 'gd', vim.lsp.buf.definition, {buffer=bufnr})
+        vim.keymap.set('n', 'gru', function()
+            vim.lsp.buf.references{includeDeclaration=false}
+        end, {buffer=bufnr}) -- show usages only
+    end,
+    detached = true,
+}) -- consistent behaviours across language servers
+
+-- server configs, usually just launch cmd, applicable filetypes and root marker
+-- some specific language settings can also be applied
+-- can be disabled/terminated by [:lsp disable/stop] command
+vim.lsp.config('pyright', {
+    cmd = {'pyright-langserver', '--stdio'}, filetypes = {'python'},
+    root_markers = {'pyrightconfig.json', 'pyproject.toml', 'setup.py', 'setup.cfg', 'requirements.txt', 'Pipfile', '.git'},
+    settings = {python = {analysis = {autoSearchPaths=true, diagnosticMode='openFilesOnly', useLibraryCodeForTypes=true}}},
+})
+vim.lsp.enable('pyright')
+
+-- js/ts
+vim.lsp.config('tsserver', {
+    cmd = {'typescript-language-server', '--stdio'}, filetypes = {'javascript', 'typescript'},
+    root_markers = {'tsconfig.json', 'jsconfig.json', 'package.json', '.git'}, init_options = {hostInfo='neovim'},
+})
+vim.lsp.enable('tsserver')
+
+-- java
 local java_home = os.getenv'JDK25'
 if not java_home then return end -- TODO: required JDK version might be changed in the future
 
@@ -59,6 +93,7 @@ vim.lsp.config('jdtls', {
         }
     }
 })
+vim.lsp.enable('jdtls')
 
 -- fetch jdt:// content and load it into a buffer
 vim.api.nvim_create_autocmd('BufReadCmd', {
