@@ -5,10 +5,6 @@ set -gx XDG_CACHE_HOME "$HOME/.cache"
 
 fish_add_path "$HOME/.local/bin"
 if status is-interactive
-    set -l age (machine_age)
-    set -l ok $status
-    set -gx fish_greeting (test $ok -eq 0; and echo "it's been $age — the warranty is gone but the bugs remain"; or echo '')
-
     set -gx EDITOR nvim
     set -gx VISUAL nvim
 
