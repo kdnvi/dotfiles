@@ -4,6 +4,7 @@ set -eu
 link_dotfiles() {
     echo '> creating essential dirs'
     mkdir -p "${XDG_CONFIG_HOME:-"$HOME/.config"}"
+    mkdir -p ~/repos ~/personal
 
     echo '> linking dotfiles'
     ln -sfn $(pwd)/fish ~/.config/fish
