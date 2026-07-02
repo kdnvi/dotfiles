@@ -1,0 +1,9 @@
+[submodule "vim/pack/plugs/opt/fzf"]
+	path = vim/pack/plugs/opt/fzf
+	url = https://github.com/junegunn/fzf.vim
+[submodule "vim/pack/plugs/opt/fugitive"]
+	path = vim/pack/plugs/opt/fugitive
+	url = https://github.com/tpope/vim-fugitive
+[submodule "vim/pack/plugs/opt/lsp"]
+	path = vim/pack/plugs/opt/lsp
+	url = https://github.com/yegappan/lsp

@@ -1,0 +1,71 @@
+vim9script
+set nocp enc=utf-8 re=2 noml noswf nobk
+set pt=<F2> mouse=nvi mousem=popup_setpos
+set title hid ruler ar swb=uselast ut=256
+set wildoptions=pum,tagfile,fuzzy
+set ts=4 sw=0 et autoindent smarttab
+set list lcs=tab:>\ ,trail:-,nbsp:+
+set incsearch hls ignorecase smartcase
+set laststatus=2 showmatch splitright
+&showbreak = '+++ '
+
+# syntax highlighting
+filetype plugin indent on
+syntax enable
+colorscheme unokai
+
+&undodir = expand('~/.vim/undo')
+if !isdirectory(&undodir) | mkdir(&undodir, 'p', 0700) | endif
+set undofile cursorline
+nmap - <Cmd>Explore<CR>
+au FileType netrw nmap <buffer> <C-c> <Cmd>Rex<CR>
+g:netrw_dirhistmax = 0
+nmap <C-l> <Cmd>noh<Bar>dif!<Bar>redr!<CR>
+
+# extend vim grep abilities with git-grep if possible
+set grepprg=grep\ -rn\ $*
+call system('git rev-parse --is-inside-work-tree &>/dev/null')
+if !v:shell_error
+  set grepprg=git\ grep\ --column\ -n\ $*
+  set grepformat^=%f:%l:%c:%m
+endif
+# add [--untracked --no-exclude-standard] for wildcard
+nmap <Space>g :grep! -i ''<Left>
+xmap <Space>g "0y:grep! -F '<C-r>0'<Left>
+nmap <Space>G :grep! -F '<C-r><C-w>'<CR>
+
+# yank/paste to/from system clipboard
+# all motions work the same as normal [y]
+nmap <Space>y "+y
+xmap <Space>y "+y
+nmap <Space>p "+p
+xmap <Space>p "+p
+nmap <Space>P "+P
+
+# open the quickfix window whenever a qf command is executed
+au QuickFixCmdPost [^l]* cwindow
+au BufRead,BufNewFile *.log* setf messages
+au BufRead,BufNewFile *.psql setf sql
+au FileType vim setl tabstop=2
+
+# load useful optional packs
+packadd comment
+packadd hlyank
+g:hlyank_duration = 128
+packadd! editorconfig
+
+# plugins
+packadd fugitive
+packadd fzf
+if has('linux') | set rtp+=/usr/local/share/fzf | endif
+if has('mac') | set rtp+=/opt/homebrew/opt/fzf | endif
+g:fzf_vim = {}
+g:fzf_layout = {'down': '40%'}
+g:fzf_vim.preview_window = []
+nmap <Space>f <Cmd>Files<CR>
+nmap <Space>s <Cmd>GFiles?<CR>
+nmap <Space>o <Cmd>Buffers<CR>
+nmap <Space>c <Cmd>Changes<CR>
+nmap <Space>m <Cmd>Marks<CR>
+nmap <Space>j <Cmd>Jumps<CR>
+import './langserver.vim'
