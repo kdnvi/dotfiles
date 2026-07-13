@@ -16,9 +16,7 @@ set.list = true
 set.showbreak = "+++ "
 set.visualbell = true
 set.cursorline = true
-set.number = true
 set.termguicolors = false
-vim.cmd.colorscheme("wildcharm")
 vim.filetype.add({
     extension = { psql = "sql", mdc = "markdown" },
     pattern = { [".*%.log.*"] = "messages" }
