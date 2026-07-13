@@ -57,16 +57,15 @@ endif
 
 " yank/paste to/from system clipboard
 " all motions work the same as normal [y]
-nnoremap <C-w>y "+y
-vnoremap <C-w>y "+y
-nnoremap <C-w>p "+p
-vnoremap <C-w>p "+p
-nnoremap <C-w>P "+P
+nnoremap <Space>y "+y
+vnoremap <Space>y "+y
+nnoremap <Space>p "+p
+vnoremap <Space>p "+p
+nnoremap <Space>P "+P
 
 " quickly copy file name/path
 nn <Space>n <Cmd>let @+=expand('%:t')<Bar>echo 'filename yanked'<CR>
-nn <Space>p <Cmd>let @+=expand('%')<Bar>echo 'filepath yanked'<CR>
-nn <Space>P <Cmd>let @+=expand('%:p')<Bar>echo 'fullpath yanked'<CR>
+nn <Space>N <Cmd>let @+=expand('%:p')<Bar>echo 'filepath yanked'<CR>
 
 " open the quickfix window whenever a qf command is executed
 autocmd QuickFixCmdPost [^l]* cwindow

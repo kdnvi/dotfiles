@@ -93,9 +93,9 @@ dap.configurations.java = {{
 
 -- threads widget also contains frames
 local widgets = require'dap.ui.widgets'
-vim.keymap.set('n', '<C-h>', widgets.sidebar(widgets.scopes, {width=65}).toggle)
-vim.keymap.set('n', '<C-w>t', function() widgets.cursor_float(widgets.threads) end)
-vim.keymap.set('n', '<C-w>b', dap.toggle_breakpoint, {buffer=0})
+vim.keymap.set('n', '<Space>ds', widgets.sidebar(widgets.scopes, {width=65}).toggle)
+vim.keymap.set('n', '<Space>dt', function() widgets.cursor_float(widgets.threads) end)
+vim.keymap.set('n', '<Space>db', dap.toggle_breakpoint, {buffer=0})
 vim.keymap.set('n', '<Up>', dap.continue)
 vim.keymap.set('n', '<Down>', dap.step_over)
 vim.keymap.set('n', '<Right>', dap.step_into)

@@ -10,6 +10,6 @@ vim.api.nvim_create_user_command('Blame', function()
     vim.cmd(string.format('!git blame -L %d,%d %%', start, finish))
 end, {nargs=0, desc='git blame 5 lines surround'})
 
-vim.keymap.set('n', '<Space>d', function()
+vim.keymap.set('n', '<Space>c', function()
     vim.cmd[[terminal git diff --color=always %]]
 end) -- show current file changes
