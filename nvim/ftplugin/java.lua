@@ -1,5 +1,6 @@
 local api = vim.api
 local user_command = api.nvim_create_user_command
+local map = vim.keymap.set
 local fs = vim.fs
 local fn = vim.fn
 local setl = vim.opt_local
@@ -22,7 +23,8 @@ if fs.find("pom.xml", { upward = true, path = "." })[1] then
         local modpath = pompath and fs.dirname(pompath) or ""
 
         -- generate test command
-        local test_cmd = { "terminal mvn test -e -DskipTests=false" }
+        local height = math.floor(vim.o.lines * 0.37)
+        local test_cmd = { "belowright " .. height .. "split | terminal mvn test -e -DskipTests=false" }
         table.insert(test_cmd, " -Dgroups=medium,small")
         table.insert(test_cmd, " -Dlogback.configurationFile=")
         table.insert(test_cmd, cwd)
@@ -42,7 +44,7 @@ if fs.find("pom.xml", { upward = true, path = "." })[1] then
             if vim.uv.fs_stat(mod_cp) then
                 config_path = string.format("%s:%s", config_path, mod_cp)
             end -- module specific configuration.properties
-        end -- non-root module
+        end     -- non-root module
 
         table.insert(test_cmd, " -Dic.configurationFile=")
         table.insert(test_cmd, config_path)
@@ -64,7 +66,8 @@ if fs.find("pom.xml", { upward = true, path = "." })[1] then
 
         -- bang = debug (:MvnTest! or :MvnTest! method)
         if opts.bang then
-            table.insert(test_cmd, " -DargLine=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=localhost:5500")
+            table.insert(test_cmd,
+                " -DargLine=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=localhost:5500")
         end -- checkout dap.configurations.java
         vim.cmd(table.concat(test_cmd))
     end, { nargs = "?", bang = true, desc = "run maven test (method); use ! to debug" })
@@ -72,7 +75,8 @@ end -- maven
 
 -- jdb: thin wrapper for breakpoint management
 local ns = api.nvim_create_namespace("jdb_bp")
-local jdb = { chan = nil, breakpoints = {} }
+_G._jdb = _G._jdb or { chan = nil, breakpoints = {} }
+local jdb = _G._jdb
 
 local function jdb_class_name()
     local fpath = api.nvim_buf_get_name(0)
@@ -95,15 +99,16 @@ local function jdb_attach()
     local port = tonumber(fn.input("port: ", "5500"))
     if not port then return end
 
-    vim.cmd("belowright 20split new")
+    local width = math.floor(vim.o.columns * 0.37)
+    vim.cmd("belowright " .. width .. "vsplit new")
     jdb.chan = fn.jobstart(
         string.format("jdb -connect com.sun.jdi.SocketAttach:hostname=%s,port=%d", host, port), {
-        term = true,
-        on_exit = function()
-            jdb.chan = nil
-            jdb.breakpoints = {}
-        end,
-    })
+            term = true,
+            on_exit = function()
+                jdb.chan = nil
+                jdb.breakpoints = {}
+            end,
+        })
 
     vim.cmd("startinsert")
 end
@@ -133,8 +138,14 @@ local function jdb_toggle_breakpoint()
     end
 end
 
-user_command("Jdb", jdb_attach, { desc = "jdb attach" })
-user_command("Bp", jdb_toggle_breakpoint, { desc = "jdb toggle breakpoint" })
-user_command("JdbClear", function()
+user_command("Breakpoint", jdb_toggle_breakpoint, { nargs = 0, desc = "jdb toggle breakpoint" })
+user_command("Debug", jdb_attach, { nargs = 0, desc = "jdb attach" })
+user_command("DebugCmd", function(opts) jdb_send(opts.args) end, { nargs = "+", desc = "run debug command" })
+user_command("DebugClear", function()
     api.nvim_buf_clear_namespace(0, ns, 0, -1)
-end, { desc = "clear jdb breakpoint signs in current buffer" })
+end, { nargs = 0, desc = "clear jdb breakpoint signs in current buffer" })
+
+map("n", "<Up>", ":DebugCmd cont<CR>", { buffer = 0 })
+map("n", "<Right>", ":DebugCmd next<CR>", { buffer = 0 })
+map("n", "<Down>", ":DebugCmd step<CR>", { buffer = 0 })
+map("n", "<Left>", ":DebugCmd ", { buffer = 0 })
