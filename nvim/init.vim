@@ -1,6 +1,6 @@
-set nocp enc=utf-8 noml noswf nobk title hid ruler
-set incsearch hls ignorecase smartcase
-set autoindent showmatch splitright
+set nocp enc=utf-8 noml noswf nobk title hid
+set incsearch hls ignorecase smartcase ruler
+set autoindent showmatch splitright nu rnu
 set ts=4 sw=0 et ut=256 list wildoptions+=fuzzy
 let &showbreak = '+++ '
 
