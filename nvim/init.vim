@@ -1,13 +1,12 @@
 set nomodeline title
 set tabstop=4 shiftwidth=0
-set expandtab smartcase
+set expandtab showmatch
 set noswapfile undofile
 set cursorline updatetime=512
 set wildoptions+=fuzzy
 set completeopt+=fuzzy
-set spelloptions=camel
-set spelllang=en_us
-set showmatch splitright list
+set ignorecase smartcase
+set splitright list
 let &showbreak = '+++ '
 colorscheme unokai
 
