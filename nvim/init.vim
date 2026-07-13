@@ -52,9 +52,9 @@ vnoremap <C-w>p "+p
 nnoremap <C-w>P "+P
 
 " quickly copy file name/path
-nn <Space>n <Cmd>let @+=expand('%:t')<Bar>echo 'yoink'<CR>
-nn <Space>p <Cmd>let @+=expand('%')<Bar>echo 'yoink'<CR>
-nn <Space>P <Cmd>let @+=expand('%:p')<Bar>echo 'yoink'<CR>
+nn <Space>n <Cmd>let @+=expand('%:t')<Bar>echo 'filename yanked'<CR>
+nn <Space>p <Cmd>let @+=expand('%')<Bar>echo 'filepath yanked'<CR>
+nn <Space>P <Cmd>let @+=expand('%:p')<Bar>echo 'fullpath yanked'<CR>
 
 " moving in command mode
 cnoremap <C-a> <Home>
