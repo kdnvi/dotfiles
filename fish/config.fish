@@ -3,7 +3,10 @@ set -gx XDG_DATA_HOME "$HOME/.local/share"
 set -gx XDG_CACHE_HOME "$HOME/.cache"
 
 if status is-interactive
-    set -gx fish_greeting "It's "(date '+%A, %B %d, %Y at %H:%M')" - bugs don't fix themselves. Or do they?"
+    set -l age (machine_age)
+    set -l age_str (test -n "$age" -a "$age" != unknown; and echo " — it's been $age — the warranty is gone but the bugs remain"; or echo "")
+    set -gx fish_greeting (date '+%A, %B %d, %Y at %H:%M')$age_str
+
     fish_add_path "$HOME/.local/bin"
     set -gx EDITOR nvim
     set -gx VISUAL nvim

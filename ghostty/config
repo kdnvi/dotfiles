@@ -1,11 +1,8 @@
 shell-integration = fish
 scrollback-limit = 100000
-font-family = SF Mono
-font-family = Ubuntu Sans Mono
-font-style = Medium
 font-feature = -calt,-liga,-dlig
 font-thicken = true
-font-size = 16
+font-size = 17
 window-padding-x = 0
 window-padding-y = 0
 maximize = true
