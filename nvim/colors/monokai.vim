@@ -43,6 +43,13 @@ hi! link @keyword.function        Keyword
 hi! link @keyword.operator        Operator
 hi! link @keyword.return          Keyword
 hi! link @label                   Label
+hi! link @markup.raw              String
+hi! link @markup.raw.block        String
+hi! link @markup.heading          Title
+hi! link @markup.link             Identifier
+hi! link @markup.link.url         Underlined
+hi! link @markup.quote            Comment
+hi! link markdownCode             String
 hi! link @math                    Special
 hi! link @method                  Function
 hi! link @method.call             Normal
