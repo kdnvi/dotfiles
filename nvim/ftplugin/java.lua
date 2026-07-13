@@ -32,6 +32,10 @@ if #fn.findfile("pom.xml", ".;") > 0 then
 
         -- generate test command
         local test_cmd = { "terminal mvn test -e -DskipTests=false" }
+        table.insert(test_cmd, " -Dgroups=medium,small")
+        table.insert(test_cmd, " -Dlogback.configurationFile=")
+        table.insert(test_cmd, fn.getcwd())
+        table.insert(test_cmd, "/logback-dev.xml")
         local config_path = string.format("%s/configuration.properties", fn.getcwd())
         if #modpath > 0 then
             local module = vim.trim(fn.system(string.format(
@@ -40,19 +44,14 @@ if #fn.findfile("pom.xml", ".;") > 0 then
             table.insert(test_cmd, " -pl :")
             table.insert(test_cmd, module)
 
-            local mod_config_path = string.format("%s/configuration.properties", modpath)
-            if fn.filereadable(mod_config_path) == 1 then
-                config_path = mod_config_path
-            end
+            local mod_cp = string.format("%s/%s/configuration.properties", fn.getcwd(), modpath)
+            if fn.filereadable(mod_cp) == 1 then
+                config_path = string.format("%s:%s", config_path, mod_cp)
+            end -- module specific configuration.properties
         end -- non-root module
 
-        assert(fn.filereadable(config_path) == 1, "no valid configuration.properties file")
         table.insert(test_cmd, " -Dic.configurationFile=")
-        table.insert(test_cmd, config_path)
-        table.insert(test_cmd, " -Dlogback.configurationFile=")
-        table.insert(test_cmd, fn.getcwd())
-        table.insert(test_cmd, "/logback-dev.xml")
-        table.insert(test_cmd, " -Dgroups=medium,small")
+        table.insert(test_cmd, fn.shellescape(config_path))
 
         -- extract test class name from current file
         local tdir_pattern = "/src/test/java/"

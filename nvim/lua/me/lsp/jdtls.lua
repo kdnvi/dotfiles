@@ -38,7 +38,7 @@ vim.lsp.config("jdtls", {
                 generateComments = true,
                 useBlocks = true
             },
-            completion = { enabled = true },
+            completion = { enabled = true, overwrite = true },
             configuration = {
                 maven = {
                     downloadSources = true,
@@ -66,9 +66,11 @@ vim.lsp.config("jdtls", {
                 updateBuildConfiguration = "disabled"
             },
             contentProvider = { preferred = "fernflower" },
+            compile = { nullAnalysis = { mode = "automatic" } },
             jdt = { ls = { javac = { enabled = false } } },
             maxConcurrentBuilds = 1,
             signatureHelp = { enabled = true },
+            saveActions = { organizeImports = true },
             sources = {
                 organizeImports = {
                     starThreshold = 9999,
