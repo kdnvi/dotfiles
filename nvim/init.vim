@@ -61,6 +61,8 @@ cnoremap <C-a> <Home>
 cnoremap <C-e> <End>
 cnoremap <C-b> <Up>
 cnoremap <C-f> <Down>
+" escape VT220/xterm terminal emulator buffer
+tnoremap <Esc> <C-\><C-n>
 
 " open the quickfix window whenever a qf command is executed
 autocmd QuickFixCmdPost [^l]* cwindow
