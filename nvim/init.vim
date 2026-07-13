@@ -21,7 +21,7 @@ let g:loaded_netrwPlugin = 0
 
 " :find command should search files
 func! s:findfiles(cmdarg, _cmdcomp) abort
-  let l:out = systemlist('rg --files --smart-case --follow --hidden --glob=!.git 2>/dev/null')
+  let l:out = systemlist('rg --files --hidden -L -S -g=!.git 2>/dev/null')
   if v:shell_error != 0 | return [] | endif
   return empty(a:cmdarg) ? l:out : matchfuzzy(l:out, a:cmdarg)
 endfunc
@@ -38,11 +38,11 @@ nnoremap - :edit %:.:h<C-z><C-z>
 " extend vim grep abilities with ripgrep
 if executable('rg')
   set grepformat^=%f:%l:%c:%m
-  set grepprg=rg\ --vimgrep\ --smart-case\ --line-number\ $*
+  set grepprg=rg\ --vimgrep\ --line-number\ $*
   " add [--hidden --no-ignore] for wildcard
-  nnoremap <Space>g :silent grep! ''<Left>
-  nnoremap <Space>G :silent grep! --case-sensitive '<C-r><C-w>'<CR>
-  vnoremap <Space>g "0y:silent grep! --case-sensitive '<C-r>0'<Left>
+  nnoremap <Space>g :silent grep! -S ''<Left>
+  nnoremap <Space>G :silent grep! -s '<C-r><C-w>'<CR>
+  vnoremap <Space>g "0y:silent grep! -s '<C-r>0'<Left>
 endif
 
 " moving in command mode
