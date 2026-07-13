@@ -7,10 +7,6 @@ local launcher_jar = vim.fs.find(function(name)
 end, {path=jdtls_dir..'/plugins', limit=1})[1]
 assert(launcher_jar, 'jdtls: equinox launcher jar not found')
 
-local debug_jar = vim.fs.find(function(name)
-    return name:match[[^com%.microsoft%.java%.debug%.plugin%-.+%.jar$]]
-end, {path=os.getenv'XDG_DATA_HOME'..'/java-debug/com.microsoft.java.debug.plugin/target', limit=1}) or {}
-
 -- use [mvn eclipse:clean eclipse:eclipse] or [./gradlew eclipse] to regenerate
 vim.lsp.config('jdtls', {
     cmd = {
@@ -24,12 +20,12 @@ vim.lsp.config('jdtls', {
         '--add-opens=java.base/java.lang=ALL-UNNAMED',
         '-jar', launcher_jar,
         '-configuration', jdtls_dir..'/'..(vim.uv.os_uname().sysname=='Darwin'and'config_mac_arm'or'config_linux'),
-        '-data', os.getenv'XDG_CACHE_HOME'..'/jdtls/ws/'..vim.fs.basename(vim.uv.cwd()),
+        '-data', os.getenv'XDG_CACHE_HOME'..'/jdtls/ws/'..vim.fs.basename(vim.uv.cwd())
     },
     filetypes = {'java'},
     root_markers = {
         {'mvnw', 'gradlew', 'settings.gradle', 'settings.gradle.kts', '.git'},
-        {'build.xml', 'pom.xml', 'build.gradle', 'build.gradle.kts'},
+        {'build.xml', 'pom.xml', 'build.gradle', 'build.gradle.kts'}
     },
     -- see https://github.com/eclipse-jdtls/eclipse.jdt.ls/wiki/Running-the-JAVA-LS-server-from-the-command-line#initialize-request
     settings = {
@@ -49,8 +45,8 @@ vim.lsp.config('jdtls', {
             saveActions = {organizeImports=true},
             sources = {organizeImports = {starThreshold=9999, staticStarThreshold=9999}},
             symbols = {includeSourceMethodDeclarations=true},
-            telemetry = {enabled=false},
-        },
+            telemetry = {enabled=false}
+        }
     },
     init_options = {
         extendedClientCapabilities = {
@@ -60,8 +56,7 @@ vim.lsp.config('jdtls', {
             moveRefactoringSupport=true,
             overrideMethodsPromptSupport=true,
             executeClientCommandSupport=true,
-        },
-        bundles=debug_jar,
+        }
     }
 })
 

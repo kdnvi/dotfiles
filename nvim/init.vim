@@ -83,7 +83,7 @@ if has('nvim')
 
   " load lua stuff
   lua require'utils'
+  lua require'bundle.diffsigns'
   lua require'lspc'
   lua require'sessionize'
-  lua require'bundle'
 endif

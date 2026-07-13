@@ -16,13 +16,12 @@ vim.lsp.config('*', {
 
 -- server configs, usually just launch cmd, applicable filetypes and root marker
 -- some specific language settings can also be applied
-require'lspc.zls'
 require'lspc.pyright'
 require'lspc.jdtls'
 require'lspc.tsserver'
 
 -- can be disabled/terminated by [:lsp disable/stop] command
-vim.lsp.enable{'zls', 'pyright', 'jdtls', 'tsserver'}
+vim.lsp.enable{'pyright', 'jdtls', 'tsserver'}
 
 vim.api.nvim_create_autocmd('LspProgress', {
     group = vim.api.nvim_create_augroup('lsp_progress', {clear=true}),
