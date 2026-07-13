@@ -1,7 +1,6 @@
 local map = vim.keymap.set
 local lsp = vim.lsp
 
--- consistent behaviours across language servers
 vim.diagnostic.config({ virtual_text = true, underline = true })
 lsp.config("*", {
     on_attach = function(client, bufnr)
@@ -21,7 +20,7 @@ lsp.config("*", {
         map("i", "<C-h>", lsp.buf.signature_help, opts)
     end,
     detached = true
-})
+}) -- consistent behaviours across language servers
 
 -- server configs, usually just launch cmd, applicable filetypes and root marker
 -- some specific language settings can be applied too
@@ -32,3 +31,18 @@ require("me.lsp.tsserver")
 
 -- can be disabled/terminated by [:lsp disable/stop]
 lsp.enable({ "clangd", "jdtls", "pyright", "tsserver" })
+
+vim.api.nvim_create_autocmd("LspProgress", {
+    group = vim.api.nvim_create_augroup("lsp_progress", { clear = true }),
+    callback = function(e)
+        local value = e.data.params.value or {}
+        vim.api.nvim_echo({ { value.message or "done" } }, false, {
+            id = "lsp." .. e.data.client_id,
+            kind = "progress",
+            source = "vim.lsp",
+            title = value.title,
+            status = value.kind ~= "end" and "running" or "success",
+            percent = value.percentage,
+        })
+    end -- report language server progress
+})
