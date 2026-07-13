@@ -3,9 +3,6 @@ vim.filetype.add({
     extension = {psql='sql'},
 }) -- ft mapping
 
--- ui2 experimental
-require'vim._core.ui2'.enable{enable=true, msg={targets='cmd'}}
-
 vim.api.nvim_create_user_command('Blame', function()
     local line = vim.api.nvim_win_get_cursor(0)[1]
     local start = math.max(1, line-5)
