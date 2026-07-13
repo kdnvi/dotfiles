@@ -23,11 +23,11 @@ map({ "n", "v" }, "<C-w>p", [["+p]])
 map("n", "<C-w><C-p>", [["+P]])
 
 -- command mode navigation
+map("c", "<M-Left>", "<C-Left>")
+map("c", "<M-Right>", "<C-Right>")
 map("c", "<C-a>", "<Home>")
 map("c", "<C-e>", "<End>")
 map("c", "<M-BS>", "<C-w>")
-map("c", "<M-Left>", "<C-Left>")
-map("c", "<M-Right>", "<C-Right>")
 
 -- better keymap to toggle netrw
 map("n", "-", cmd.Explore)

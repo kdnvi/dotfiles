@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# vim: ft=bash
 set -euo pipefail
 
 readonly XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
@@ -123,3 +122,4 @@ main() {
 }
 
 main "$@"
+# vim: ft=bash
