@@ -37,7 +37,7 @@ xmap <Space>p "+p
 nmap <Space>P "+P
 
 if has('nvim')
-  lua vim.filetype.add{pattern={['.*%.log.*']='messages'}, extension={psql='sql'}}
+  lua vim.filetype.add{pattern={['.*%.log.*']='messages'}, extension={psql='sql'}, extension={mdc='markdown'}}
   au TextYankPost * silent! lua vim.hl.on_yank()
 
   " :find command should search files

@@ -49,20 +49,6 @@ alwaysApply: true
 - Never modify generated files (e.g. build output, lockfile artifacts, codegen output, `node_modules/`).
 - If a generated file needs to change, update the source or generator that produces it.
 
-## Searching the Codebase
-
-- Use `rg --hidden` when grepping text via the shell.
-- Add `--no-ignore` only when you specifically need to search inside ignored files (e.g. `.env.example`, vendored paths).
-- Note: Cursor's built-in Grep tool has its own behavior and may not honor these flags.
-
-```bash
-# Default search
-rg --hidden "pattern" .
-
-# Only when ignored files must be included
-rg --hidden --no-ignore "pattern" .
-```
-
 ## Tests and Verification
 
 - After non-trivial changes, run relevant tests or linters when the project has them.
