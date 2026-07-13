@@ -14,7 +14,7 @@ function M.get_active_lsp_client(lsname)
         lsp.buf_attach_client(buf, client.id)
     end
 
-    assert(client, string.format("must have a `%s` client configured", lsname))
+    assert(client, string.format("must have a [%s] client configured", lsname))
     return client, buf
 end
 

@@ -21,7 +21,7 @@ local debug_jar = vim.fs.find(function(name)
     return name:match("^com%.microsoft%.java%.debug%.plugin%-.+%.jar$")
 end, { path = java_debug_dir, limit = 1 })[1]
 
--- use `mvn eclipse:clean eclipse:eclipse` or `./gradlew eclipse` to regenerate
+-- use [mvn eclipse:clean eclipse:eclipse] or [./gradlew eclipse] to regenerate
 vim.lsp.config("jdtls", {
     cmd = {
         jdtls_jdk .. "/bin/java",

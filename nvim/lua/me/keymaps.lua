@@ -5,7 +5,7 @@ local set = vim.opt
 if vim.fn.executable("rg") > 0 then
     set.grepformat:prepend("%f:%l:%c:%m")
     set.grepprg = "rg --vimgrep $*"
-    -- add `--hidden --no-ignore` for wildcard
+    -- add [--hidden --no-ignore] for wildcard
     map("n", "<Space>g", [[:silent grep! ''<Left>]])
     map("v", "<Space>g", [["0y:silent grep! '<C-r>0'<Left>]])
     map("n", "<Space>G", [[:silent grep! '<C-r><C-w>'<CR>]])
@@ -18,7 +18,7 @@ map("n", "<C-Space>", [[:buffer <C-z><C-p>]])
 map("n", "-", [[:edit %:.:h<C-z><C-z>]])
 
 -- copy to system clipboard
--- all motions after `<Space>y` work the same as normal `y`
+-- all motions after [<Space>y] work the same as normal [y]
 map({ "n", "v" }, "<Space>y", [["+y]])
 map({ "n", "v" }, "<Space>p", [["+p]])
 map("n", "<Space>P", [["+P]])

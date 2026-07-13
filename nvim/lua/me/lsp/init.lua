@@ -9,7 +9,7 @@ lsp.config("*", {
         lsp.completion.enable(true, client.id, bufnr, { autotrigger = false })
         lsp.inlay_hint.enable(true)
 
-        -- see `:help vim.lsp.*` for documentation on any of the below functions
+        -- see [:help vim.lsp.*] for documentation on any of the below functions
         local opts = { buffer = bufnr }
         map("n", "gi", lsp.buf.implementation, opts)
         map("n", "gr", lsp.buf.references, opts)
@@ -28,8 +28,7 @@ lsp.config("*", {
 require("me.lsp.clangd")
 require("me.lsp.jdtls")
 require("me.lsp.pyright")
-require("me.lsp.luals")
 require("me.lsp.tsserver")
 
--- can be disabled by `:lua vim.lsp.enable("tsserver", false)` for example
-lsp.enable({ "clangd", "jdtls", "pyright", "luals", "tsserver" })
+-- can be disabled/terminated by [:lsp disable/stop]
+lsp.enable({ "clangd", "jdtls", "pyright", "tsserver" })

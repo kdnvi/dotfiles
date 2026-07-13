@@ -4,7 +4,7 @@ local cmd = vim.cmd
 local map = vim.keymap.set
 local common = require("me.common")
 
--- close some windows quicker using `q` instead of typing :bd<CR>
+-- close some windows quicker using [q] instead of typing :bd<CR>
 autocmd("FileType", {
     pattern = { "help", "qf", "messages", "checkhealth" },
     callback = function() map("n", "q", cmd.bdelete, { buffer = 0 }) end
@@ -24,7 +24,7 @@ autocmd("TextYankPost", {
     end
 })
 
--- open `jdt://` uri and load them into the buffer
+-- open jdt:// uri and load them into the buffer
 autocmd("BufReadCmd", {
     group = augroup("jdtls_class_file_content", { clear = true }),
     pattern = "jdt://*",
