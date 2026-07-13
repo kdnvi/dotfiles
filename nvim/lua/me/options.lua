@@ -11,18 +11,17 @@ set.expandtab = true
 set.shiftround = true
 set.undofile = true
 set.title = true
+set.list = true
+set.showbreak = "+++ "
 set.visualbell = true
 set.cursorline = true
 set.number = true
-set.list = true
-set.showbreak = "+++ "
-set.fillchars:append({ vert = "|" })
 vim.filetype.add({
     extension = { psql = "sql", mdc = "markdown" },
     pattern = { [".*%.log.*"] = "messages" }
 })
 g.loaded_node_provider = 0
 g.loaded_perl_provider = 0
-g.loaded_python_provider = 0
 g.loaded_python3_provider = 0
 g.loaded_ruby_provider = 0
+g.loaded_netrwPlugin = 0

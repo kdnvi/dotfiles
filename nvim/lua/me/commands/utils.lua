@@ -5,7 +5,7 @@ local notify = vim.notify
 
 -- simple find finder using ripgrep
 _G.rg_find_func = function(cmd_arg, _)
-    local result = vim.system({ "rg", "--files", "--hidden", "--follow" }, { text = true }):wait()
+    local result = vim.system({ "rg", "--files", "--hidden" }, { text = true }):wait()
     if result.code ~= 0 then return {} end
     local files = vim.split(vim.trim(result.stdout or ""), "\n", { plain = true, trimempty = true })
     if type(cmd_arg) == "string" and #cmd_arg > 0 then
@@ -24,7 +24,7 @@ user_command("SCleanup", function()
     assert(sfile and vim.uv.fs_stat(sfile), "no session found")
     assert(os.remove(sfile), "failed to remove session file: " .. sfile)
     notify("removed session file: " .. sfile, log.INFO)
-end, { nargs = 0 })
+end, { nargs = 0, desc = "cleanup session file"  })
 
 user_command("TCleanup", function()
     local count = 0
@@ -40,4 +40,4 @@ user_command("TCleanup", function()
         end
     end
     notify(count .. " terminal buffer(s) removed", log.INFO)
-end, { nargs = 0, desc = "delete terminal buffers with exited processes" })
+end, { nargs = 0, desc = "cleanup terminal buffers with exited processes" })

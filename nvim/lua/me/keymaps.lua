@@ -3,8 +3,8 @@ local set = vim.opt
 
 -- extend vim grep abilities with ripgrep
 if vim.fn.executable("rg") > 0 then
-    set.grepprg = "rg --vimgrep --smart-case $*"
     set.grepformat:prepend("%f:%l:%c:%m")
+    set.grepprg = "rg --vimgrep $*"
     -- add `--hidden --no-ignore` for wildcard
     map("n", "<Space>g", [[:silent grep! ''<Left>]])
     map("v", "<Space>g", [["0y:silent grep! '<C-r>0'<Left>]])
@@ -15,9 +15,11 @@ end -- result can be accessible through qf list
 map("n", "<Space>f", [[:find ]])
 map("n", "<Space>F", [[:find <C-r><C-w><C-z>]])
 map("n", "<C-Space>", [[:ls t<CR>:buffer ]])
-map("n", "-", [[:edit %:.:h<C-z>]])
+map("n", "<C-j>", [[:edit %:.:h<C-z><C-z><C-p>]])
+map("n", "-", "<C-^>")
 
--- copy to system clipboard, all motions after `<Space>y` work the same as normal `y`
+-- copy to system clipboard
+-- all motions after `<Space>y` work the same as normal `y`
 map({ "n", "v" }, "<Space>y", [["+y]])
 map({ "n", "v" }, "<Space>p", [["+p]])
 map("n", "<Space>P", [["+P]])

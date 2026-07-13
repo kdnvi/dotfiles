@@ -140,26 +140,7 @@ end
 
 user_command("Debug", jdb_attach, { nargs = 0, desc = "jdb attach" })
 user_command("Bp", jdb_toggle_breakpoint, { nargs = 0, desc = "jdb toggle breakpoint" })
-user_command("Dbc", function(opts) jdb_send(opts.args) end, {
-    nargs = "+",
-    complete = function(arg_lead)
-        local cmds = {
-            "run", "cont", "step", "step up", "next",
-            "stop at", "stop in", "clear", "catch", "ignore",
-            "threads", "thread", "where", "wherei",
-            "dump", "eval", "print", "set", "locals",
-            "classes", "class", "methods", "fields",
-            "watch", "unwatch", "suspend", "resume",
-            "up", "down", "kill", "interrupt",
-            "list", "use", "sourcepath", "trace", "untrace",
-            "monitor", "unmonitor", "classpath", "read",
-            "lock", "threadlocks", "pop", "reenter", "redefine",
-            "disablegc", "enablegc", "exit"
-        }
-        return vim.tbl_filter(function(c) return c:find(arg_lead, 1, true) == 1 end, cmds)
-    end,
-    desc = "run debug command",
-})
+user_command("Dbc", function(opts) jdb_send(opts.args) end, { nargs = "+", desc = "run debug command" })
 
 map({ "n", "v" }, "<Up>", [[:Dbc cont<CR>]], { buffer = 0 })
 map({ "n", "v" }, "<Right>", [[:Dbc next<CR>]], { buffer = 0 })
