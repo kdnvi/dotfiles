@@ -8,6 +8,12 @@ if not jdtls_jdk then
     return
 end -- early exit if JDK env vars haven't been set
 
+-- log language server status
+vim.lsp.handlers["language/status"] = function(_, result, _)
+    local msg = result.message or "(no message)"
+    vim.notify(string.format("lsp [jdtls]: %s", msg), vim.log.levels.INFO)
+end
+
 -- use `mvn eclipse:clean eclipse:eclipse` or `./gradlew eclipse` to regenerate
 vim.lsp.config("jdtls", {
     cmd = {

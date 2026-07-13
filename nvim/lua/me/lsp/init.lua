@@ -1,7 +1,5 @@
 local map = vim.keymap.set
 local lsp = vim.lsp
-local notify = vim.notify
-local log = vim.log.levels
 
 -- consistent behaviours across language servers
 vim.diagnostic.config({ virtual_text = true, underline = true })
@@ -22,12 +20,6 @@ lsp.config("*", {
         map("n", "<C-w>a", lsp.buf.code_action, opts)
         map("n", "<C-h>", lsp.buf.document_symbol, opts)
         map("i", "<C-k>", lsp.buf.signature_help, opts)
-
-        -- log language server status
-        vim.lsp.handlers["language/status"] = function(_, result, _)
-            local msg = result.message or "(no message)"
-            notify(string.format("lsp [%s]: %s", client.name, msg), log.INFO)
-        end
     end,
     detached = true
 })

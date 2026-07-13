@@ -9,7 +9,7 @@ if vim.fn.executable("rg") > 0 then
     -- add `--hidden --no-ignore` for wildcard
     map("n", "<Space>g", [[:silent grep! ''<Left>]])
     map("v", "<Space>g", [["0y:silent grep! --case-sensitive '<C-r>0'<Left>]])
-    map("n", "<Space>G", [["0y:silent grep! --case-sensitive '<C-r><C-w>'<CR>]])
+    map("n", "<Space>G", [[:silent grep! --case-sensitive '<C-r><C-w>'<CR>]])
 end -- result can be accessible through qf list
 
 -- some proper ways to browse/search
@@ -38,6 +38,10 @@ vim.api.nvim_create_autocmd("FileType", {
 
 -- navigate between terminal buffers easier
 map("t", "<Esc><Esc>", [[<C-\><C-n>]])
+map("t", "<C-w><C-h>", [[<C-\><C-n><C-w><C-h>]])
+map("t", "<C-w><C-j>", [[<C-\><C-n><C-w><C-j>]])
+map("t", "<C-w><C-k>", [[<C-\><C-n><C-w><C-k>]])
+map("t", "<C-w><C-l>", [[<C-\><C-n><C-w><C-l>]])
 map("t", "<C-w>h", [[<C-\><C-n><C-w>h]])
 map("t", "<C-w>j", [[<C-\><C-n><C-w>j]])
 map("t", "<C-w>k", [[<C-\><C-n><C-w>k]])

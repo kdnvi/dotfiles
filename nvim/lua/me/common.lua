@@ -25,10 +25,7 @@ function M.get_session_filepath()
         return nil
     end -- returns nil as we want silent exit
 
-    local repo_path = vim.uv.cwd():gsub("/", "")
-    assert(repo_path, "invalid repo path")
-
-    local name = string.format("%s_%s", repo_path, branch)
+    local name = vim.fn.sha256(vim.uv.cwd() .. "_" .. branch)
     local sessions_dir = vim.fn.stdpath("state") .. "/sessions"
     if not vim.uv.fs_stat(sessions_dir) then
         vim.uv.fs_mkdir(sessions_dir, 493) -- 0755

@@ -87,10 +87,14 @@ local function jdb_send(cmd)
     fn.chansend(jdb.chan, cmd .. "\n")
 end
 
-local function jdb_attach(host, port)
+local function jdb_attach()
     if jdb.chan then return end
-    host = host or "localhost"
-    port = port or 5500
+
+    local host = fn.input("host: ", "localhost")
+    if #host == 0 then return end
+    local port = tonumber(fn.input("port: ", "5500"))
+    if not port then return end
+
     vim.cmd("belowright 20split new")
     jdb.chan = fn.jobstart(
         string.format("jdb -connect com.sun.jdi.SocketAttach:hostname=%s,port=%d", host, port), {
@@ -100,10 +104,13 @@ local function jdb_attach(host, port)
             jdb.breakpoints = {}
         end,
     })
+
     vim.cmd("startinsert")
 end
 
 local function jdb_toggle_breakpoint()
+    assert(jdb.chan, "jdb not running")
+
     local class = jdb_class_name()
     local line = api.nvim_win_get_cursor(0)[1]
     local key = class .. ":" .. line
@@ -126,13 +133,7 @@ local function jdb_toggle_breakpoint()
     end
 end
 
-user_command("Jdb", function()
-    local host = fn.input("host: ", "localhost")
-    if #host == 0 then return end
-    local port = tonumber(fn.input("port: ", "5500"))
-    if not port then return end
-    jdb_attach(host, port)
-end, { desc = "jdb attach" })
+user_command("Jdb", jdb_attach, { desc = "jdb attach" })
 user_command("Bp", jdb_toggle_breakpoint, { desc = "jdb toggle breakpoint" })
 user_command("JdbClear", function()
     api.nvim_buf_clear_namespace(0, ns, 0, -1)

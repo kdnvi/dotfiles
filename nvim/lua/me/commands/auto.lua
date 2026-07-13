@@ -55,8 +55,7 @@ autocmd("BufReadCmd", {
 })
 
 -- don't do sessionize stuff if opening specific files
-local workspace = vim.v.argv[3]
-if not workspace or workspace == "." then
+if #vim.fn.argv() == 0 then
     autocmd("BufWritePost", {
         group = augroup("session_auto_save", { clear = true }),
         pattern = "*",

@@ -75,8 +75,8 @@ build_from_source() {
     local build_commands="$3"
 
     echo "building $name from source"
-    if [[ !  -d $target_dir ]]; then
-        git clone --depth 1 "$repo_url" "$target_dir"
+    if [[ ! -d $target_dir ]]; then
+        git clone "$repo_url" "$target_dir"
     else
         echo "$name already cloned, updating..."
         git -C "$target_dir" pull --rebase
@@ -98,8 +98,10 @@ setup_linux() {
     )
     sudo apt-get install -y "${packages[@]}"
 
-    echo 'disable dash to dock hot-keys on ubuntu'
-    gsettings set org.gnome.shell.extensions.dash-to-dock hot-keys false
+    if command -v gsettings &> /dev/null; then
+        echo 'disable dash to dock hot-keys on ubuntu'
+        gsettings set org.gnome.shell.extensions.dash-to-dock hot-keys false
+    fi
 }
 
 install_neovim() {
