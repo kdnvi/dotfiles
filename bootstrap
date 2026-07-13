@@ -21,7 +21,7 @@ link_dotfiles() {
         local src=$DOTDIR/$file dst
         [[ -d $src ]] && dst=$XDG_CONFIG_HOME/$file
         [[ -f $src ]] && dst=$HOME/$file
-        [[ -n $dst ]] || { echo "! file not found: $src" >&2; return; }
+        [[ -n $dst ]] || { echo "! file not found: $src" >&2; return 1; }
         ln -sfn "$src" "$dst"
     done
 }

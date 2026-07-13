@@ -3,7 +3,7 @@ local function get_session_filepath()
     -- returns nil as we want silent exit
     local out = vim.system({'git', 'rev-parse', '--abbrev-ref', 'HEAD'}, {stdout=true}):wait()
     local branch = vim.trim(out.stdout or '')
-    if out.code~=0 or #branch==0 then return nil end
+    if out.code~=0 or branch=='' then return nil end
 
     local name = vim.fn.sha256(vim.uv.cwd()..'_'..branch)
     local dir = vim.fn.stdpath'state'..'/sessions'

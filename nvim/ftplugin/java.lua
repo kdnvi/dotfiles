@@ -25,13 +25,13 @@ if vim.fs.find('pom.xml', {upward=true, stop=vim.fs.dirname(vim.uv.cwd())})[1] t
         local mod_path = vim.fs.dirname(pom_path)
         local config_path = vim.uv.cwd()..'/configuration.properties'
 
-        if #mod_path > 0 then
+        if mod_path and mod_path ~= '' then
             local out = vim.system(
                 {'mvn', '-f', pom_path, 'help:evaluate', '-Dexpression=project.artifactId', '-q', '-DforceStdout'},
                 {stdout=true}
             ):wait()
             local mod = vim.trim(out.stdout or '')
-            assert(out.code==0 and #mod>0, 'failed to get module name')
+            assert(out.code==0 and mod~='', 'failed to get module name')
             table.insert(test_cmd, ' -pl :')
             table.insert(test_cmd, mod)
 
@@ -49,7 +49,7 @@ if vim.fs.find('pom.xml', {upward=true, stop=vim.fs.dirname(vim.uv.cwd())})[1] t
         table.insert(test_cmd, test_class)
 
         local method_name = vim.trim(opts.args or '')
-        if #method_name > 0 then
+        if method_name ~= '' then
             table.insert(test_cmd, '\\#')
             table.insert(test_cmd, method_name)
         end -- add -Dtest optional method name if specified

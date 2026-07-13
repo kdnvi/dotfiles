@@ -28,16 +28,16 @@ local ns = vim.api.nvim_create_namespace('diffsigns')
 local function refresh(buf)
     vim.api.nvim_buf_clear_namespace(buf, ns, 0, -1)
     local file = vim.api.nvim_buf_get_name(buf)
-    if file == '' or vim.bo[buf].buftype ~= '' then return end
+    if file=='' or vim.bo[buf].buftype~='' or vim.bo[buf].filetype=='netrw' then return end
 
     local marks = changed_lines(buf, file)
     for _, mark in ipairs(marks) do
         local def = signs[mark[1]] -- sign definition at index
         vim.api.nvim_buf_set_extmark(buf, ns, mark[2]-1, 0, {sign_text=def.text, sign_hl_group=def.hl, priority=10})
-    end
+    end -- place signs
 end
 
-vim.api.nvim_create_autocmd({'BufEnter', 'BufWritePost', 'FocusGained', 'CursorHold', 'CursorHoldI'}, {
+vim.api.nvim_create_autocmd({'BufEnter', 'BufWritePost'}, {
     group = vim.api.nvim_create_augroup('diffsigns', {clear=true}),
     callback = function(args) refresh(args.buf) end,
 })
