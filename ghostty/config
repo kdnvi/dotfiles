@@ -1,7 +1,8 @@
 shell-integration = fish
 scrollback-limit = 100000
 theme = Adwaita
-font-family = Hack
+font-family = SF Mono
+font-style = Medium
 font-feature = -calt,-liga,-dlig
 font-thicken = true
 font-size = 16

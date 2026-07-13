@@ -70,6 +70,7 @@ if fs.find("pom.xml", { upward = true, path = "." })[1] then
                 " -DargLine=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=localhost:5500")
         end -- checkout dap.configurations.java
         vim.cmd(table.concat(test_cmd))
+        vim.cmd("normal! G")
     end, { nargs = "?", bang = true, desc = "run maven test (method); use ! to debug" })
 end -- maven
 
@@ -106,11 +107,13 @@ local function jdb_attach()
             term = true,
             on_exit = function()
                 jdb.chan = nil
+                for _, bp in pairs(jdb.breakpoints) do
+                    api.nvim_buf_del_extmark(bp.buf, ns, bp.mark)
+                end
                 jdb.breakpoints = {}
             end,
         })
-
-    vim.cmd("startinsert")
+    vim.cmd("normal! G")
 end
 
 local function jdb_toggle_breakpoint()
@@ -121,31 +124,46 @@ local function jdb_toggle_breakpoint()
     local key = class .. ":" .. line
     local buf = api.nvim_get_current_buf()
 
-    if jdb.breakpoints[key] then
-        jdb.breakpoints[key] = nil
-        jdb_send("clear " .. key)
-        local marks = api.nvim_buf_get_extmarks(buf, ns, { line - 1, 0 }, { line - 1, 0 }, {})
-        for _, mark in ipairs(marks) do
-            api.nvim_buf_del_extmark(buf, ns, mark[1])
-        end
-    else
-        jdb.breakpoints[key] = true
-        jdb_send("stop at " .. key)
-        api.nvim_buf_set_extmark(buf, ns, line - 1, 0, {
-            sign_text = "*",
+    if not jdb.breakpoints[key] then
+        local mark_id = api.nvim_buf_set_extmark(buf, ns, line - 1, 0, {
+            sign_text = "B",
             sign_hl_group = "DiagnosticError",
         })
+        jdb.breakpoints[key] = { buf = buf, mark = mark_id }
+        jdb_send("stop at " .. key)
+    else
+        api.nvim_buf_del_extmark(jdb.breakpoints[key].buf, ns, jdb.breakpoints[key].mark)
+        jdb.breakpoints[key] = nil
+        jdb_send("clear " .. key)
     end
 end
 
-user_command("Breakpoint", jdb_toggle_breakpoint, { nargs = 0, desc = "jdb toggle breakpoint" })
 user_command("Debug", jdb_attach, { nargs = 0, desc = "jdb attach" })
-user_command("DebugCmd", function(opts) jdb_send(opts.args) end, { nargs = "+", desc = "run debug command" })
-user_command("DebugClear", function()
-    api.nvim_buf_clear_namespace(0, ns, 0, -1)
-end, { nargs = 0, desc = "clear jdb breakpoint signs in current buffer" })
+user_command("Bp", jdb_toggle_breakpoint, { nargs = 0, desc = "jdb toggle breakpoint" })
+user_command("Dbc", function(opts) jdb_send(opts.args) end, {
+    nargs = "+",
+    complete = function(arg_lead)
+        local cmds = {
+            "run", "cont", "step", "step up", "next",
+            "stop at", "stop in", "clear", "catch", "ignore",
+            "threads", "thread", "where", "wherei",
+            "dump", "eval", "print", "set", "locals",
+            "classes", "class", "methods", "fields",
+            "watch", "unwatch", "suspend", "resume",
+            "up", "down", "kill", "interrupt",
+            "list", "use", "sourcepath", "trace", "untrace",
+            "monitor", "unmonitor", "classpath", "read",
+            "lock", "threadlocks", "pop", "reenter", "redefine",
+            "disablegc", "enablegc", "exit"
+        }
+        return vim.tbl_filter(function(c) return c:find(arg_lead, 1, true) == 1 end, cmds)
+    end,
+    desc = "run debug command",
+})
 
-map("n", "<Up>", ":DebugCmd cont<CR>", { buffer = 0 })
-map("n", "<Right>", ":DebugCmd next<CR>", { buffer = 0 })
-map("n", "<Down>", ":DebugCmd step<CR>", { buffer = 0 })
-map("n", "<Left>", ":DebugCmd ", { buffer = 0 })
+map({ "n", "v" }, "<Up>", [[:Dbc cont<CR>]], { buffer = 0 })
+map({ "n", "v" }, "<Right>", [[:Dbc next<CR>]], { buffer = 0 })
+map({ "n", "v" }, "<Down>", [[:Dbc step<CR>]], { buffer = 0 })
+map({ "n", "v" }, "<Left>", [[:Dbc step up<CR>]], { buffer = 0 })
+map("n", "<C-k>", [[:Dbc dump <C-r><C-w>]], { buffer = 0 })
+map("v", "<C-k>", [["0y:Dbc dump <C-r>0]], { buffer = 0 })

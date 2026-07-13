@@ -19,9 +19,25 @@ end     -- returns list of file path strings
 vim.opt.findfunc = "v:lua.rg_find_func"
 
 -- remove session files for current repo
-user_command("CleanSession", function()
+user_command("SCleanup", function()
     local sfile = require("me.common").get_session_filepath()
     assert(sfile and vim.uv.fs_stat(sfile), "no session found")
     assert(os.remove(sfile), "failed to remove session file: " .. sfile)
     notify("removed session file: " .. sfile, log.INFO)
 end, { nargs = 0 })
+
+user_command("TCleanup", function()
+    local count = 0
+    for _, buf in ipairs(api.nvim_list_bufs()) do
+        if api.nvim_buf_is_valid(buf) and vim.bo[buf].buftype == "terminal" then
+            local chan = vim.bo[buf].channel
+            if chan == 0 or vim.fn.jobwait({ chan }, 0)[1] ~= -1 then
+                api.nvim_buf_delete(buf, { force = true })
+                count = count + 1
+            end
+            -- returns -1 if the job is still running
+            -- otherwise `exit_code` (0, 1, etc. -> the job has exited)
+        end
+    end
+    notify(count .. " terminal buffer(s) removed", log.INFO)
+end, { nargs = 0, desc = "delete terminal buffers with exited processes" })
