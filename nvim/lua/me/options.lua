@@ -4,6 +4,7 @@ set.swapfile = false
 set.showmatch = true
 set.ignorecase = true
 set.smartcase = true
+set.updatetime = 512
 set.shiftwidth = 4
 set.tabstop = 4
 set.softtabstop = 4

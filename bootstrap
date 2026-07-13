@@ -133,38 +133,17 @@ configure_shell() {
     echo 'please log out and log back in for shell change to take effect'
 }
 
-install_packages() {
+main() {
+    create_directories
+    link_dotfiles
+    configure_git
     if [[ $(uname -s) == Darwin ]]; then
         setup_macos
     else
         setup_linux
     fi
-}
-
-usage() {
-    echo "usage: $0 {all|link|git|packages|neovim|shell}"
-    echo ""
-    echo "commands:"
-    echo "  all       run everything (default)"
-    echo "  link      create directories and symlink dotfiles"
-    echo "  git       configure global git settings"
-    echo "  packages  install platform packages (brew/apt)"
-    echo "  neovim    build neovim from source"
-    echo "  shell     set fish as default shell"
-}
-
-main() {
-    local cmd="${1:-all}"
-    case "$cmd" in
-        link)     create_directories; link_dotfiles ;;
-        git)      configure_git ;;
-        packages) install_packages ;;
-        neovim)   install_neovim ;;
-        shell)    configure_shell ;;
-        all)      create_directories; link_dotfiles; configure_git
-                  install_packages; install_neovim; configure_shell ;;
-        *)        usage >&2; exit 1 ;;
-    esac
+    install_neovim
+    configure_shell
 }
 
 main "$@"
