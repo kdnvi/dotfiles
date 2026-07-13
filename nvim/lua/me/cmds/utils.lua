@@ -20,4 +20,4 @@ vim.api.nvim_create_user_command("Blame", function()
     local start = math.max(1, line - 5)
     local finish = line + 5
     vim.cmd(string.format("!git blame -L %d,%d %%", start, finish))
-end, { nargs = 0, desc = "git blame around current line" })
+end, { nargs = 0, desc = "git blame 10 lines surround" })
