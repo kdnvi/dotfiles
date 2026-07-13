@@ -22,7 +22,7 @@ vim.lsp.config("jdtls", {
         "--add-opens=java.base/java.lang=ALL-UNNAMED",
         "-jar", vim.fs.find(function(name) return name:match("^org%.eclipse%.equinox%.launcher_.+%.jar$") end,
             { path = jdtls_dir .. "/plugins", limit = 1 })[1],
-        "-configuration", jdtls_dir .. "/config_mac_arm",
+        "-configuration", jdtls_dir .. "/" .. (vim.uv.os_uname().sysname == "Darwin" and "config_mac_arm" or "config_linux"),
         "-data", workspace_dir
     },
     filetypes = { "java" },

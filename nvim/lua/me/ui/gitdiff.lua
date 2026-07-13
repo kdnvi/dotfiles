@@ -41,7 +41,7 @@ local function update_sign(event)
         end)
     end)
 end
-api.nvim_create_autocmd({ "BufReadPost", "BufWritePost" }, {
+api.nvim_create_autocmd({ "BufReadPost", "BufWritePost", "BufEnter", "CursorHold" }, {
     group = api.nvim_create_augroup("gitdiff", { clear = true }),
     callback = update_sign
 })

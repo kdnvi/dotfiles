@@ -12,15 +12,16 @@ lsp.config("*", {
         lsp.inlay_hint.enable(true)
 
         -- see `:help vim.lsp.*` for documentation on any of the below functions
-        map("n", "gi", lsp.buf.implementation)
-        map("n", "gr", lsp.buf.references)
-        map("n", "gR", lsp.buf.rename)
+        local opts = { buffer = bufnr }
+        map("n", "gi", lsp.buf.implementation, opts)
+        map("n", "gr", lsp.buf.references, opts)
+        map("n", "gR", lsp.buf.rename, opts)
         map("n", "gu", function()
             lsp.buf.references({ includeDeclaration = false })
-        end) -- show usages only
-        map("n", "<C-w>a", lsp.buf.code_action)
-        map("n", "<C-h>", lsp.buf.document_symbol)
-        map("i", "<C-k>", lsp.buf.signature_help)
+        end, opts) -- show usages only
+        map("n", "<C-w>a", lsp.buf.code_action, opts)
+        map("n", "<C-h>", lsp.buf.document_symbol, opts)
+        map("i", "<C-k>", lsp.buf.signature_help, opts)
 
         -- log language server status
         vim.lsp.handlers["language/status"] = function(_, result, _)
