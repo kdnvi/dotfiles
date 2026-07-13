@@ -8,5 +8,3 @@ size = 17
 normal.family = "Hack"
 [selection]
 save_to_clipboard = true
-[cursor]
-thickness = 0.1
