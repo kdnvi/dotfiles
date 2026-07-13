@@ -19,9 +19,12 @@ if status is-interactive
     abbr -a -- gd 'git diff'
     abbr -a -- gf 'git fetch'
     abbr -a -- gp 'git pull'
-    abbr -a -- ga 'git add'
+    abbr -a -- gP 'git push'
+    abbr -a -- gac 'git add .'
+    abbr -a -- gaa 'git add --all'
+    abbr -a -- gap 'git add --patch'
     abbr -a -- gc 'git commit -m'
-    abbr -a -- gss 'git stash save'
+    abbr -a -- gsP 'git stash push'
     abbr -a -- gsp 'git stash pop'
 
     alias vi=nvim

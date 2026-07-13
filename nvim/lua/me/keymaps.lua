@@ -4,23 +4,24 @@ local set = vim.opt
 
 -- extend vim grep abilities with ripgrep
 if vim.fn.executable("rg") > 0 then
-    set.grepprg = "rg --vimgrep --smart-case --no-heading --column"
+    set.grepprg = "rg --vimgrep --smart-case $*"
     set.grepformat:prepend("%f:%l:%c:%m")
     -- add `--hidden --no-ignore` for wildcard
     map("n", "<Space>g", [[:silent grep! ''<Left>]])
-    map("v", "<Space>g", [["0y:silent grep! --case-sensitive '<C-r>0'<Left>]])
-    map("n", "<Space>G", [[:silent grep! --case-sensitive '<C-r><C-w>'<CR>]])
+    map("v", "<Space>g", [["0y:silent grep! '<C-r>0'<Left>]])
+    map("n", "<Space>G", [[:silent grep! '<C-r><C-w>'<CR>]])
 end -- result can be accessible through qf list
 
 -- some proper ways to browse/search
 map("n", "<Space>f", [[:find ]])
+map("n", "<Space>F", [[:find <C-r><C-w><C-z>]])
 map("n", "<C-Space>", [[:ls t<CR>:buffer ]])
 map("n", "<C-j>", "<C-^>")
 
--- copy to system clipboard, all motions after `<C-w>y` work the same as normal `y`
-map({ "n", "v" }, "<C-w>y", [["+y]])
-map({ "n", "v" }, "<C-w>p", [["+p]])
-map("n", "<C-w><C-p>", [["+P]])
+-- copy to system clipboard, all motions after `<Space>y` work the same as normal `y`
+map({ "n", "v" }, "<Space>y", [["+y]])
+map({ "n", "v" }, "<Space>p", [["+p]])
+map("n", "<Space>P", [["+P]])
 
 -- command mode navigation
 map("c", "<M-Left>", "<C-Left>")
