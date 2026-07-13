@@ -36,4 +36,9 @@ vim.api.nvim_create_autocmd("FileType", {
     callback = function() map("n", "<C-c>", cmd.Rexplore, { buffer = 0 }) end
 })
 
+-- navigate between terminal buffers easier
 map("t", "<Esc><Esc>", [[<C-\><C-n>]])
+map("t", "<C-w>h", [[<C-\><C-n><C-w>h]])
+map("t", "<C-w>j", [[<C-\><C-n><C-w>j]])
+map("t", "<C-w>k", [[<C-\><C-n><C-w>k]])
+map("t", "<C-w>l", [[<C-\><C-n><C-w>l]])
