@@ -17,21 +17,22 @@ create_directories() {
     mkdir -p "$HOME/personal"
 }
 
+# fancy stuff will not be available on server
 is_linux_server() {
     [[ $(uname -s) != Linux ]] && return 1
     [[ -z "${DISPLAY:-}" && -z "${WAYLAND_DISPLAY:-}" && -z "${XDG_CURRENT_DESKTOP:-}" ]]
 }
 
 link_dotfiles() {
-    echo '> linking dotfiles'
-
     if is_linux_server; then
-        ln -sfn "$DOTDIR/.tmux.conf" "$HOME/.tmux.conf"
-        ln -sfn "$DOTDIR/nvim/init.vim" "$HOME/.vimrc"
-        ln -sfn "$DOTDIR/.psqlrc" "$HOME/.psqlrc"
+        echo '> copying config files'
+        cp -fp "$DOTDIR/.tmux.conf" "$HOME/.tmux.conf"
+        cp -fp "$DOTDIR/nvim/init.vim" "$HOME/.vimrc"
+        cp -fp "$DOTDIR/.psqlrc" "$HOME/.psqlrc"
         return 0
     fi
 
+    echo '> linking dotfiles'
     local -a dotfiles=(ghostty fish nvim .tmux.conf .psqlrc .gitignore)
     for file in "${dotfiles[@]}"; do
         if [[ -d $DOTDIR/$file ]]; then
@@ -50,6 +51,7 @@ setup_macos() {
         xcode-select --install
     fi
 
+    # only install if brew doesn't exist
     if ! command -v brew &>/dev/null; then
         echo '> installing homebrew'
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
@@ -66,7 +68,7 @@ setup_linux() {
     sudo apt-get update && sudo apt-get upgrade -y
     if is_linux_server; then
         local -a packages=(curl git tmux)
-        echo '> installing essential packages (no desktop environment)'
+        echo '> installing essential packages (server)'
         sudo apt-get install -y "${packages[@]}"
         return 0
     fi

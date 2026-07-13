@@ -1,12 +1,17 @@
-scrollback-limit=100000
+# no lingatures
 font-feature=-calt,-liga,-dlig
 font-thicken=true
 font-family=Ubuntu Sans Mono
-font-style=Medium
 font-size=18
+font-style=Medium
+theme=Monokai Classic
+
+# no spaces
 window-padding-x=0
 window-padding-y=0
 maximize=true
+scrollback-limit=100000
+
+# quick actions
 copy-on-select=clipboard
 macos-option-as-alt=true
-theme=Monokai Classic
