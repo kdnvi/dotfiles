@@ -64,7 +64,7 @@ setup_macos() {
     brew update
 
     local -a packages=(
-        wget git fish watch cmake ninja tmux tree ncdu ripgrep jq ghostty font-hack
+        wget git fish watch cmake ninja tmux tree ncdu ripgrep jq ghostty
     )
     brew install "${packages[@]}"
 }
@@ -89,24 +89,6 @@ build_from_source() {
     )
 }
 
-install_font() {
-    local target_dir="$XDG_DATA_HOME/fonts"
-    if [[ -f $target_dir/Hack-Regular.ttf ]]; then
-        echo 'hack font already installed'
-        return 0
-    fi
-
-    echo 'installing hack font'
-    wget -O /tmp/Hack-v3.003-ttf.zip \
-        https://github.com/source-foundry/Hack/releases/download/v3.003/Hack-v3.003-ttf.zip
-
-    mkdir -p "$target_dir"
-    unzip -j /tmp/Hack-v3.003-ttf.zip 'ttf/*.ttf' -d "$target_dir"
-
-    rm -f /tmp/Hack-v3.003-ttf.zip
-    fc-cache -f -v
-}
-
 setup_linux() {
     echo 'installing essential packages'
     sudo apt-get update && sudo apt-get upgrade -y
@@ -116,9 +98,7 @@ setup_linux() {
         watch tree vim tmux gdb ripgrep ncdu parallel jq xxd wl-clipboard
     )
     sudo apt-get install -y "${packages[@]}"
-
     sudo snap install ghostty --classic
-    install_font
 
     if command -v gsettings &> /dev/null; then
         echo 'disable dash to dock hot-keys on ubuntu'
@@ -153,17 +133,38 @@ configure_shell() {
     echo 'please log out and log back in for shell change to take effect'
 }
 
-main() {
-    create_directories
-    link_dotfiles
-    configure_git
+install_packages() {
     if [[ $(uname -s) == Darwin ]]; then
         setup_macos
     else
         setup_linux
     fi
-    install_neovim
-    configure_shell
+}
+
+usage() {
+    echo "usage: $0 {all|link|git|packages|neovim|shell}"
+    echo ""
+    echo "commands:"
+    echo "  all       run everything (default)"
+    echo "  link      create directories and symlink dotfiles"
+    echo "  git       configure global git settings"
+    echo "  packages  install platform packages (brew/apt)"
+    echo "  neovim    build neovim from source"
+    echo "  shell     set fish as default shell"
+}
+
+main() {
+    local cmd="${1:-all}"
+    case "$cmd" in
+        link)     create_directories; link_dotfiles ;;
+        git)      configure_git ;;
+        packages) install_packages ;;
+        neovim)   install_neovim ;;
+        shell)    configure_shell ;;
+        all)      create_directories; link_dotfiles; configure_git
+                  install_packages; install_neovim; configure_shell ;;
+        *)        usage >&2; exit 1 ;;
+    esac
 }
 
 main "$@"

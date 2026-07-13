@@ -1,5 +1,4 @@
 local map = vim.keymap.set
-local cmd = vim.cmd
 local set = vim.opt
 
 -- extend vim grep abilities with ripgrep
@@ -16,7 +15,8 @@ end -- result can be accessible through qf list
 map("n", "<Space>f", [[:find ]])
 map("n", "<Space>F", [[:find <C-r><C-w><C-z>]])
 map("n", "<C-Space>", [[:ls t<CR>:buffer ]])
-map("n", "<C-j>", "<C-^>")
+map("n", "<Space>e", [[:edit %:.:h<C-z>]])
+map("n", "-", "<C-^>")
 
 -- copy to system clipboard, all motions after `<Space>y` work the same as normal `y`
 map({ "n", "v" }, "<Space>y", [["+y]])
@@ -29,13 +29,8 @@ map("c", "<M-Right>", "<C-Right>")
 map("c", "<C-a>", "<Home>")
 map("c", "<C-e>", "<End>")
 map("c", "<M-BS>", "<C-w>")
-
--- better keymap to toggle netrw
-map("n", "-", cmd.Explore)
-vim.api.nvim_create_autocmd("FileType", {
-    pattern = "netrw",
-    callback = function() map("n", "<C-c>", cmd.Rexplore, { buffer = 0 }) end
-})
+map("c", "<C-b>", "<Up>")
+map("c", "<C-f>", "<Down>")
 
 -- navigate between terminal buffers easier
 map("t", "<Esc><Esc>", [[<C-\><C-n>]])

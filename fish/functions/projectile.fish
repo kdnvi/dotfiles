@@ -6,18 +6,13 @@ function projectile --description "switch to a tmux session/window matching patt
         return 1
     end # ensure pattern is specified
 
-    set -l matched (tmux list-sessions 2>/dev/null | grep "$pattern")
+    set -l matched (tmux list-sessions -F '#{session_name}' 2>/dev/null | grep -iF "$pattern")
     if test -n "$matched"
-        # from right to left, from inner brackets to outer:
-        # - split by newline, get the first part
-        # - split by ':' at most 1 (-m 1)
-        # - the first part is session name
-        set -l session_name (string split -m 1 ":" (string split \n -- $matched)[1])[1]
-        tmux switch-client -t "$session_name"
+        tmux switch-client -t (string split \n -- $matched)[1]
         return 0
     end # try matching session name first
 
-    set -l matched (tmux list-windows -a -F "#{session_name}:#{window_index}:#{window_name}" 2>/dev/null | grep "$pattern")
+    set -l matched (tmux list-windows -a -F '#{session_name}:#{window_index}:#{window_name}' 2>/dev/null | grep -iF "$pattern")
     if test -n "$matched"
         set -l target (string split -m 2 ":" (string split \n -- $matched)[1])
         tmux switch-client -t "$target[1]:$target[2]"

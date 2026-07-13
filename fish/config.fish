@@ -3,7 +3,7 @@ set -gx XDG_DATA_HOME "$HOME/.local/share"
 set -gx XDG_CACHE_HOME "$HOME/.cache"
 
 if status is-interactive
-    set -gx fish_greeting "It's $(date '+%A, %B %d, %Y at %H:%M') - bugs don't fix themselves. Or do they?"
+    set -gx fish_greeting "It's "(date '+%A, %B %d, %Y at %H:%M')" - bugs don't fix themselves. Or do they?"
 
     set -gx EDITOR nvim
     set -gx VISUAL nvim
@@ -15,17 +15,16 @@ if status is-interactive
     set __fish_git_prompt_showupstream 'yes'
 
     abbr -a -- gs 'git status'
-    abbr -a -- gco 'git checkout'
     abbr -a -- gd 'git diff'
     abbr -a -- gf 'git fetch'
     abbr -a -- gp 'git pull'
     abbr -a -- gP 'git push'
-    abbr -a -- gac 'git add .'
-    abbr -a -- gaa 'git add --all'
-    abbr -a -- gap 'git add --patch'
+    abbr -a -- ga 'git add'
     abbr -a -- gc 'git commit -m'
-    abbr -a -- gsP 'git stash push'
-    abbr -a -- gsp 'git stash pop'
+    abbr -a -- gr 'git restore'
+    abbr -a -- gR 'git reset'
+    abbr -a -- gS 'git stash'
+    abbr -a -- gco 'git checkout'
 
     alias vi=nvim
     alias myip='echo (dig +short txt ch whoami.cloudflare @1.0.0.1)'

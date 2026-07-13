@@ -2,6 +2,7 @@ shell-integration = fish
 scrollback-limit = 100000
 theme = Adwaita
 font-family = SF Mono
+font-family = Ubuntu Mono
 font-style = Medium
 font-feature = -calt,-liga,-dlig
 font-thicken = true
