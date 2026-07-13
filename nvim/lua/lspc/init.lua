@@ -7,13 +7,9 @@ vim.lsp.config('*', {
 
         -- see [:help vim.lsp.*] for documentation
         vim.keymap.set('n', 'gd', vim.lsp.buf.definition, {buffer=bufnr})
-        vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, {buffer=bufnr})
-        vim.keymap.set('n', 'gr', vim.lsp.buf.references, {buffer=bufnr})
-        vim.keymap.set('n', 'gu', function()
+        vim.keymap.set('n', 'gru', function()
             vim.lsp.buf.references{includeDeclaration=false}
         end, {buffer=bufnr}) -- show usages only
-        vim.keymap.set('n', 'gR', vim.lsp.buf.rename, {buffer=bufnr})
-        vim.keymap.set({'n', 'v'}, '<C-w>a', vim.lsp.buf.code_action, {buffer=bufnr})
     end,
     detached = true,
 }) -- consistent behaviours across language servers
