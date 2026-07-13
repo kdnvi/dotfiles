@@ -1,11 +1,11 @@
 set nocompatible encoding=utf-8
 set incsearch hlsearch autoindent autoread
-set nomodeline noswapfile undofile
+set nomodeline noswapfile title
 set tabstop=4 shiftwidth=0 expandtab
 set ignorecase smartcase updatetime=512
 set hidden laststatus=2 belloff=all
 set mouse=nvi mousemodel=popup_setpos
-set title showmatch splitright list
+set showmatch splitright list
 set wildoptions=pum,tagfile,fuzzy
 set listchars=tab:>\ ,trail:-,nbsp:+
 let &showbreak = '+++ '
@@ -52,7 +52,7 @@ if has('nvim')
   let g:loaded_python3_provider = 0
   let g:loaded_ruby_provider = 0
   let g:loaded_matchit = 1
-  set completeopt+=menuone,noselect
+  set undofile completeopt+=menuone,noselect
   set inccommand=split cursorline
   colorscheme unokai
 
@@ -86,7 +86,7 @@ if has('nvim')
 
   " load lua stuff
   lua require'utils'
-  lua require'bundle.diffsigns'
   lua require'lspc'
+  lua require'bundle.diffsign'
   lua require'sessionize'
 endif
