@@ -27,10 +27,11 @@ lsp.config("*", {
 require("me.lsp.clangd")
 require("me.lsp.jdtls")
 require("me.lsp.pyright")
+require("me.lsp.luals")
 require("me.lsp.tsserver")
 
 -- can be disabled/terminated by [:lsp disable/stop]
-lsp.enable({ "clangd", "jdtls", "pyright", "tsserver" })
+lsp.enable({ "clangd", "jdtls", "pyright", "luals", "tsserver" })
 
 vim.api.nvim_create_autocmd("LspProgress", {
     group = vim.api.nvim_create_augroup("lsp_progress", { clear = true }),
