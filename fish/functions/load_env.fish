@@ -8,11 +8,12 @@ function load_env
     end
     if test -f $argv[1]
         for line in (string match -rv '^\s*#|^\s*$' < $argv[1])
-            # split on first '=' only so values containing '=' are preserved
-            set -l key (string split -m1 = $line)[1]
-            set -l val (string split -m1 = $line)[2]
-            # strip matching surrounding quotes (" or ') using backreference
-            set val (string replace -r "^(['\"])(.*)\1\$" '$2' $val)
+            set -l parts (string split -m1 = $line)
+            if test (count $parts) -lt 2
+                continue
+            end
+            set -l key $parts[1]
+            set -l val (string replace -r "^(['\"])(.*)\1\$" '$2' $parts[2])
             set -gx $key $val
         end
     end # only when file exist

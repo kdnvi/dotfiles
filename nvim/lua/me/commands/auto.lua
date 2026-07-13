@@ -54,6 +54,22 @@ autocmd("BufReadCmd", {
     end
 })
 
+-- language server progress
+vim.api.nvim_create_autocmd("LspProgress", {
+    group = augroup("lsp_progress", { clear = true }),
+    callback = function(e)
+        local value = e.data.params.value or {}
+        vim.api.nvim_echo({ { value.message or "done" } }, false, {
+            id = "lsp." .. e.data.client_id,
+            kind = "progress",
+            source = "vim.lsp",
+            title = value.title,
+            status = value.kind ~= "end" and "running" or "success",
+            percent = value.percentage,
+        })
+    end
+})
+
 -- don't do sessionize stuff if opening specific files
 if #vim.fn.argv() == 0 then
     autocmd("BufWritePost", {
