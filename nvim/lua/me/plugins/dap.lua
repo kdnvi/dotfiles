@@ -1,6 +1,5 @@
 local dap = require("dap")
 local map = vim.keymap.set
-local fn = vim.fn
 
 map("n", "<C-w>b", dap.toggle_breakpoint)
 map("n", "<Up>", dap.continue)
@@ -29,7 +28,7 @@ dap.configurations.java = {
         type = "java",
         request = "attach",
         name = "Debug (Attach) - Local 5055",
-        projectName = function() return fn.input("project_name: ") end,
+        projectName = function() return vim.fn.input("project_name: ") end,
         hostName = "localhost",
         port = 5055,
         timeout = 5000
@@ -38,7 +37,7 @@ dap.configurations.java = {
         type = "java",
         request = "attach",
         name = "Test Debug (Attach) - Local 5155",
-        projectName = function() return fn.input("project_name: ") end,
+        projectName = function() return vim.fn.input("project_name: ") end,
         hostName = "localhost",
         port = 5155,
         timeout = 5000
@@ -47,12 +46,12 @@ dap.configurations.java = {
         type = "java",
         request = "attach",
         name = "Debug (Attach) - Remote",
-        projectName = function() return fn.input("project_name: ") end,
+        projectName = function() return vim.fn.input("project_name: ") end,
         hostName = function()
-            return fn.input("remote_host: ")
+            return vim.fn.input("remote_host: ")
         end,
         port = function()
-            return tonumber(fn.input("port: ", "5005")) or 5005
+            return tonumber(vim.fn.input("port: ", "5005")) or 5005
         end,
         timeout = 30000
     }

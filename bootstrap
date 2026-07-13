@@ -63,8 +63,7 @@ setup_macos() {
     brew update
 
     local -a packages=(
-        curl wget git fish coreutils watch cmake ninja gdb
-        alacritty tmux tree ncdu ripgrep jq parallel font-hack
+        wget git fish watch cmake ninja alacritty tmux tree ncdu ripgrep jq font-hack
     )
     brew install "${packages[@]}"
 }
@@ -112,8 +111,8 @@ setup_linux() {
     sudo apt-get update && sudo apt-get upgrade -y
 
     local -a packages=(
-        curl wget zip git fish coreutils gcc clang clangd cmake make ninja-build
-        alacritty watch tree vim tmux gdb ripgrep ncdu parallel jq xxd wl-clipboard
+        curl wget zip git fish gcc clang clangd cmake make ninja-build watch
+        alacritty tree vim tmux gdb ripgrep ncdu parallel jq xxd wl-clipboard
     )
     sudo apt-get install -y "${packages[@]}"
 
