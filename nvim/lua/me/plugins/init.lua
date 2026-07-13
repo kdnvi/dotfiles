@@ -5,6 +5,6 @@ vim.pack.add({
     "https://codeberg.org/mfussenegger/nvim-dap"
 })
 -- config for plugins
-vim.cmd.colorscheme("seoul256-light")
 vim.g.seoul256_srgb = 1
+vim.cmd.colorscheme("seoul256-light")
 require("me.plugins.dap")
