@@ -1,16 +1,15 @@
-local function extract_class_name()
-    local file_path = vim.api.nvim_buf_get_name(0)
+local function extract_class_name(file_path)
     local class = file_path:match('/src/[^/]+/java/(.+)%.java$') or file_path:match('/src/(.+)%.java$')
     assert(class, 'could not derive fully qualified class name from path')
     return class:gsub('/', '.')
-end -- extract fqcn
+end -- extract FQCN
 
-if vim.fs.find('pom.xml', {upward=true, path='.'})[1] then
+if vim.fs.find('pom.xml', {upward=true, stop=vim.fs.dirname(vim.uv.cwd())})[1] then
     vim.opt_local.errorformat = '[ERROR] %f:[%l\\,%v] %m'
     vim.opt_local.makeprg = 'mvn package -T 1C -am -DskipTests'
 
     vim.api.nvim_buf_create_user_command(0, 'RunTests', function(opts)
-        local file_path = vim.api.nvim_buf_get_name(0):sub(#vim.uv.cwd()+2) -- relative path
+        local file_path = vim.fs.relpath(vim.uv.cwd(), vim.api.nvim_buf_get_name(0))
         assert(vim.regex([[\(/test/\|[Tt]ests\?\.java\)]]):match_str(file_path), 'not a test file')
 
         -- generate test command
@@ -22,8 +21,8 @@ if vim.fs.find('pom.xml', {upward=true, path='.'})[1] then
         table.insert(test_cmd, '/logback-dev.xml')
 
         -- walk up the directory tree to find pom.xml
-        local pom_path = vim.fn.findfile('pom.xml', vim.fn.expand('%:p:h')..';')
-        local mod_path = vim.fn.fnamemodify(pom_path, ':h')
+        local pom_path = vim.fs.find('pom.xml', {upward=true, path=vim.fs.dirname(file_path)})[1]
+        local mod_path = vim.fs.dirname(pom_path)
         local config_path = vim.uv.cwd() .. '/configuration.properties'
 
         if #mod_path > 0 then
@@ -45,8 +44,7 @@ if vim.fs.find('pom.xml', {upward=true, path='.'})[1] then
         table.insert(test_cmd, config_path)
 
         -- extract test class name from current file
-        local test_class = extract_class_name()
-        vim.notify(test_class, vim.log.levels.WARN)
+        local test_class = extract_class_name(file_path)
         table.insert(test_cmd, ' -Dtest=')
         table.insert(test_cmd, test_class)
 
@@ -69,7 +67,7 @@ _G.jdb_ctx = _G.jdb_ctx or {chan=nil, breakpoints={}, ready=false}
 
 local function jdb_send(cmd)
     assert(_G.jdb_ctx.chan, 'jdb not running')
-    vim.fn.chansend(_G.jdb_ctx.chan, cmd..'\n')
+    vim.api.nvim_chan_send(_G.jdb_ctx.chan, cmd..'\n')
 end
 
 local function clear_breakpoints()
@@ -85,7 +83,7 @@ end
 local function toggle_breakpoint()
     assert(_G.jdb_ctx.chan, 'jdb not running')
 
-    local class = extract_class_name()
+    local class = extract_class_name(vim.api.nvim_buf_get_name(0))
     local line = vim.api.nvim_win_get_cursor(0)[1]
     local key = class .. ':' .. line
     local bufnr = vim.api.nvim_get_current_buf()
