@@ -5,7 +5,6 @@ local signs = {
     change = { text = "~", hl = "DiffChange" },
     delete = { text = "-", hl = "DiffDelete" }
 }
-
 local function update_sign(event)
     local buf = event.buf
     local name = api.nvim_buf_get_name(buf)
@@ -42,7 +41,6 @@ local function update_sign(event)
         end)
     end)
 end
-
 api.nvim_create_autocmd({ "BufReadPost", "BufWritePost" }, {
     group = api.nvim_create_augroup("gitdiff", { clear = true }),
     callback = update_sign
