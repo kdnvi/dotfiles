@@ -39,7 +39,6 @@ nmap <Space>P "+P
 if has('nvim')
   lua vim.filetype.add{pattern={['.*%.log.*']='messages'}, extension={psql='sql'}}
   au TextYankPost * silent! lua vim.hl.on_yank()
-  au FileType * silent! lua vim.treesitter.stop()
 
   " :find command should search files
   func! s:findfiles(cmdarg, _cmdcomp) abort
@@ -69,7 +68,6 @@ if has('nvim')
   let g:loaded_matchit = 1
   set udf cul inccommand=split
   set completeopt+=menuone,noselect
-  silent! colorscheme unokai
 
   " load lua stuff
   lua require'sessionize'

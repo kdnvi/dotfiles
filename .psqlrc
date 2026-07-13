@@ -1,5 +1,8 @@
 \encoding unicode
 \setenv PAGER 'less -XS'
+\timing on
+\conninfo
+\x auto
 \pset null 'NULL'
 \pset linestyle unicode
 \pset format wrapped
@@ -13,6 +16,3 @@
 \set uptime 'SELECT now() - pg_postmaster_start_time() AS uptime;'
 \set sz 'SELECT schemaname, relname, pg_size_pretty(pg_total_relation_size(relid)) AS size FROM pg_stat_user_tables ORDER BY pg_total_relation_size(relid) DESC;'
 \set ae 'EXPLAIN (ANALYZE, BUFFERS, VERBOSE, FORMAT TEXT)'
-\x auto
-\timing on
-\conninfo
