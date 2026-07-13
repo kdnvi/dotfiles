@@ -12,8 +12,8 @@ au FileType netrw nmap <buffer> <C-c> <Cmd>Rex<CR>
 " extend vim grep abilities with ripgrep
 if executable('rg')
   set grepformat^=%f:%l:%c:%m
-  set grepprg=rg\ --vimgrep\ -n\ $*
-  " add [--hidden --no-ignore] for wildcard
+  set grepprg=rg\ --vimgrep\ --hidden\ -n\ $*
+  " use [--no-ignore] for wildcard
   nmap <Space>g :silent grep! -S ''<Left>
   xmap <Space>g "0y:silent grep! -s '<C-r>0'<Left>
   nmap <Space>G :silent grep! -s '<C-r><C-w>'<CR>
@@ -39,16 +39,27 @@ nmap <Space>P "+P
 if has('nvim')
   lua vim.filetype.add{pattern={['.*%.log.*']='messages'}, extension={psql='sql'}}
   au TextYankPost * silent! lua vim.hl.on_yank()
+  au FileType * silent! lua vim.treesitter.stop()
 
   " :find command should search files
   func! s:findfiles(cmdarg, _cmdcomp) abort
-    let l:out = systemlist($FZF_DEFAULT_COMMAND . ' 2>/dev/null')
+    let l:out = systemlist('rg --files -. -L -S -g=!.git 2>/dev/null')
     if v:shell_error != 0 | return [] | endif
     return empty(a:cmdarg) ? l:out : matchfuzzy(l:out, a:cmdarg)
   endfunc
   set findfunc=s:findfiles
   nmap <Space>f :find 
   nmap <Space>F :find <C-r><C-w><C-z>
+
+  " browse git modified/untracked files
+  func! s:gitfiles() abort
+    let l:out = systemlist('git ls-files -t -m -o --exclude-standard 2>/dev/null')
+    if v:shell_error != 0 || empty(l:out) | echo 'no changes' | return | endif
+    let l:files = map(l:out, {_, line -> {'filename': matchstr(line, '\s\zs.*'), 'text': matchstr(line, '^\S\ze\s')}})
+    call setloclist(0, l:files, 'r') | lopen
+  endfunc
+  command! -nargs=0 GFiles call <SID>gitfiles()
+  nmap <Space>s <Cmd>GFiles<CR>
 
   " unload redundant providers
   let g:loaded_node_provider = 0
@@ -61,7 +72,7 @@ if has('nvim')
   silent! colorscheme unokai
 
   " load lua stuff
-  lua require'langserver'
   lua require'sessionize'
-  lua require'plugin'
+  lua require'diffsign'
+  lua require'langserver'
 endif

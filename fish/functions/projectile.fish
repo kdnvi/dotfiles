@@ -4,13 +4,11 @@ function projectile --description "switch to a tmux session matching pattern, or
     # try to match existing session first
     if test -n "$pattern"
         set -l matched (tmux list-sessions -F '#{session_name}' 2>/dev/null | grep -iF "$pattern" | head -n 1)
-        if test -n "$matched"
-            tmux switch-client -t "$matched"; return 0
-        end
+        if test -n "$matched"; tmux switch-client -t "$matched"; return 0; end
     end
 
-    # otherwise browse projects with fzf
-    set -l dir (find ~/repos ~/personal -maxdepth 3 -mindepth 1 -type d 2>/dev/null | fzf --tmux --query="$pattern")
+    # otherwise open first matched project having the pattern as prefix
+    set -l dir (find ~/work ~/lab ~/side -maxdepth 3 -mindepth 1 -type d -iname "$pattern*" 2>/dev/null | head -n 1)
     if test -z "$dir"; return 0; end
 
     # create session for selected project

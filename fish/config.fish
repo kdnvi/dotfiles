@@ -25,8 +25,6 @@ if status is-interactive
     # set -e JDK_JAVA_OPTIONS
     # abbr -a --set-cursor mvntest 'mvn test -e -DskipTests=false -Dgroups=medium,small -Dtest=%'
 
-    set -gx FZF_DEFAULT_COMMAND 'rg --files -. -L -S -g=!.git'
-
     alias vi=nvim
     alias myip='echo (dig +short txt ch whoami.cloudflare @1.0.0.1)'
 end # only what are reasonable for interactive use-cases

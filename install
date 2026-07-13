@@ -2,7 +2,7 @@
 set -eu
 
 echo '> creating essential dirs'
-mkdir -p ~/.config ~/repos ~/personal/notes
+mkdir -p ~/.config ~/work ~/lab ~/side
 
 echo '> linking dotfiles'
 ln -sfn $(pwd)/ghostty ~/.config/ghostty
@@ -16,7 +16,7 @@ echo '> installing essential packages'
 case $(uname -s) in
     Linux)
         sudo apt-get update
-        sudo apt-get install -y curl git fish tmux neovim fzf ripgrep watch tree ncdu htop jq fonts-noto-mono
+        sudo apt-get install -y curl git fish tmux neovim ripgrep watch tree ncdu htop jq fonts-noto-mono
         sudo snap install ghostty --classic
         ;;
     Darwin)
@@ -26,7 +26,7 @@ case $(uname -s) in
             /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
             eval "$(/opt/homebrew/bin/brew shellenv)"
         }
-        brew update && brew install fish tmux neovim fzf ripgrep watch tree ncdu htop jq ghostty font-noto-sans-mono
+        brew update && brew install fish tmux neovim ripgrep watch tree ncdu htop jq ghostty font-noto-sans-mono
         ;;
     *)  echo '! unsupported os: only linux and mac' >&2; exit 1 ;;
 esac
