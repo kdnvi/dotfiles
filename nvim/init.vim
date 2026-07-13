@@ -1,16 +1,15 @@
 set noswapfile showmatch
-set laststatus=1 updatetime=512
 set smartcase ignorecase
 set shiftwidth=2 tabstop=2
 set expandtab shiftround
 set nomodeline undofile
 set cursorline title list
+set splitright updatetime=512
 set wildoptions+=fuzzy
 set completeopt+=fuzzy
 let &showbreak = '+++ '
-set notermguicolors background=light
-colorscheme wildcharm
-hi! Normal ctermbg=NONE
+set notermguicolors
+colorscheme unokai
 
 " unload unused providers
 let g:loaded_node_provider = 0
@@ -28,11 +27,10 @@ endfunc
 set findfunc=s:findfiles
 nnoremap <Space>f :find 
 nnoremap <Space>F :find <C-r><C-w><C-z>
-vnoremap <Space>f "0y:find <C-r>0<C-z>
+nnoremap <Space>s :vert sfind 
 
 " browse buffers/files
-nnoremap <Space>s :ls t<CR>:buffer 
-nnoremap <Space>o :let @+=expand('%')<CR>
+nnoremap <Space>o :ls t<CR>:buffer 
 nnoremap - :edit %:.:h<C-z><C-z>
 
 " extend vim grep abilities with ripgrep
@@ -45,12 +43,6 @@ if executable('rg')
   vnoremap <Space>g "0y:silent grep! -s '<C-r>0'<Left>
 endif
 
-" moving in command mode
-cnoremap <C-a> <Home>
-cnoremap <C-e> <End>
-cnoremap <C-b> <Up>
-cnoremap <C-f> <Down>
-
 " yank/paste to/from system clipboard
 " all motions work the same as normal [y]
 nnoremap <C-w>y "+y
@@ -58,6 +50,17 @@ vnoremap <C-w>y "+y
 nnoremap <C-w>p "+p
 vnoremap <C-w>p "+p
 nnoremap <C-w>P "+P
+
+" quickly copy file name/path
+nn <Space>n <Cmd>let @+=expand('%:t')<Bar>echo 'filename copied'<CR>
+nn <Space>p <Cmd>let @+=expand('%')<Bar>echo 'filepath copied'<CR>
+nn <Space>P <Cmd>let @+=expand('%:p')<Bar>echo 'absolute filepath copied'<CR>
+
+" moving in command mode
+cnoremap <C-a> <Home>
+cnoremap <C-e> <End>
+cnoremap <C-b> <Up>
+cnoremap <C-f> <Down>
 
 " open the quickfix window whenever a qf command is executed
 autocmd QuickFixCmdPost [^l]* cwindow
