@@ -34,10 +34,10 @@ vim.api.nvim_create_autocmd("LspProgress", {
 
 -- server configs, usually just launch cmd, applicable filetypes and root marker
 -- some specific language settings can also be applied
-require("me.lsp.clangd")
-require("me.lsp.jdtls")
-require("me.lsp.pyright")
-require("me.lsp.tsserver")
+require("khoa.lsp.clangd")
+require("khoa.lsp.jdtls")
+require("khoa.lsp.pyright")
+require("khoa.lsp.tsserver")
 
 -- can be disabled/terminated by [:lsp disable/stop] command
 vim.lsp.enable({"clangd", "jdtls", "pyright", "tsserver"})

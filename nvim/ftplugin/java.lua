@@ -13,8 +13,7 @@ if vim.fs.find("pom.xml", {upward=true, stop=vim.fs.dirname(vim.uv.cwd())})[1] t
         assert(vim.regex([[\(/test/\|[Tt]ests\?\.java\)]]):match_str(file_path), "not a test file")
 
         -- generate test command
-        local height = math.floor(vim.o.lines*0.29)
-        local test_cmd = {"belowright "..height.."split | terminal mvn test -e -DskipTests=false"}
+        local test_cmd = {"terminal mvn test -e -DskipTests=false"}
         table.insert(test_cmd, " -Dgroups=medium,small")
         table.insert(test_cmd, " -Dlogback.configurationFile=")
         table.insert(test_cmd, vim.uv.cwd())
@@ -55,7 +54,7 @@ if vim.fs.find("pom.xml", {upward=true, stop=vim.fs.dirname(vim.uv.cwd())})[1] t
         end -- add -Dtest optional method name if specified
 
         if opts.bang then
-            table.insert(test_cmd, " -DargLine=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=localhost:5005")
+            table.insert(test_cmd, " -DargLine=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=localhost:5005")
         end -- bang = debug (:RunTests! or :RunTests! method)
         vim.cmd(table.concat(test_cmd))
         vim.cmd("normal! G")
@@ -94,7 +93,7 @@ dap.configurations.java = {{
 
 -- threads widget also contains frames
 local widgets = require("dap.ui.widgets")
-vim.keymap.set("n", "<C-s>", widgets.sidebar(widgets.scopes, {width=79}).toggle)
+vim.keymap.set("n", "<C-s>", widgets.sidebar(widgets.scopes, {width=65}).toggle)
 vim.keymap.set("n", "<C-h>", function() widgets.cursor_float(widgets.threads) end)
 vim.keymap.set("n", "<C-w>b", dap.toggle_breakpoint, {buffer=0})
 vim.keymap.set("n", "<Up>", dap.continue)
