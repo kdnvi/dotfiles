@@ -28,6 +28,7 @@ endfunc
 set findfunc=s:findfiles
 nnoremap <Space>f :find 
 nnoremap <Space>F :find <C-r><C-w><C-z>
+vnoremap <Space>f "0y:find <C-r>0<C-z>
 
 " browse buffers/files
 nnoremap <Space>s :ls t<CR>:buffer 
@@ -40,8 +41,8 @@ if executable('rg')
   set grepprg=rg\ --vimgrep\ --smart-case\ --line-number\ $*
   " add [--hidden --no-ignore] for wildcard
   nnoremap <Space>g :silent grep! ''<Left>
-  vnoremap <Space>g "0y:silent grep! '<C-r>0'<Left>
-  nnoremap <Space>G :silent grep! '<C-r><C-w>'<CR>
+  nnoremap <Space>G :silent grep! --case-sensitive '<C-r><C-w>'<CR>
+  vnoremap <Space>g "0y:silent grep! --case-sensitive '<C-r>0'<Left>
 endif
 
 " moving in command mode
