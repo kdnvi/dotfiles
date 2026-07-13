@@ -1,22 +1,17 @@
-set nomodeline
-set notermguicolors
-set updatetime=512
-set noswapfile
-set undofile
-set shiftwidth=4
-set tabstop=4
-set expandtab
-set smartcase
-set ignorecase
-set showmatch
-set cursorline
-set title
+set nomodeline updatetime=512
+set noswapfile undofile
+set shiftwidth=4 tabstop=4
+set expandtab smartcase
+set ignorecase showmatch
+set cursorline title
 set wildoptions+=fuzzy
 set completeopt+=fuzzy
-set splitright
-set list
+set laststatus=1 splitright list
 let &showbreak = '+++ '
-colorscheme unokai
+set notermguicolors background=light
+colorscheme wildcharm
+hi! WinSeparator ctermbg=NONE
+hi! Normal ctermbg=NONE
 
 " unload redundant providers
 let g:loaded_node_provider = 0
