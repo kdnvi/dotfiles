@@ -71,21 +71,24 @@ setup_macos() {
 }
 
 build_from_source() {
-    local name="$1"
-    local target_dir="$HOME/personal/$name"
-    local repo_url="$2"
+    local repo_url="$1"
+    local tag="$2"
     local build_commands="$3"
+    local name
+    name=$(basename "$repo_url" .git)
+    local target_dir="$HOME/personal/$name"
 
     echo "building $name from source"
     if [[ ! -d $target_dir ]]; then
         git clone "$repo_url" "$target_dir"
     else
         echo "$name already cloned, updating..."
-        git -C "$target_dir" pull --rebase
+        git -C "$target_dir" fetch --tags --force
     fi
 
     (
         cd "$target_dir"
+        git checkout "$tag"
         eval "$build_commands"
     )
 }
@@ -108,8 +111,8 @@ setup_linux() {
 }
 
 install_neovim() {
-    build_from_source 'neovim' 'https://github.com/neovim/neovim.git' \
-        'make distclean && make CMAKE_BUILD_TYPE=RelWithDebInfo && sudo make install'
+    build_from_source 'https://github.com/neovim/neovim.git' 'stable' \
+        'make distclean && make CMAKE_BUILD_TYPE=Release && sudo make install'
 }
 
 configure_shell() {
