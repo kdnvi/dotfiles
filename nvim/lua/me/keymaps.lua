@@ -15,7 +15,7 @@ end -- result can be accessible through qf list
 map("n", "<Space>f", [[:find ]])
 map("n", "<Space>F", [[:find <C-r><C-w><C-z>]])
 map("n", "<C-Space>", [[:buffer <C-z><C-p>]])
-map("n", "-", [[:edit %:.:h<C-z><C-z><C-p>]])
+map("n", "-", [[:edit %:.:h<C-z><C-z>]])
 
 -- copy to system clipboard
 -- all motions after `<Space>y` work the same as normal `y`

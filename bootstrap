@@ -11,6 +11,7 @@ create_directories() {
     mkdir -p "$XDG_CONFIG_HOME"
     mkdir -p "$HOME/personal"
     mkdir -p "$HOME/repos"
+    touch "$HOME/.env.local"
 }
 
 link_dotfiles() {
@@ -24,6 +25,7 @@ link_dotfiles() {
         .psqlrc
         .ripgreprc
         .gitignore
+        .bashrc
     )
 
     for file in "${dotfiles[@]}"; do

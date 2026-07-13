@@ -1,3 +1,5 @@
-conf.d/
-completions/
-fish_variables
+*
+!config.fish
+!functions/
+!functions/**
+!.gitignore
