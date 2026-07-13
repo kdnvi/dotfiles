@@ -1,5 +1,0 @@
-require("me.cmds.auto")
-require("me.cmds.utils")
-require("me.lsp")
-require("me.options")
-require("me.keymaps")
