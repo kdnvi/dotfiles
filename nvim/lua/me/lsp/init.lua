@@ -19,6 +19,22 @@ vim.lsp.config("*", {
     detached = true
 }) -- consistent behaviours across language servers
 
+vim.api.nvim_create_autocmd("LspProgress", {
+    group = vim.api.nvim_create_augroup("lsp_progress", { clear = true }),
+    callback = function(e)
+        if vim.fn.mode() == "i" then return end
+        local value = e.data.params.value
+        vim.api.nvim_echo({ { value.message or "done" } }, false, {
+            id = "lsp." .. e.data.client_id,
+            kind = "progress",
+            source = "vim.lsp",
+            title = value.title,
+            status = value.kind ~= "end" and "running" or "success",
+            percent = value.percentage,
+        })
+    end -- language server progress
+})
+
 -- server configs, usually just launch cmd, applicable filetypes and root marker
 -- some specific language settings can be applied too
 require("me.lsp.clangd")

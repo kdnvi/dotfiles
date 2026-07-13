@@ -45,7 +45,7 @@ vim.api.nvim_create_autocmd("BufReadCmd", {
 })
 
 local session = common.get_session_filepath()
-if session and vim.uv.fs_stat(session) then
+if session then
     vim.api.nvim_create_autocmd("BufWritePost", {
         group = vim.api.nvim_create_augroup("session_auto_save", { clear = true }),
         pattern = "*",
@@ -54,6 +54,6 @@ if session and vim.uv.fs_stat(session) then
     vim.api.nvim_create_autocmd("VimEnter", {
         group = vim.api.nvim_create_augroup("session_auto_load", { clear = true }),
         pattern = "*", nested = true,
-        callback = function() vim.cmd.source(session) end
+        callback = function() if vim.uv.fs_stat(session) then vim.cmd.source(session) end end
     })
 end -- don't sessionize when opening specific file

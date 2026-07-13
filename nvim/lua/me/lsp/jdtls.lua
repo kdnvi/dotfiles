@@ -46,12 +46,12 @@ vim.lsp.config("jdtls", {
                 runtimes = {
                     {
                         name = "JavaSE-11",
-                        path = os.getenv("JDK11"),
-                        default = true
+                        path = os.getenv("JDK11")
                     },
                     {
                         name = "JavaSE-17",
-                        path = os.getenv("JDK17")
+                        path = os.getenv("JDK17"),
+                        default = true
                     },
                     {
                         name = "JavaSE-21",
