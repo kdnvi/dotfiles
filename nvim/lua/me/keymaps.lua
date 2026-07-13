@@ -15,7 +15,7 @@ end -- result can be accessible through qf list
 map("n", "<Space>f", [[:find ]])
 map("n", "<Space>F", [[:find <C-r><C-w><C-z>]])
 map("n", "<C-Space>", [[:ls t<CR>]])
-map("n", "<C-j>", [[:edit %:.:h<C-z>]])
+map("n", "<C-j>", [[:edit %:.:h<C-z><C-z>]])
 map("n", "-", "<C-^>")
 
 -- copy to system clipboard
