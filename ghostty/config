@@ -1,4 +1,3 @@
-theme=Monokai Classic
 font-feature=-calt,-liga,-dlig
 font-family=Ubuntu Sans Mono
 font-thicken=true
@@ -8,4 +7,6 @@ window-padding-x=0
 window-padding-y=0
 maximize=true
 shell-integration-features=no-cursor
+window-theme=system
 macos-option-as-alt=true
+macos-titlebar-style=native
