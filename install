@@ -4,7 +4,6 @@ set -eu
 link_dotfiles() {
     echo '> creating essential dirs'
     mkdir -p "${XDG_CONFIG_HOME:-"$HOME/.config"}"
-    mkdir -p ~/repos ~/personal
 
     echo '> linking dotfiles'
     ln -sfn $(pwd)/ghostty ~/.config/ghostty
@@ -17,11 +16,11 @@ link_dotfiles() {
 
 setup_linux() {
     echo '> installing essential packages'
-    sudo apt-get update && sudo apt-get install -y curl git tmux fish watch neovim tree ncdu ripgrep jq
+    sudo apt-get update && sudo apt-get install -y curl git fish watch neovim tree ncdu htop ripgrep jq
     sudo snap install ghostty --classic
 }
 
-setup_macos() {
+setup_mac() {
     xcode-select -p >/dev/null 2>&1 || { echo '> installing command line tools for xcode'; xcode-select --install; }
     command -v brew >/dev/null 2>&1 || {
         echo '> installing homebrew'
@@ -29,7 +28,7 @@ setup_macos() {
         eval "$(/opt/homebrew/bin/brew shellenv)"
     }
     echo '> installing essential packages'
-    brew update && brew install git tmux fish watch neovim tree ncdu ripgrep jq ghostty font-ubuntu-sans-mono
+    brew update && brew install fish watch neovim tree ncdu htop ripgrep jq ghostty font-ubuntu-sans-mono
 }
 
 config_git() {
@@ -57,8 +56,8 @@ main() {
     link_dotfiles
     case $(uname -s) in
         Linux)  setup_linux ;;
-        Darwin) setup_macos ;;
-        *)      echo '! unsupported os: only linux and macos' >&2; exit 1 ;;
+        Darwin) setup_mac ;;
+        *)      echo '! unsupported os: only linux and mac' >&2; exit 1 ;;
     esac
     config_git
     config_shell
