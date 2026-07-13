@@ -1,6 +1,9 @@
 -- simple find finder using ripgrep
 _G.find_files = function(cmd_arg, _cmd_comp)
-    local out = vim.system({ "rg", "--files", "--hidden" }, { stdout = true }):wait()
+    local out = vim.system(
+        { "rg", "--files", "--smart-case", "--follow", "--hidden", "--glob=!.git" },
+        { stdout = true }
+    ):wait()
     if out.code ~= 0 then return {} end
     local files = vim.split(out.stdout or "", "\n", { plain = true, trimempty = true })
     if cmd_arg and #cmd_arg > 0 then files = vim.fn.matchfuzzy(files, cmd_arg) end

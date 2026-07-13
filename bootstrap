@@ -20,11 +20,9 @@ create_directories() {
 link_dotfiles() {
     echo 'linking dotfiles'
     local -a dotfiles=(
-        ghostty
         fish
         nvim
         .tmux.conf
-        .ripgreprc
         .psqlrc
         .gitignore
     )
@@ -66,7 +64,7 @@ setup_macos() {
     echo 'installing essential packages'
     brew update
 
-    local -a packages=(git fish watch tmux neovim tree ncdu ripgrep jq ghostty font-ubuntu-sans-mono)
+    local -a packages=(git fish watch tmux neovim tree ncdu ripgrep jq font-ubuntu-sans-mono)
     brew install "${packages[@]}"
 }
 
@@ -76,7 +74,6 @@ setup_linux() {
 
     local -a packages=(curl git fish watch tmux neovim tree ncdu ripgrep jq wl-clipboard)
     sudo apt-get install -y "${packages[@]}"
-    sudo snap install ghostty --classic
 
     if command -v gsettings &> /dev/null; then
         echo 'disable dash to dock hot-keys on ubuntu'
