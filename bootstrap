@@ -71,41 +71,6 @@ setup_linux() {
     fi # to switch workspace using Super+number instead of application
 }
 
-install_lsp() {
-    echo '> installing language runtime/package-manager'
-    if [[ $(uname -s) == Darwin ]]; then
-        brew install pipx node
-    else
-        sudo apt-get install -y clangd pipx nodejs npm
-    fi
-
-    echo '> installing pyright language server'
-    pipx install pyright
-
-    echo '> installing typescript language server'
-    npm install -g typescript-language-server
-
-    echo '> installing eclipse jdt language server'
-    local jdtls_dir="$XDG_DATA_HOME/eclipse.jdt.ls"
-    if [[ ! -d $jdtls_dir ]]; then
-        git clone https://github.com/eclipse-jdtls/eclipse.jdt.ls "$jdtls_dir"
-    else
-        git -C "$jdtls_dir" fetch --tags
-    fi
-
-    local current_tag latest_tag
-    current_tag=$(git -C "$jdtls_dir" describe --tags --exact-match 2>/dev/null || true)
-    latest_tag=$(git -C "$jdtls_dir" tag --sort=-version:refname | head -1)
-
-    if [[ $latest_tag == $current_tag ]]; then
-        echo "* jdtls already at $current_tag, skipping build"
-        return 0
-    fi
-
-    git -C "$jdtls_dir" checkout "$latest_tag"
-    "$jdtls_dir/mvnw" -f "$jdtls_dir/pom.xml" clean verify -DskipTests=true
-}
-
 configure_shell() {
     if [[ $SHELL == */fish ]]; then
         echo '* default shell is already fish'
@@ -137,7 +102,6 @@ main() {
     else
         setup_linux
     fi
-    install_lsp || echo '! install_lsp failed, continuing' >&2
     configure_shell
 }
 
