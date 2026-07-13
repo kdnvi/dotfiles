@@ -30,4 +30,3 @@ require("vim._core.ui2").enable({
 })
 vim.opt.termguicolors = false
 vim.cmd.colorscheme("unokai")
-vim.opt.keywordprg = ":help"
