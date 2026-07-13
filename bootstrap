@@ -65,7 +65,7 @@ setup_macos() {
     brew update
 
     local -a packages=(
-        wget git fish watch cmake ninja tmux tree ncdu ripgrep jq ghostty
+        wget git fish watch cmake ninja tmux tree ncdu ripgrep jq ghostty font-ubuntu-sans-mono
     )
     brew install "${packages[@]}"
 }

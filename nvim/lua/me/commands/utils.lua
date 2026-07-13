@@ -22,3 +22,10 @@ user_command("ClearSession", function()
     assert(os.remove(sfile), "failed to remove session file: " .. sfile)
     notify("removed session file: " .. sfile, log.INFO)
 end, { nargs = 0, desc = "cleanup session file" })
+
+user_command("Blame", function()
+    local line = api.nvim_win_get_cursor(0)[1]
+    local start = math.max(1, line - 11)
+    local finish = line + 9
+    vim.cmd(string.format("!git blame -L %d,%d %%", start, finish))
+end, { nargs = 0, desc = "git blame around current line" })

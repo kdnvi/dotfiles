@@ -126,7 +126,7 @@ local function jdb_toggle_breakpoint()
 
     if not jdb.breakpoints[key] then
         local mark_id = api.nvim_buf_set_extmark(buf, ns, line - 1, 0, {
-            sign_text = "B",
+            sign_text = "●",
             sign_hl_group = "DiagnosticError",
         })
         jdb.breakpoints[key] = { buf = buf, mark = mark_id }
