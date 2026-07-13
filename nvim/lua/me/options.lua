@@ -14,10 +14,8 @@ set.title = true
 set.visualbell = true
 set.cursorline = true
 set.number = true
-set.showbreak = "+++ "
 set.list = true
-set.termguicolors = false
-vim.cmd.colorscheme("seoul256")
+set.showbreak = "+++ "
 set.fillchars:append({ vert = "|" })
 vim.filetype.add({
     extension = { psql = "sql", mdc = "markdown" },
