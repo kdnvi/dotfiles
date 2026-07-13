@@ -1,19 +1,4 @@
 local M = {}
-function M.get_active_lsp(name)
-    local bufnr = vim.api.nvim_get_current_buf()
-    local filters = { name = name }
-    local client = vim.lsp.get_clients(filters)[1]
-
-    if not client then
-        filters["bufnr"] = bufnr
-        vim.wait(5000, function() return next(vim.lsp.get_clients(filters)) ~= nil end)
-        client = vim.lsp.get_clients(filters)[1]
-    end
-
-    assert(client, string.format("must have a [%s] client configured", name))
-    return client, bufnr
-end
-
 function M.get_session_filepath()
     if vim.fn.argc() > 0 then return nil end
     -- returns nil as we want silent exit
@@ -30,5 +15,20 @@ function M.get_session_filepath()
         vim.uv.fs_mkdir(sessions_dir, 493) -- 0755
     end -- first start only
     return string.format("%s/%s.vim", sessions_dir, name)
+end
+
+function M.get_active_lsp(name)
+    local bufnr = vim.api.nvim_get_current_buf()
+    local filters = { name = name }
+    local client = vim.lsp.get_clients(filters)[1]
+
+    if not client then
+        filters["bufnr"] = bufnr
+        vim.wait(5000, function() return next(vim.lsp.get_clients(filters)) ~= nil end)
+        client = vim.lsp.get_clients(filters)[1]
+    end
+
+    assert(client, string.format("must have a [%s] client configured", name))
+    return client, bufnr
 end
 return M

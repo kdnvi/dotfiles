@@ -28,34 +28,18 @@ vim.lsp.config("jdtls", {
         { "mvnw", "gradlew", "settings.gradle", "settings.gradle.kts", ".git" },
         { "build.xml", "pom.xml", "build.gradle", "build.gradle.kts" }
     },
+    -- see https://github.com/eclipse-jdtls/eclipse.jdt.ls/wiki/Running-the-JAVA-LS-server-from-the-command-line#initialize-request
     settings = {
-        -- see https://github.com/eclipse-jdtls/eclipse.jdt.ls/wiki/Running-the-JAVA-LS-server-from-the-command-line#initialize-request
         java = {
             autobuild = { enabled = false },
-            codeGeneration = {
-                generateComments = true,
-                useBlocks = true
-            },
+            codeGeneration = { generateComments = true, useBlocks = true },
             completion = { enabled = true, overwrite = true },
             configuration = {
-                maven = {
-                    downloadSources = true,
-                    updateSnapshots = true
-                },
+                maven = { downloadSources = true, updateSnapshots = true },
                 runtimes = {
-                    {
-                        name = "JavaSE-17",
-                        path = os.getenv("JDK17"),
-                        default = true
-                    },
-                    {
-                        name = "JavaSE-21",
-                        path = os.getenv("JDK21")
-                    },
-                    {
-                        name = "JavaSE-25",
-                        path = os.getenv("JDK25")
-                    }
+                    { name = "JavaSE-17", path = os.getenv("JDK17"), default = true },
+                    { name = "JavaSE-21", path = os.getenv("JDK21") },
+                    { name = "JavaSE-25", path = os.getenv("JDK25") }
                 },
                 updateBuildConfiguration = "disabled"
             },
@@ -65,12 +49,7 @@ vim.lsp.config("jdtls", {
             maxConcurrentBuilds = 1,
             signatureHelp = { enabled = true },
             saveActions = { organizeImports = true },
-            sources = {
-                organizeImports = {
-                    starThreshold = 9999,
-                    staticStarThreshold = 9999
-                }
-            },
+            sources = { organizeImports = { starThreshold = 9999, staticStarThreshold = 9999 } },
             symbols = { includeSourceMethodDeclarations = true },
             telemetry = { enabled = false }
         }

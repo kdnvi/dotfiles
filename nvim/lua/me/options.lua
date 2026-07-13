@@ -16,7 +16,7 @@ vim.opt.showbreak = "+++ "
 vim.opt.wildoptions:append("fuzzy")
 vim.opt.completeopt:append("fuzzy")
 vim.filetype.add({
-    extension = { psql = "sql", mdc = "markdown" },
+    extension = { psql = "sql" },
     pattern = { [".*%.log.*"] = "messages" }
 })
 vim.g.loaded_node_provider = 0
