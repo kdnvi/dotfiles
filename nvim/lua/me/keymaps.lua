@@ -14,7 +14,7 @@ end -- result can be accessible through qf list
 -- some proper ways to browse/search
 map("n", "<Space>f", [[:find ]])
 map("n", "<Space>F", [[:find <C-r><C-w><C-z>]])
-map("n", "<C-Space>", [[:ls t<CR>:buffer ]])
+map("n", "<C-Space>", [[:ls t<CR>]])
 map("n", "<C-j>", [[:edit %:.:h<C-z>]])
 map("n", "-", "<C-^>")
 

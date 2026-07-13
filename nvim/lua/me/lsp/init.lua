@@ -5,7 +5,7 @@ local lsp = vim.lsp
 vim.diagnostic.config({ virtual_text = true, underline = true })
 lsp.config("*", {
     on_attach = function(client, bufnr)
-        lsp.semantic_tokens.enable(true)
+        lsp.semantic_tokens.enable(false)
         lsp.completion.enable(true, client.id, bufnr, { autotrigger = false })
         lsp.inlay_hint.enable(true)
 

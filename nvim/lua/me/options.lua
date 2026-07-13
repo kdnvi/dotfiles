@@ -17,11 +17,13 @@ set.showbreak = "+++ "
 set.visualbell = true
 set.cursorline = true
 set.number = true
+set.termguicolors = false
+vim.cmd.colorscheme("wildcharm")
 vim.filetype.add({
     extension = { psql = "sql", mdc = "markdown" },
     pattern = { [".*%.log.*"] = "messages" }
 })
-require("vim._core.ui2").enable({})
+require("vim._core.ui2").enable({ msg = { target = "cmd" } })
 g.loaded_node_provider = 0
 g.loaded_perl_provider = 0
 g.loaded_python3_provider = 0
