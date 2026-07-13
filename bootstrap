@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-# supported: macos (homebrew) and debian/ubuntu linux
-# linux server: ./bootstrap --minimal
 set -euo pipefail
 
 readonly XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
@@ -9,27 +7,15 @@ readonly XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
 readonly XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
 readonly DOTDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-readonly -a _DESKTOP_PACKAGES=(fish watch neovim tree ncdu ripgrep jq)
-readonly -a _GIT_CONFIG=(
-    diff.tool:nvimdiff
-    merge.tool:nvimdiff
-    mergetool.keepBackup:false
-    pull.rebase:true
-    push.autoSetupRemote:true
-    core.excludesFile:$HOME/.gitignore
-)
-
 # fancy stuff skipped in minimal mode
 MINIMAL=0
 _minimal() { [[ $MINIMAL -eq 1 ]]; }
 
-parse_args() {
-    for arg in "$@"; do
-        case $arg in
-            --minimal) MINIMAL=1 ;;
-            *) echo "! unknown argument: $arg" >&2; exit 1 ;;
-        esac
-    done
+mkdirs() {
+    echo '> creating essential dirs'
+    local -a xdg_dirs=("$XDG_DATA_HOME" "$XDG_CONFIG_HOME" "$XDG_STATE_HOME" "$XDG_CACHE_HOME")
+    local -a home_dirs=(repos personal)
+    mkdir -p "${xdg_dirs[@]}" "${home_dirs[@]/#/$HOME/}"
 }
 
 _install_dotfile() {
@@ -43,20 +29,13 @@ _install_dotfile() {
     if _minimal; then cp -fp "$src" "$dst"; else ln -sfn "$src" "$dst"; fi
 }
 
-mkdirs() {
-    echo '> creating essential dirs'
-    local -a xdg_dirs=("$XDG_DATA_HOME" "$XDG_CONFIG_HOME" "$XDG_STATE_HOME" "$XDG_CACHE_HOME")
-    local -a home_dirs=(repos personal)
-    mkdir -p "${xdg_dirs[@]}" "${home_dirs[@]/#/$HOME/}"
-}
-
 link_dotfiles() {
     if _minimal; then
         echo '> copying config files'
         _install_dotfile .tmux.conf
         _install_dotfile nvim/init.vim "$HOME/.vimrc"
         _install_dotfile .psqlrc
-        return
+        return 0
     fi
 
     echo '> linking dotfiles'
@@ -74,7 +53,7 @@ setup_macos() {
         eval "$(/opt/homebrew/bin/brew shellenv)"
     }
 
-    local -a packages=(git tmux "${_DESKTOP_PACKAGES[@]}" ghostty font-ubuntu-sans-mono)
+    local -a packages=(git tmux fish watch neovim tree ncdu ripgrep jq ghostty font-ubuntu-sans-mono)
     echo '> installing essential packages'
     brew update && brew install "${packages[@]}"
 }
@@ -83,7 +62,7 @@ setup_linux() {
     sudo apt-get update && sudo apt-get upgrade -y
 
     local -a packages=(curl git tmux)
-    _minimal || packages+=("${_DESKTOP_PACKAGES[@]}")
+    _minimal || packages+=(fish watch neovim tree ncdu ripgrep jq)
 
     echo "> installing essential packages$(_minimal && echo ' (minimal)')"
     sudo apt-get install -y "${packages[@]}"
@@ -93,10 +72,12 @@ setup_linux() {
 configure_git() {
     _minimal && return 0
     echo '> configuring git'
-    local setting
-    for setting in "${_GIT_CONFIG[@]}"; do
-        git config --global "${setting%%:*}" "${setting#*:}"
-    done
+    git config --global core.excludesFile "$HOME/.gitignore"
+    git config --global push.autoSetupRemote true
+    git config --global pull.rebase true
+    git config --global diff.tool nvimdiff
+    git config --global merge.tool nvimdiff
+    git config --global mergetool.keepBackup false
 }
 
 configure_shell() {
@@ -112,20 +93,38 @@ configure_shell() {
     echo '* please log out and log back in for shell change to take effect'
 }
 
+parse_args() {
+    for arg in "$@"; do
+        case $arg in
+            --minimal|-m)
+                [[ $(uname -s) == Linux ]] || { echo '! --minimal is only supported on linux' >&2; exit 1; }
+                MINIMAL=1
+                ;;
+            --help|-h)
+                cat <<EOF >&2
+usage: $(basename "$0") [-m]
+-m, --minimal   minimal linux setup (copy configs, base packages only)
+-h, --help      show this help
+EOF
+                exit 0
+                ;;
+            *)
+                echo "! unknown argument: $arg" >&2
+                echo "try '$(basename "$0") --help'" >&2
+                exit 1
+                ;;
+        esac
+    done
+}
+
 main() {
     parse_args "$@"
-    if _minimal && [[ $(uname -s) != Linux ]]; then
-        echo '! --minimal is only supported on linux' >&2
-        exit 1
-    fi
-
     mkdirs && link_dotfiles
     case $(uname -s) in
         Darwin) setup_macos ;;
         Linux)  setup_linux ;;
-        *)      echo '! unsupported os: only macos and linux are supported' >&2; exit 1 ;;
+        *)      echo '! unsupported os: only macos and linux' >&2; exit 1 ;;
     esac
-
     configure_git
     configure_shell
 }
