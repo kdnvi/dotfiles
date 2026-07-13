@@ -1,4 +1,4 @@
-function projectile --description "switch to a tmux session matching pattern, or create one"
+function projectile --description "switch to a tmux session/window matching pattern, or create one"
     set -l pattern $argv[1]
     if test -z "$pattern"
         echo "usage: $(status basename) <pattern>"
@@ -7,27 +7,34 @@ function projectile --description "switch to a tmux session matching pattern, or
     end # ensure pattern is specified
 
     set -l matched (tmux list-sessions 2>/dev/null | grep "$pattern")
-    if test -z "$matched"
-        set -l dir (find "$HOME/repos" "$HOME/personal" -maxdepth 3 -type d -iname "$pattern*" 2>/dev/null | head -n 1)
-        if test -z "$dir"
-            tmux display-message "no project found matching '$pattern'"
-            return 0
-        end
-
-        set -l name (basename "$dir")
-        tmux has-session -t "$name" 2>/dev/null
-        if test $status -ne 0
-            tmux new-session -s "$name" -d -c "$dir"
-        end # previous command failed
-
-        tmux switch-client -t "$name"
+    if test -n "$matched"
+        # from right to left, from inner brackets to outer:
+        # - split by newline, get the first part
+        # - split by ':' at most 1 (-m 1)
+        # - the first part is session name
+        set -l session_name (string split -m 1 ":" (string split \n -- $matched)[1])[1]
+        tmux switch-client -t "$session_name"
         return 0
-    end
+    end # try matching session name first
 
-    # from right to left, from inner brackets to outer:
-    # - split by newline, get the first part
-    # - split by ':' at most 1 (-m 1)
-    # - the first part is session name
-    set -l session_name (string split -m 1 ":" (string split \n -- $matched)[1])[1]
-    tmux switch-client -t "$session_name"
+    set -l matched (tmux list-windows -a -F "#{session_name}:#{window_index}:#{window_name}" 2>/dev/null | grep "$pattern")
+    if test -n "$matched"
+        set -l target (string split -m 2 ":" (string split \n -- $matched)[1])
+        tmux switch-client -t "$target[1]:$target[2]"
+        return 0
+    end # fallback to matching window name
+
+    set -l dir (find "$HOME/repos" "$HOME/personal" -maxdepth 3 -type d -iname "$pattern*" 2>/dev/null | head -n 1)
+    if test -z "$dir"
+        tmux display-message "no project found matching '$pattern'"
+        return 0
+    end # no session or window matched — try finding a project directory
+
+    set -l name (basename "$dir")
+    tmux has-session -t "$name" 2>/dev/null
+    if test $status -ne 0
+        tmux new-session -s "$name" -d -c "$dir"
+    end # previous command failed
+
+    tmux switch-client -t "$name"
 end

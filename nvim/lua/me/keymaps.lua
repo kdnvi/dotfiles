@@ -15,7 +15,7 @@ end -- result can be accessible through qf list
 -- some proper ways to browse/search
 map("n", "<Space>f", [[:find ]])
 map("n", "<Space>b", [[:ls<CR>:buffer ]])
-map("n", "<Space><Space>", "<C-^>")
+map("n", "<C-j>", "<C-^>")
 
 -- copy to system clipboard, all motions after `<C-w>y` work the same as normal `y`
 map({ "n", "v" }, "<C-w>y", [["+y]])
