@@ -17,8 +17,21 @@ create_directories() {
     mkdir -p "$HOME/personal"
 }
 
+is_linux_server() {
+    [[ $(uname -s) != Linux ]] && return 1
+    [[ -z "${DISPLAY:-}" && -z "${WAYLAND_DISPLAY:-}" && -z "${XDG_CURRENT_DESKTOP:-}" ]]
+}
+
 link_dotfiles() {
     echo '> linking dotfiles'
+
+    if is_linux_server; then
+        ln -sfn "$DOTDIR/.tmux.conf" "$HOME/.tmux.conf"
+        ln -sfn "$DOTDIR/nvim/init.vim" "$HOME/.vimrc"
+        ln -sfn "$DOTDIR/.psqlrc" "$HOME/.psqlrc"
+        return 0
+    fi
+
     local -a dotfiles=(ghostty fish nvim .tmux.conf .psqlrc .gitignore)
     for file in "${dotfiles[@]}"; do
         if [[ -d $DOTDIR/$file ]]; then
@@ -29,15 +42,6 @@ link_dotfiles() {
             echo "! file not found: $DOTDIR/$file" >&2
         fi # probably will never happen; should not be
     done
-}
-
-configure_git() {
-    echo '> configuring git'
-    git config --global diff.tool nvimdiff
-    git config --global merge.tool nvimdiff
-    git config --global mergetool.keepBackup false
-    git config --global pull.rebase true
-    git config --global core.excludesFile "$HOME/.gitignore"
 }
 
 setup_macos() {
@@ -60,6 +64,13 @@ setup_macos() {
 
 setup_linux() {
     sudo apt-get update && sudo apt-get upgrade -y
+    if is_linux_server; then
+        local -a packages=(curl git tmux)
+        echo '> installing essential packages (no desktop environment)'
+        sudo apt-get install -y "${packages[@]}"
+        return 0
+    fi
+
     local -a packages=(curl git fish watch tmux neovim tree ncdu ripgrep jq)
     echo '> installing essential packages'
     sudo apt-get install -y "${packages[@]}"
@@ -69,6 +80,15 @@ setup_linux() {
         echo '> disable dash to dock hot-keys on ubuntu'
         gsettings set org.gnome.shell.extensions.dash-to-dock hot-keys false
     fi # to switch workspace using Super+number instead of application
+}
+
+configure_git() {
+    echo '> configuring git'
+    git config --global diff.tool nvimdiff
+    git config --global merge.tool nvimdiff
+    git config --global mergetool.keepBackup false
+    git config --global pull.rebase true
+    git config --global core.excludesFile "$HOME/.gitignore"
 }
 
 configure_shell() {
@@ -94,15 +114,22 @@ configure_shell() {
 }
 
 main() {
-    create_directories
+    if ! is_linux_server; then
+        create_directories
+    fi
+
     link_dotfiles
-    configure_git
+
     if [[ $(uname -s) == Darwin ]]; then
         setup_macos
     else
         setup_linux
     fi
-    configure_shell
+
+    if ! is_linux_server; then
+        configure_git
+        configure_shell
+    fi
 }
 
 main "$@"
