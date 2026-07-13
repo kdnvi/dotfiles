@@ -83,7 +83,7 @@ hi! link @keyword.modifier                         Keyword
 hi! link @keyword.operator                         Operator
 hi! link @keyword.repeat                           Repeat
 hi! link @keyword.return                           Keyword
-hi! link @keyword.type                             Type
+hi! link @keyword.type                             Keyword
 hi! link @preproc                                  PreProc
 hi! link @conditional                              Conditional
 hi! link @conditional.ternary                      Conditional
