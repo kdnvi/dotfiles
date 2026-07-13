@@ -1,7 +1,7 @@
 vim.diagnostic.config{virtual_text=true, underline=true}
 vim.lsp.config('*', {
     on_attach = function(client, bufnr)
-        vim.lsp.semantic_tokens.enable(true)
+        vim.lsp.semantic_tokens.enable(false)
         vim.lsp.completion.enable(true, client.id, bufnr, {autotrigger=true})
         vim.lsp.inlay_hint.enable(true)
 
@@ -17,6 +17,14 @@ vim.lsp.config('*', {
 -- server configs, usually just launch cmd, applicable filetypes and root marker
 -- some specific language settings can also be applied
 -- can be disabled/terminated by [:lsp disable/stop] command
+vim.lsp.config('clangd', {
+    cmd = {'clangd', '--background-index'}, filetypes = {'c', 'cpp', 'objc', 'objcpp', 'cuda'},
+    root_markers = {'.clangd', '.clang-tidy', '.clang-format', 'compile_commands.json', 'compile_flags.txt', 'configure.ac', '.git'},
+    capabilities = {offsetEncoding = {'utf-8', 'utf-16'}, textDocument = {completion = {editsNearCursor=true}}}
+})
+vim.lsp.enable('clangd')
+
+-- python
 vim.lsp.config('pyright', {
     cmd = {'pyright-langserver', '--stdio'}, filetypes = {'python'},
     root_markers = {'pyrightconfig.json', 'pyproject.toml', 'setup.py', 'setup.cfg', 'requirements.txt', 'Pipfile', '.git'},
@@ -35,7 +43,7 @@ vim.lsp.enable('tsserver')
 local java_home = os.getenv'JDK25'
 if not java_home then return end -- TODO: required JDK version might be changed in the future
 
-local jdtls_dir = os.getenv'XDG_DATA_HOME'..'/eclipse.jdt.ls/org.eclipse.jdt.ls.product/target/repository'
+local jdtls_dir = vim.fn.stdpath'data'..'/eclipse.jdt.ls/org.eclipse.jdt.ls.product/target/repository'
 local launcher_jar = vim.fs.find(function(name)
     return name:match[[^org%.eclipse%.equinox%.launcher_.+%.jar$]]
 end, {path=jdtls_dir..'/plugins', limit=1})[1]
@@ -54,7 +62,7 @@ vim.lsp.config('jdtls', {
         '--add-opens=java.base/java.lang=ALL-UNNAMED',
         '-jar', launcher_jar,
         '-configuration', jdtls_dir..'/'..(vim.uv.os_uname().sysname=='Darwin'and'config_mac_arm'or'config_linux'),
-        '-data', os.getenv'XDG_CACHE_HOME'..'/jdtls/ws/'..vim.fs.basename(vim.uv.cwd())
+        '-data', vim.fn.stdpath'cache'..'/jdtls/ws/'..vim.fs.basename(vim.uv.cwd())
     },
     filetypes = {'java'},
     root_markers = {

@@ -1,65 +1,51 @@
 #!/bin/sh
 set -eu
 
-link_dotfiles() {
-    echo '> creating essential dirs'
-    mkdir -p "${XDG_CONFIG_HOME:-"$HOME/.config"}"
-    mkdir -p ~/repos ~/personal
+echo '> creating essential dirs'
+mkdir -p ~/.config ~/repos ~/personal/notes
 
-    echo '> linking dotfiles'
-    ln -sfn $(pwd)/fish ~/.config/fish
-    ln -sfn $(pwd)/nvim ~/.config/nvim
-    ln -sfn $(pwd)/.gitignore ~/.gitignore
-    ln -sfn $(pwd)/.psqlrc ~/.psqlrc
-}
+echo '> linking dotfiles'
+ln -sfn $(pwd)/ghostty ~/.config/ghostty
+ln -sfn $(pwd)/fish ~/.config/fish
+ln -sfn $(pwd)/nvim ~/.config/nvim
+ln -sfn $(pwd)/.tmux.conf ~/.tmux.conf
+ln -sfn $(pwd)/.gitignore ~/.gitignore
+ln -sfn $(pwd)/.psqlrc ~/.psqlrc
 
-setup_linux() {
-    echo '> installing essential packages'
-    sudo apt-get update && sudo apt-get install -y curl git fish watch neovim tree ncdu htop ripgrep jq
-}
+echo '> installing essential packages'
+case $(uname -s) in
+    Linux)
+        sudo apt-get update
+        sudo apt-get install -y curl git fish tmux neovim fzf ripgrep watch tree ncdu htop jq fonts-noto-mono
+        sudo snap install ghostty --classic
+        ;;
+    Darwin)
+        xcode-select -p >/dev/null 2>&1 || { echo '> installing command line tools for xcode'; xcode-select --install; }
+        command -v brew >/dev/null 2>&1 || {
+            echo '> installing homebrew'
+            /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+            eval "$(/opt/homebrew/bin/brew shellenv)"
+        }
+        brew update && brew install fish tmux neovim fzf ripgrep watch tree ncdu htop jq ghostty font-noto-sans-mono
+        ;;
+    *)  echo '! unsupported os: only linux and mac' >&2; exit 1 ;;
+esac
 
-setup_mac() {
-    xcode-select -p >/dev/null 2>&1 || { echo '> installing command line tools for xcode'; xcode-select --install; }
-    command -v brew >/dev/null 2>&1 || {
-        echo '> installing homebrew'
-        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-        eval "$(/opt/homebrew/bin/brew shellenv)"
-    }
-    echo '> installing essential packages'
-    brew update && brew install fish watch neovim tree ncdu htop ripgrep jq font-ubuntu-sans-mono
-}
+echo '> configuring git'
+git config --global core.excludesFile ~/.gitignore
+git config --global push.autoSetupRemote true
+git config --global pull.rebase true
+git config --global diff.tool nvimdiff
+git config --global merge.tool nvimdiff
+git config --global mergetool.keepBackup false
 
-config_git() {
-    echo '> configuring git'
-    git config --global core.excludesFile ~/.gitignore
-    git config --global push.autoSetupRemote true
-    git config --global pull.rebase true
-    git config --global diff.tool nvimdiff
-    git config --global merge.tool nvimdiff
-    git config --global mergetool.keepBackup false
-}
+[ "${SHELL##*/}" = fish ] && { echo '* default shell is already fish'; exit 0; }
+fish_path=$(command -v fish || true)
+[ -n "$fish_path" ] || { echo '! fish not found in path' >&2; exit 1; }
 
-config_shell() {
-    [ "${SHELL##*/}" = fish ] && { echo '* default shell is already fish'; return 0; }
-    fish_path=$(command -v fish || true)
-    [ -n "$fish_path" ] || { echo '! fish not found in path' >&2; return 1; }
+echo '> changing default shell to fish'
+grep -qxF "$fish_path" /etc/shells || echo "$fish_path" | sudo tee -a /etc/shells
 
-    echo '> changing default shell to fish'
-    grep -qxF "$fish_path" /etc/shells || echo "$fish_path" | sudo tee -a /etc/shells
-    chsh -s "$fish_path"
-    echo '* please log out and log back in for shell change to take effect'
-}
-
-main() {
-    link_dotfiles
-    case $(uname -s) in
-        Linux)  setup_linux ;;
-        Darwin) setup_mac ;;
-        *)      echo '! unsupported os: only linux and mac' >&2; exit 1 ;;
-    esac
-    config_git
-    config_shell
-}
-
-main "$@"
+chsh -s "$fish_path"
+echo '* please log out and log back in for shell change to take effect'
 # vim: ft=sh

@@ -1,25 +1,17 @@
-set -gx XDG_CONFIG_HOME "$HOME/.config"
-set -gx XDG_DATA_HOME "$HOME/.local/share"
-set -gx XDG_STATE_HOME "$HOME/.local/state"
-set -gx XDG_CACHE_HOME "$HOME/.cache"
-
 fish_add_path "$HOME/.local/bin"
 if command -q brew; fish_add_path /opt/homebrew/bin; end
 if status is-interactive
-    set -gx EDITOR nvim
-    set -gx VISUAL nvim
-
     set -g __fish_git_prompt_showdirtystate 'yes'
     set -g __fish_git_prompt_showstashstate 'yes'
     set -g __fish_git_prompt_showupstream 'yes'
 
+    set -gx EDITOR nvim
+    set -gx VISUAL nvim
+    set -gx FZF_DEFAULT_COMMAND 'rg --files -. -L -S -g=!.git'
+
     abbr -a gs 'git status'
     abbr -a gd 'git diff'
-    abbr -a gds 'git diff --staged'
     abbr -a ga 'git add'
-    abbr -a gaa 'git add --all'
-    abbr -a gap 'git add --patch'
-    abbr -a gac 'git add .'
     abbr -a gr 'git restore'
     abbr -a gR 'git reset'
     abbr -a --set-cursor gc 'git commit -m "%"'
