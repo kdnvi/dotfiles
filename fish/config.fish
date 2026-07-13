@@ -4,6 +4,7 @@ set -gx XDG_STATE_HOME "$HOME/.local/state"
 set -gx XDG_CACHE_HOME "$HOME/.cache"
 
 fish_add_path "$HOME/.local/bin"
+if command -q brew; fish_add_path /opt/homebrew/bin; end
 if status is-interactive
     set -gx EDITOR nvim
     set -gx VISUAL nvim

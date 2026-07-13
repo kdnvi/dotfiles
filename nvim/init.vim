@@ -50,6 +50,7 @@ if has('nvim')
   let g:loaded_matchit = 1
   set undofile completeopt+=menuone,noselect
   set inccommand=split cursorline
+  silent! colorscheme unokai
 
   " :find command should search files
   func! s:findfiles(cmdarg, _cmdcomp) abort
