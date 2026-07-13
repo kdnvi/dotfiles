@@ -6,12 +6,11 @@ set ignorecase showmatch
 set cursorline title
 set wildoptions+=fuzzy
 set completeopt+=fuzzy
-set laststatus=1 splitright list
+set laststatus=1 splitright
+set list
 let &showbreak = '+++ '
-set notermguicolors background=light
-colorscheme wildcharm
-hi! WinSeparator ctermbg=NONE
-hi! Normal ctermbg=NONE
+set notermguicolors
+colorscheme unokai
 
 " unload redundant providers
 let g:loaded_node_provider = 0

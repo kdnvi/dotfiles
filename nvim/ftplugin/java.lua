@@ -1,4 +1,3 @@
-local golden_ratio = 0.38
 if vim.fs.find('pom.xml', {upward=true, path='.'})[1] then
     vim.opt_local.errorformat = '[ERROR] %f:[%l\\,%v] %m'
     vim.opt_local.makeprg = 'mvn package -T 1C -am -DskipTests'
@@ -8,7 +7,7 @@ if vim.fs.find('pom.xml', {upward=true, path='.'})[1] then
         assert(vim.regex([[\(/test/\|[Tt]ests\?\.java\)]]):match_str(file_path), 'not a test file')
 
         -- generate test command
-        local height = math.floor(vim.o.lines*golden_ratio)
+        local height = math.floor(vim.o.lines*0.29)
         local test_cmd = {'belowright '..height..'split | terminal mvn test -e -DskipTests=false'}
         table.insert(test_cmd, ' -Dgroups=medium,small')
         table.insert(test_cmd, ' -Dlogback.configurationFile=')
@@ -73,7 +72,7 @@ local function jdb_attach()
     local port = tonumber(vim.fn.input('port: ', '5005'))
     assert(port, 'port must be specified')
 
-    local width = math.floor(vim.o.columns*golden_ratio)
+    local width = math.floor(vim.o.columns*0.38)
     vim.cmd('belowright '..width..'vsplit new')
     jdb.chan = vim.fn.jobstart({
         'jdb', '-connect', string.format('com.sun.jdi.SocketAttach:hostname=%s,port=%d', host, port)
