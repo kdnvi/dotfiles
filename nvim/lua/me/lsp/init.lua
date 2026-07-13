@@ -9,6 +9,22 @@ lsp.config("*", {
         lsp.completion.enable(true, client.id, bufnr, { autotrigger = false })
         lsp.inlay_hint.enable(true)
 
+        -- language server progress
+        vim.api.nvim_create_autocmd("LspProgress", {
+            buffer = bufnr,
+            callback = function(e)
+                local value = e.data.params.value or {}
+                vim.api.nvim_echo({ { value.message or "done" } }, false, {
+                    id = "lsp." .. e.data.client_id,
+                    kind = "progress",
+                    source = "vim.lsp",
+                    title = value.title,
+                    status = value.kind ~= "end" and "running" or "success",
+                    percent = value.percentage,
+                })
+            end
+        })
+
         -- see `:help vim.lsp.*` for documentation on any of the below functions
         local opts = { buffer = bufnr }
         map("n", "gi", lsp.buf.implementation, opts)
