@@ -16,7 +16,7 @@ if has('nvim')
   let g:loaded_python3_provider = 0
   let g:loaded_ruby_provider = 0
   set completeopt+=menuone,noselect
-  colorscheme unokai
+  colorscheme monokai
 endif
 
 " :find command should search files
@@ -76,6 +76,7 @@ autocmd FileType vim setl tabstop=2
 if has('nvim')
   autocmd TermOpen * nnoremap <buffer> q <Cmd>bd<CR>
   autocmd TextYankPost * silent! lua vim.hl.on_yank()
+  autocmd FileType * silent! lua vim.treesitter.start()
 
   " browse git modified/untracked files
   func! s:gitfiles(arglead) abort
