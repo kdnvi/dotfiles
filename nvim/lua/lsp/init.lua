@@ -9,8 +9,23 @@ vim.lsp.config('*', {
         vim.keymap.set('n', 'gru', function()
             vim.lsp.buf.references({includeDeclaration=false})
         end, {buffer=bufnr}) -- show usages only
+
+        vim.api.nvim_create_autocmd('LspProgress', {
+            group=vim.api.nvim_create_augroup('lsp_progress', {clear=true}),
+            buffer=bufnr, callback=function(e)
+                if vim.api.nvim_get_mode().mode ~= 'n' then return end
+                local value = e.data.params.value
+                if not value or not value.message then return end
+                vim.api.nvim_echo({{value.message}}, false, {
+                    id='lsp.'..e.data.params.token, kind='progress',
+                    source='vim.lsp', title=value.title,
+                    status=value.kind~='end'and'running'or'success',
+                    percent=value.percentage,
+                }) -- only notify on normal mode for now
+            end -- report language server progress
+        })
     end,
-    detached=true
+    detached=true,
 }) -- consistent behaviours across language servers
 
 -- server configs, usually just launch cmd, applicable filetypes and root marker
