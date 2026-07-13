@@ -1,6 +1,5 @@
 function machine_age --description "days since this machine was first set up"
     set -l install_epoch
-
     switch (uname)
         case Darwin
             # /var/db/.AppleSetupDone is created during macOS initial setup
@@ -9,15 +8,14 @@ function machine_age --description "days since this machine was first set up"
             # try filesystem birth time of / via stat
             set install_epoch (stat -c %W / 2>/dev/null)
             if test -z "$install_epoch" -o "$install_epoch" = 0
-                # fallback: /etc/machine-id is written at OS install
                 set install_epoch (stat -c %Y /etc/machine-id 2>/dev/null)
-            end
-    end
+            end # fallback: /etc/machine-id is written at OS install
+    end # keep switch-case for multiple OSes
 
     if test -z "$install_epoch"
-        echo "unknown"
+        echo "unsupported platform: "(uname)
         return 1
-    end
+    end # the rest will fallback to empty $install_epoch
 
     set -l now (date +%s)
     set -l total_days (math "floor(($now - $install_epoch) / 86400)")
@@ -33,4 +31,4 @@ function machine_age --description "days since this machine was first set up"
     set -a parts {$days}d
 
     echo (string join "" $parts)
-end
+end # output should look like XyYmZd

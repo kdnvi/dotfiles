@@ -32,4 +32,4 @@ function projectile --description "switch to a tmux session/window matching patt
     end # previous command failed
 
     tmux switch-client -t "$name"
-end
+end # matches session first then window, otherwise create
