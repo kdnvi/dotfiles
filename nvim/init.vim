@@ -3,13 +3,16 @@ set smartcase ignorecase
 set shiftwidth=2 tabstop=2
 set expandtab shiftround
 set nomodeline undofile
-set cursorline title list
-set splitright updatetime=512
+set updatetime=512
 set wildoptions+=fuzzy
 set completeopt+=fuzzy
+set splitright relativenumber
+set cursorline title list
 let &showbreak = '+++ '
 set notermguicolors
-colorscheme unokai
+set background=light
+colorscheme wildcharm
+hi! Normal ctermbg=NONE
 
 " unload unused providers
 let g:loaded_node_provider = 0
