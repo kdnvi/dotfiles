@@ -1,6 +1,6 @@
 require("me.commands.auto")
 require("me.commands.utils")
 require("me.lsp")
-require("me.plugins")
 require("me.options")
 require("me.keymaps")
+require("me.ui.gitdiff")

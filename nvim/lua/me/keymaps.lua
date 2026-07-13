@@ -35,3 +35,5 @@ vim.api.nvim_create_autocmd("FileType", {
     pattern = "netrw",
     callback = function() map("n", "<C-c>", cmd.Rexplore, { buffer = 0 }) end
 })
+
+map("t", "<Esc><Esc>", [[<C-\><C-n>]])

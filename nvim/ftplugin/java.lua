@@ -1,13 +1,15 @@
-local setl = vim.opt_local
-local fs = vim.fs
 local api = vim.api
+local user_command = api.nvim_create_user_command
+local fs = vim.fs
+local fn = vim.fn
+local setl = vim.opt_local
 local cwd = vim.uv.cwd()
 
 if fs.find("pom.xml", { upward = true, path = "." })[1] then
     setl.errorformat = "[ERROR] %f:[%l\\,%v] %m"
     setl.makeprg = "mvn compile"
 
-    api.nvim_create_user_command("MvnTest", function(opts)
+    user_command("MvnTest", function(opts)
         local fpath = api.nvim_buf_get_name(0):sub(#cwd + 2) -- relative path
         local basename = fs.basename(fpath)
         local fname = basename:match("(.+)%.") or basename
@@ -67,3 +69,71 @@ if fs.find("pom.xml", { upward = true, path = "." })[1] then
         vim.cmd(table.concat(test_cmd))
     end, { nargs = "?", bang = true, desc = "run maven test (method); use ! to debug" })
 end -- maven
+
+-- jdb: thin wrapper for breakpoint management
+local ns = api.nvim_create_namespace("jdb_bp")
+local jdb = { chan = nil, breakpoints = {} }
+
+local function jdb_class_name()
+    local fpath = api.nvim_buf_get_name(0)
+    local class = fpath:match("/src/[^/]+/java/(.+)%.java$")
+        or fpath:match("/src/(.+)%.java$")
+    assert(class, "could not derive class name from path")
+    return class:gsub("/", ".")
+end
+
+local function jdb_send(cmd)
+    assert(jdb.chan, "jdb not running")
+    fn.chansend(jdb.chan, cmd .. "\n")
+end
+
+local function jdb_attach(host, port)
+    if jdb.chan then return end
+    host = host or "localhost"
+    port = port or 5500
+    vim.cmd("belowright 20split new")
+    jdb.chan = fn.jobstart(
+        string.format("jdb -connect com.sun.jdi.SocketAttach:hostname=%s,port=%d", host, port), {
+        term = true,
+        on_exit = function()
+            jdb.chan = nil
+            jdb.breakpoints = {}
+        end,
+    })
+    vim.cmd("startinsert")
+end
+
+local function jdb_toggle_breakpoint()
+    local class = jdb_class_name()
+    local line = api.nvim_win_get_cursor(0)[1]
+    local key = class .. ":" .. line
+    local buf = api.nvim_get_current_buf()
+
+    if jdb.breakpoints[key] then
+        jdb.breakpoints[key] = nil
+        jdb_send("clear " .. key)
+        local marks = api.nvim_buf_get_extmarks(buf, ns, { line - 1, 0 }, { line - 1, 0 }, {})
+        for _, mark in ipairs(marks) do
+            api.nvim_buf_del_extmark(buf, ns, mark[1])
+        end
+    else
+        jdb.breakpoints[key] = true
+        jdb_send("stop at " .. key)
+        api.nvim_buf_set_extmark(buf, ns, line - 1, 0, {
+            sign_text = "*",
+            sign_hl_group = "DiagnosticError",
+        })
+    end
+end
+
+user_command("Jdb", function()
+    local host = fn.input("host: ", "localhost")
+    if #host == 0 then return end
+    local port = tonumber(fn.input("port: ", "5500"))
+    if not port then return end
+    jdb_attach(host, port)
+end, { desc = "jdb attach" })
+vim.keymap.set("n", "<C-w>b", jdb_toggle_breakpoint, { buffer = true, desc = "jdb toggle breakpoint" })
+user_command("JdbClear", function()
+    api.nvim_buf_clear_namespace(0, ns, 0, -1)
+end, { desc = "clear jdb breakpoint signs in current buffer" })
