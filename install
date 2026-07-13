@@ -24,13 +24,8 @@ esac
 echo '> creating essential dirs'
 mkdir -p ~/.config ~/work ~/lab ~/side
 
-echo '> cloning/updating dotfiles'
-if [ -d "$DOTFILES_DIR/.git" ]; then
-    git -C "$DOTFILES_DIR" pull
-else
-    git clone "$REPO_URL" "$DOTFILES_DIR"
-fi
-cd "$DOTFILES_DIR"
+echo '> cloning dotfiles'
+[ -d "$DOTFILES_DIR/.git" ] || git clone "$REPO_URL" "$DOTFILES_DIR"
 
 echo '> linking dotfiles'
 ln -sfn "$DOTFILES_DIR/fish" ~/.config/fish
@@ -46,6 +41,13 @@ git config --global pull.rebase true
 git config --global diff.tool nvimdiff
 git config --global merge.tool nvimdiff
 git config --global mergetool.keepBackup false
+
+echo '> adding llm rules'
+mkdir -p ~/.cursor/rules
+for rule in "$DOTFILES_DIR"/rules/*; do
+    [ -f "$rule" ] || continue
+    ln -sfn "$rule" ~/.cursor/rules/
+done
 
 [ "${SHELL##*/}" = fish ] && { echo '* default shell is already fish'; exit 0; }
 fish_path=$(command -v fish || true)

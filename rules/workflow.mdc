@@ -1,0 +1,77 @@
+---
+description: Core workflow rules for git, research, search, and decision-making
+alwaysApply: true
+---
+
+# Workflow Rules
+
+## Git
+
+- Never commit or push code — the user handles all git commits and pushes.
+- Do not stage, commit, or push under any circumstances, even if changes look ready or the user previously approved similar actions.
+- Never run destructive git commands (force push, hard reset, `git clean`) or delete files/branches without explicit approval.
+
+## Secrets
+
+- Never commit, log, or echo secrets (.env, API keys, tokens).
+- Warn before touching files that likely contain credentials.
+
+## Scope of Changes
+
+- Keep diffs minimal — only change what the task requires.
+- Do not refactor, rename, or clean up unrelated code unless asked.
+- Do not revert or overwrite changes you did not make — preserve the user's in-progress edits.
+
+## Dependencies
+
+- Ask before adding new packages or upgrading major versions.
+- Prefer libraries already used in the project over introducing new ones.
+
+## Breaking Changes
+
+- Flag and ask before breaking public APIs, database schemas, or config formats other code depends on.
+
+## Before Proposing Changes
+
+- When unsure about implementation details, read the relevant source files first.
+- Read callers and tests too, not just the file being edited.
+- Do not guess at APIs, conventions, or behavior when the codebase can answer the question.
+
+## Documentation and Research
+
+- Prefer official documentation for libraries and frameworks.
+- Match the version in the project (package.json, go.mod, etc.) — do not assume latest.
+- If official docs are missing or unclear, consult the project's official repository (README, source, examples).
+- Do not rely on outdated blog posts or third-party summaries when official sources exist.
+
+## Generated Files
+
+- Never modify generated files (e.g. build output, lockfile artifacts, codegen output, `node_modules/`).
+- If a generated file needs to change, update the source or generator that produces it.
+
+## Searching the Codebase
+
+- Use `rg --hidden` when grepping text via the shell.
+- Add `--no-ignore` only when you specifically need to search inside ignored files (e.g. `.env.example`, vendored paths).
+- Note: Cursor's built-in Grep tool has its own behavior and may not honor these flags.
+
+```bash
+# Default search
+rg --hidden "pattern" .
+
+# Only when ignored files must be included
+rg --hidden --no-ignore "pattern" .
+```
+
+## Tests and Verification
+
+- After non-trivial changes, run relevant tests or linters when the project has them.
+- Report what you ran and the result — do not assume changes work without verification.
+- Tests do not need exhaustive coverage — focus on important logic that must not break.
+- For new code, ensure at least 60% of the important parts are covered by tests.
+
+## Decisions with Trade-offs
+
+- When a choice has meaningful trade-offs (architecture, performance, compatibility, maintenance), ask the user before proceeding.
+- Present options briefly with pros/cons; do not pick unilaterally when the decision is the user's to make.
+- Do not ask for approval on obvious, low-risk choices (naming a local variable, fixing a typo, following an existing pattern in the same file).
