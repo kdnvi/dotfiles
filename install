@@ -1,9 +1,9 @@
-#!/usr/bin/env bash
-set -euo pipefail
+#!/bin/sh
+set -eu
 
 link_dotfiles() {
     echo '> creating essential dirs'
-    mkdir -p "${XDG_CONFIG_HOME:-~/.config}"
+    mkdir -p "${XDG_CONFIG_HOME:-"$HOME/.config"}"
     mkdir -p ~/repos ~/personal
 
     echo '> linking dotfiles'
@@ -16,17 +16,17 @@ link_dotfiles() {
 }
 
 setup_linux() {
-    echo "> installing essential packages"
+    echo '> installing essential packages'
     sudo apt-get update && sudo apt-get install -y curl git tmux fish watch neovim tree ncdu ripgrep jq
     sudo snap install ghostty --classic
 }
 
 setup_macos() {
-    xcode-select -p &>/dev/null || { echo '> installing command line tools for xcode'; xcode-select --install; }
-    command -v brew &>/dev/null || {
+    xcode-select -p >/dev/null 2>&1 || { echo '> installing command line tools for xcode'; xcode-select --install; }
+    command -v brew >/dev/null 2>&1 || {
         echo '> installing homebrew'
-            /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-            eval "$(/opt/homebrew/bin/brew shellenv)"
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        eval "$(/opt/homebrew/bin/brew shellenv)"
     }
     echo '> installing essential packages'
     brew update && brew install git tmux fish watch neovim tree ncdu ripgrep jq ghostty font-ubuntu-sans-mono
@@ -43,9 +43,9 @@ config_git() {
 }
 
 config_shell() {
-    [[ $SHELL == */fish ]] && { echo '* default shell is already fish'; return 0; }
-    local fish_path=$(command -v fish)
-    [[ -n $fish_path ]] || { echo '! fish not found in path' >&2; return 1; }
+    [ "${SHELL##*/}" = fish ] && { echo '* default shell is already fish'; return 0; }
+    fish_path=$(command -v fish || true)
+    [ -n "$fish_path" ] || { echo '! fish not found in path' >&2; return 1; }
 
     echo '> changing default shell to fish'
     grep -qxF "$fish_path" /etc/shells || echo "$fish_path" | sudo tee -a /etc/shells
@@ -65,4 +65,4 @@ main() {
 }
 
 main "$@"
-# vim: ft=bash
+# vim: ft=sh
