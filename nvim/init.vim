@@ -17,8 +17,6 @@ let g:loaded_node_provider = 0
 let g:loaded_perl_provider = 0
 let g:loaded_python3_provider = 0
 let g:loaded_ruby_provider = 0
-let g:loaded_netrw = 1
-let g:loaded_netrwPlugin = 1
 
 " :find command should search files
 func! s:findfiles(cmdarg, _cmdcomp) abort
@@ -33,7 +31,8 @@ nnoremap <Space>s :vert sfind
 
 " browse buffers/files
 nnoremap <Space>o :ls t<CR>:buffer 
-nnoremap - :edit %:.:h<C-z><C-z>
+nnoremap - <Cmd>Explore<CR>
+au FileType netrw nn <buffer> <C-c> <Cmd>Rexplore<CR>
 
 " extend vim grep abilities with ripgrep
 if executable('rg')
@@ -68,11 +67,12 @@ tnoremap <Esc> <C-\><C-n>
 
 " open the quickfix window whenever a qf command is executed
 autocmd QuickFixCmdPost [^l]* cwindow
-autocmd FileType help,qf,checkhealth nn <buffer> q <Cmd>bd<CR>
+autocmd FileType help,qf,checkhealth,dap-float nn <buffer> q <Cmd>bd<CR>
 autocmd TextYankPost * silent! lua vim.hl.on_yank()
 autocmd FileType * silent! lua vim.treesitter.stop()
 autocmd FileType vim setl tabstop=2
 
-lua require('utils')
-lua require('lsp')
-lua require('session')
+lua require('me.utils')
+lua require('me.lsp')
+lua require('me.session')
+lua require('me.pack')
