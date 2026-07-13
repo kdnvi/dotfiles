@@ -68,6 +68,26 @@ setup_macos() {
     brew install "${packages[@]}"
 }
 
+build_from_source() {
+    local name="$1"
+    local target_dir="$HOME/personal/$name"
+    local repo_url="$2"
+    local build_commands="$3"
+
+    echo "building $name from source"
+    if [[ !  -d $target_dir ]]; then
+        git clone --depth 1 "$repo_url" "$target_dir"
+    else
+        echo "$name already cloned, updating..."
+        git -C "$target_dir" pull --rebase
+    fi
+
+    (
+        cd "$target_dir"
+        eval "$build_commands"
+    )
+}
+
 setup_linux() {
     echo 'installing essential packages'
     sudo apt-get update && sudo apt-get upgrade -y
@@ -83,7 +103,8 @@ setup_linux() {
 }
 
 install_neovim() {
-    fish -c "build_from_source neovim https://github.com/neovim/neovim.git 'make distclean && make CMAKE_BUILD_TYPE=RelWithDebInfo && sudo make install'"
+    build_from_source 'neovim' 'https://github.com/neovim/neovim.git' \
+        'make distclean && make CMAKE_BUILD_TYPE=RelWithDebInfo && sudo make install'
 }
 
 configure_shell() {
