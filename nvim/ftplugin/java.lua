@@ -1,14 +1,7 @@
-local setl = vim.opt_local
 local fn = vim.fn
-
-setl.shiftwidth = 4
-setl.tabstop = 4
-setl.softtabstop = 4
-setl.expandtab = true
-
 if #fn.findfile("pom.xml", ".;") > 0 then
-    setl.errorformat = "[ERROR] %f:[%l\\,%v] %m"
-    setl.makeprg = "mvn compile"
+    vim.opt_local.errorformat = "[ERROR] %f:[%l\\,%v] %m"
+    vim.opt_local.makeprg = "mvn compile"
 
     -- MvnTest current class
     local user_command = vim.api.nvim_create_user_command

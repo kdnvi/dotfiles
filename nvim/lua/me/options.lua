@@ -1,5 +1,10 @@
 local set = vim.opt
 local g = vim.g
+g.loaded_node_provider = 0
+g.loaded_perl_provider = 0
+g.loaded_python_provider = 0
+g.loaded_python3_provider = 0
+g.loaded_ruby_provider = 0
 set.swapfile = false
 set.showmatch = true
 set.ignorecase = true
@@ -23,8 +28,12 @@ set.number = true
 set.termguicolors = false
 set.fillchars:append({ vert = "|" })
 vim.cmd.colorscheme("retrobox")
-g.loaded_node_provider = 0
-g.loaded_perl_provider = 0
-g.loaded_python_provider = 0
-g.loaded_python3_provider = 0
-g.loaded_ruby_provider = 0
+vim.filetype.add({
+    extension = {
+        psql = "sql",
+        mdc = "markdown"
+    },
+    pattern = {
+        [".*%.log.*"] = "messages"
+    }
+})
