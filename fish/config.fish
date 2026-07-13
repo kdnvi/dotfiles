@@ -30,7 +30,7 @@ if status is-interactive
     # don't uncomment, just notes for running java debug
     # set -x JDK_JAVA_OPTIONS '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=localhost:5005'
     # set -e JDK_JAVA_OPTIONS
-    # abbr -a --set-cursor mvntest 'mvn test -e -DskipTests=false -Dgroups=medium,small -Dic.configurationFile=(pwd)/configuration.properties -Dtest=%'
+    # abbr -a --set-cursor mvntest 'mvn test -e -DskipTests=false -Dgroups=medium,small -Dtest=%'
 
     alias vi=nvim
     alias myip='echo (dig +short txt ch whoami.cloudflare @1.0.0.1)'
