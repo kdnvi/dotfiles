@@ -1,13 +1,8 @@
 font-family=Noto Sans Mono
 font-feature=-calt,-liga,-dlig
-font-style=Medium
 font-thicken=true
+font-style=Medium
 font-size=16
 shell-integration-features=no-cursor
-window-padding-x=0
-window-padding-y=0
-maximize=true
-theme=Monokai Classic
-window-theme=system
-macos-titlebar-style=native
 macos-option-as-alt=true
+theme=Monokai Classic

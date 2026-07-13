@@ -22,7 +22,7 @@ else
   nmap <Space>g :grep! -i ''<Left>
   xmap <Space>g "0y:grep! '<C-r>0'<Left>
   nmap <Space>G :grep! '<C-r><C-w>'<CR>
-endi
+endif
 
 " open the quickfix window whenever a qf command is executed
 au QuickFixCmdPost [^l]* cwindow
@@ -43,9 +43,9 @@ if has('nvim')
   " :find command should search files
   func! s:findfiles(cmdarg, _cmdcomp) abort
     let l:out = systemlist($FZF_DEFAULT_COMMAND . ' 2>/dev/null')
-    if v:shell_error != 0 | return [] | endi
+    if v:shell_error != 0 | return [] | endif
     return empty(a:cmdarg) ? l:out : matchfuzzy(l:out, a:cmdarg)
-  endf
+  endfunc
   set findfunc=s:findfiles
   nmap <Space>f :find 
   nmap <Space>F :find <C-r><C-w><C-z>
@@ -64,4 +64,4 @@ if has('nvim')
   lua require'langserver'
   lua require'sessionize'
   lua require'plugin'
-endi
+endif
