@@ -1,8 +1,8 @@
 font-feature=-calt,-liga,-dlig
+font-thicken=true
 font-family=Ubuntu Sans Mono
 font-size=18
 font-style=Medium
-font-thicken=true
 maximize=true
 window-padding-x=0
 window-padding-y=0

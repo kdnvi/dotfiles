@@ -1,14 +1,13 @@
 set -gx XDG_CONFIG_HOME "$HOME/.config"
 set -gx XDG_DATA_HOME "$HOME/.local/share"
-set -gx XDG_CACHE_HOME "$HOME/.cache"
 set -gx XDG_STATE_HOME "$HOME/.local/state"
+set -gx XDG_CACHE_HOME "$HOME/.cache"
 
 fish_add_path "$HOME/.local/bin"
 if status is-interactive
     set -l age (machine_age)
     set -l ok $status
-    set -l age_str (test $ok -eq 0; and echo " — it's been $age — the warranty is gone but the bugs remain"; or echo "")
-    set -gx fish_greeting (date '+%A, %B %d, %Y at %H:%M')$age_str
+    set -gx fish_greeting (test $ok -eq 0; and echo "it's been $age — the warranty is gone but the bugs remain"; or echo "")
 
     set -gx EDITOR nvim
     set -gx VISUAL nvim
@@ -19,15 +18,8 @@ if status is-interactive
 
     abbr -a -- gs 'git status'
     abbr -a -- gd 'git diff'
-    abbr -a -- gds 'git diff --staged'
     abbr -a -- ga 'git add'
-    abbr -a -- gaa 'git add --all'
-    abbr -a -- gac 'git add .'
-    abbr -a -- gap 'git add --patch'
     abbr -a -- gr 'git restore'
-    abbr -a -- grc 'git restore .'
-    abbr -a -- grs 'git restore --staged'
-    abbr -a -- grp 'git restore --patch'
     abbr -a -- gR 'git reset'
     abbr -a -- gc 'git commit -m'
     abbr -a -- gco 'git checkout'
