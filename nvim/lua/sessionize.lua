@@ -23,7 +23,7 @@ if filepath then
     })
 end -- don't sessionize when opening specific file
 
-vim.api.nvim_create_user_command('ClearSession', function()
+vim.api.nvim_create_user_command('ClSession', function()
     local f = get_session_filepath()
     assert(f and vim.uv.fs_stat(f), 'no session found')
     local ok, err_msg = os.remove(f)
