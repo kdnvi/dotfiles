@@ -11,4 +11,4 @@ func! s:fqcn() abort
 endfunc
 
 command! -buffer -nargs=0 Fqcn call <SID>fqcn()
-nmap <buffer> <Space>jc <Cmd>Fqcn<CR>
+nmap <buffer> <Space>J <Cmd>Fqcn<CR>

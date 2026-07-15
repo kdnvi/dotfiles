@@ -37,7 +37,7 @@ GIT_PS1_SHOWUNTRACKEDFILES=1
 GIT_PS1_SHOWCONFLICTSTATE=1
 GIT_PS1_SHOWUPSTREAM=auto
 . ~/.git-prompt.sh
-PS1='[\[\e[32m\]\u@\h\[\e[0m\] \[\e[35m\]\W\[\e[0m\]$(__git_ps1 " %s")]\$ '
+PS1='\[\e[32m\]\u@\h \[\e[36m\]\W\[\e[0m\]$(__git_ps1 " (%s)")\$ '
 
 # don't uncomment, just notes for running java debug
 # export JDK_JAVA_OPTIONS='-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=localhost:5005'

@@ -7,7 +7,7 @@ REPO_URL="https://github.com/kdnvi/dotfiles.git"
 echo '> installing essential packages'
 case $(uname -s) in
     Linux)
-        sudo dnf update -y && sudo dnf install -y git bash tmux neovim ripgrep tree ncdu htop jq alacritty
+        sudo dnf update -y && sudo dnf install -y git bash gcc make cmake tmux fzf tree ncdu htop jq
         ;;
     Darwin)
         xcode-select -p >/dev/null 2>&1 || { echo '> installing command line tools for xcode'; xcode-select --install; }
@@ -16,7 +16,7 @@ case $(uname -s) in
             /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
             eval "$(/opt/homebrew/bin/brew shellenv)"
         }
-        brew update && brew install git bash bash-completion@2 tmux neovim ripgrep tree ncdu htop jq alacritty
+        brew update && brew install git bash bash-completion@2 cmake tmux fzf tree ncdu htop jq font-noto-sans-mono
         ;;
     *)  echo '! unsupported os: only linux and mac' >&2; exit 1 ;;
 esac
@@ -29,7 +29,6 @@ echo '> cloning dotfiles'
 
 echo '> linking dotfiles'
 ln -sfn "$DOTFILES_DIR/nvim" ~/.config/nvim
-ln -sfn "$DOTFILES_DIR/alacritty.toml" ~/.config/alacritty.toml
 ln -sfn "$DOTFILES_DIR/.tmux.conf" ~/.tmux.conf
 ln -sfn "$DOTFILES_DIR/.gitignore" ~/.gitignore
 ln -sfn "$DOTFILES_DIR/.psqlrc" ~/.psqlrc
@@ -38,7 +37,7 @@ ln -sfn "$DOTFILES_DIR/.bashrc" ~/.bashrc
 
 echo '> linking bin scripts'
 mkdir -p ~/.local/bin
-for f in $(pwd)/bin/*; do
+for f in $(pwd)/localbin/*; do
     ln -sfn "$f" "$HOME/.local/bin/$(basename "$f")"
 done
 
@@ -53,6 +52,17 @@ git config --global pull.rebase true
 git config --global diff.tool nvimdiff
 git config --global merge.tool nvimdiff
 git config --global mergetool.keepBackup false
+
+echo '> building neovim from source'
+NEOVIM_DIR="$HOME/lab/neovim"
+if [ -d "$NEOVIM_DIR/.git" ]; then
+    git -C "$NEOVIM_DIR" pull
+    make -C "$NEOVIM_DIR" distclean
+else
+    git clone --depth 1 https://github.com/neovim/neovim.git "$NEOVIM_DIR"
+fi
+make -C "$NEOVIM_DIR" CMAKE_BUILD_TYPE=Release CMAKE_INSTALL_PREFIX="$HOME/.local"
+make -C "$NEOVIM_DIR" install
 
 [ "${SHELL##*/}" = bash ] && { echo '* default shell is already bash'; exit 0; }
 bash_path=$(command -v bash || true)

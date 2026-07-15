@@ -5,9 +5,13 @@ vim.lsp.config('*', {
         vim.lsp.completion.enable(true, client.id, bufnr, {autotrigger=true})
         vim.lsp.inlay_hint.enable(true)
 
+        -- see [:help vim.lsp.*] for documentation
+        vim.keymap.set('n', 'gd', vim.lsp.buf.definition, {buffer=bufnr})
+        vim.keymap.set('n', 'gru', function()
+            vim.lsp.buf.references{includeDeclaration=false}
+        end, {buffer=bufnr})
         -- show usages only
-        vim.keymap.set('n', 'gru', function() vim.lsp.buf.references{includeDeclaration=false} end, {buffer=bufnr})
-    end, -- see [:help vim.lsp.*] for documentation
+    end,
     detached = true,
 }) -- consistent behaviours across language servers
 
@@ -58,7 +62,7 @@ vim.lsp.config('jdtls', {
         '--add-opens=java.base/java.util=ALL-UNNAMED',
         '--add-opens=java.base/java.lang=ALL-UNNAMED',
         '-jar', launcher_jar,
-        '-configuration', jdtls_dir..'/'..(vim.uv.os_uname().sysname=='Darwin'and'config_mac_arm'or'config_linux'),
+        '-configuration', jdtls_dir..'/'..(vim.fn.has'mac'and'config_mac_arm'or'config_linux'),
         '-data', vim.fn.stdpath'cache'..'/jdtls/ws/'..vim.fs.basename(vim.uv.cwd())
     },
     filetypes = {'java'},
