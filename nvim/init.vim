@@ -40,6 +40,16 @@ if has('nvim')
   lua vim.filetype.add{pattern={['.*%.log.*']='messages'}, extension={psql='sql'}, extension={mdc='markdown'}}
   au TextYankPost * silent! lua vim.hl.on_yank()
 
+  " unload redundant providers
+  let g:loaded_node_provider = 0
+  let g:loaded_perl_provider = 0
+  let g:loaded_python3_provider = 0
+  let g:loaded_ruby_provider = 0
+  let g:loaded_matchit = 1
+  set udf cul inccommand=split
+  set completeopt+=menuone,noselect
+  hi! Normal guibg=NONE
+
   " :find command should search files
   func! s:findfiles(cmdarg, _cmdcomp) abort
     let l:out = systemlist('rg --files -. -L -S -g=!.git 2>/dev/null')
@@ -59,15 +69,6 @@ if has('nvim')
   endfunc
   command! -nargs=0 GFiles call <SID>gitfiles()
   nmap <Space>s <Cmd>GFiles<CR>
-
-  " unload redundant providers
-  let g:loaded_node_provider = 0
-  let g:loaded_perl_provider = 0
-  let g:loaded_python3_provider = 0
-  let g:loaded_ruby_provider = 0
-  let g:loaded_matchit = 1
-  set udf cul inccommand=split
-  set completeopt+=menuone,noselect
 
   " load lua stuff
   lua require'sessionize'
