@@ -1,6 +1,6 @@
 set nocp enc=utf-8 noml noswf nobk title hid
 set incsearch hls ignorecase smartcase ruler
-set autoindent showmatch splitright nu rnu
+set autoindent showmatch splitright
 set ts=4 sw=0 et ut=256 list wildoptions+=fuzzy
 let &showbreak = '+++ '
 
@@ -46,7 +46,7 @@ if has('nvim')
   let g:loaded_python3_provider = 0
   let g:loaded_ruby_provider = 0
   let g:loaded_matchit = 1
-  set udf cul inccommand=split
+  set undofile cul inccommand=split
   set completeopt+=menuone,noselect
   hi! Normal guibg=NONE
 
@@ -72,6 +72,6 @@ if has('nvim')
 
   " load lua stuff
   lua require'sessionize'
-  lua require'diffsign'
   lua require'langserver'
+  lua require'plugin'
 endif

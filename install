@@ -7,7 +7,7 @@ REPO_URL="https://github.com/kdnvi/dotfiles.git"
 echo '> installing essential packages'
 case $(uname -s) in
     Linux)
-        sudo dnf update -y && sudo dnf install -y git fish tmux neovim ripgrep tree ncdu htop jq alacritty
+        sudo dnf update -y && sudo dnf install -y git bash tmux neovim ripgrep tree ncdu htop jq alacritty
         ;;
     Darwin)
         xcode-select -p >/dev/null 2>&1 || { echo '> installing command line tools for xcode'; xcode-select --install; }
@@ -16,7 +16,7 @@ case $(uname -s) in
             /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
             eval "$(/opt/homebrew/bin/brew shellenv)"
         }
-        brew update && brew install git fish tmux neovim ripgrep tree ncdu htop jq alacritty
+        brew update && brew install git bash bash-completion@2 tmux neovim ripgrep tree ncdu htop jq alacritty
         ;;
     *)  echo '! unsupported os: only linux and mac' >&2; exit 1 ;;
 esac
@@ -28,12 +28,23 @@ echo '> cloning dotfiles'
 [ -d "$DOTFILES_DIR/.git" ] || git clone "$REPO_URL" "$DOTFILES_DIR"
 
 echo '> linking dotfiles'
-ln -sfn "$DOTFILES_DIR/fish" ~/.config/fish
 ln -sfn "$DOTFILES_DIR/nvim" ~/.config/nvim
 ln -sfn "$DOTFILES_DIR/alacritty.toml" ~/.config/alacritty.toml
 ln -sfn "$DOTFILES_DIR/.tmux.conf" ~/.tmux.conf
 ln -sfn "$DOTFILES_DIR/.gitignore" ~/.gitignore
 ln -sfn "$DOTFILES_DIR/.psqlrc" ~/.psqlrc
+ln -sfn "$DOTFILES_DIR/.bashrc" ~/.bashrc
+[ -f ~/.bash_profile ] || echo '[ -r ~/.bashrc ] && . ~/.bashrc' >> ~/.bash_profile
+
+echo '> linking bin scripts'
+mkdir -p ~/.local/bin
+for f in $(pwd)/bin/*; do
+    ln -sfn "$f" "$HOME/.local/bin/$(basename "$f")"
+done
+
+echo '> downloading git-completion.bash and git-prompt.sh'
+curl -fsSL https://raw.githubusercontent.com/git/git/refs/heads/master/contrib/completion/git-completion.bash -o ~/.git-completion.bash
+curl -fsSL https://raw.githubusercontent.com/git/git/refs/heads/master/contrib/completion/git-prompt.sh -o ~/.git-prompt.sh
 
 echo '> configuring git'
 git config --global core.excludesFile ~/.gitignore
@@ -43,20 +54,13 @@ git config --global diff.tool nvimdiff
 git config --global merge.tool nvimdiff
 git config --global mergetool.keepBackup false
 
-echo '> adding llm rules'
-mkdir -p ~/.cursor/rules
-for rule in "$DOTFILES_DIR"/rules/*; do
-    [ -f "$rule" ] || continue
-    ln -sfn "$rule" ~/.cursor/rules/
-done
+[ "${SHELL##*/}" = bash ] && { echo '* default shell is already bash'; exit 0; }
+bash_path=$(command -v bash || true)
+[ -n "$bash_path" ] || { echo '! bash not found in path' >&2; exit 1; }
 
-[ "${SHELL##*/}" = fish ] && { echo '* default shell is already fish'; exit 0; }
-fish_path=$(command -v fish || true)
-[ -n "$fish_path" ] || { echo '! fish not found in path' >&2; exit 1; }
+echo '> changing default shell to bash'
+grep -qxF "$bash_path" /etc/shells || echo "$bash_path" | sudo tee -a /etc/shells
 
-echo '> changing default shell to fish'
-grep -qxF "$fish_path" /etc/shells || echo "$fish_path" | sudo tee -a /etc/shells
-
-chsh -s "$fish_path"
+chsh -s "$bash_path"
 echo '* please log out and log back in for shell change to take effect'
 # vim: ft=sh

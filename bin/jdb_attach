@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+host="$1"
+port="$2"
+
+[ -z "$host" ] && { printf 'host [localhost]: '; read -r host; host="${host:-localhost}"; }
+[ -z "$port" ] && { printf 'port [5005]: '; read -r port; port="${port:-5005}"; }
+
+jdb -connect "com.sun.jdi.SocketAttach:hostname=$host,port=$port"
+# vim:ft=bash

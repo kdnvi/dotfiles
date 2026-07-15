@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# switch to a tmux session matching pattern, or create one
+set -euo pipefail
+pattern="${1:-}"
+
+# try to match existing session first
+if [ -n "$pattern" ]; then
+    matched=$(tmux list-sessions -F '#{session_name}' 2>/dev/null | grep -iF "$pattern" | head -n 1 || true)
+    if [ -n "$matched" ]; then tmux switch-client -t "$matched"; exit 0; fi
+fi
+
+# otherwise open first matched project having the pattern as prefix
+dir=$(find ~/work ~/lab ~/side -maxdepth 3 -mindepth 1 -type d -iname "$pattern*" 2>/dev/null | head -n 1 || true)
+[ -z "$dir" ] && exit 0
+
+# create session for selected project
+name=$(basename "$dir")
+tmux has-session -t "$name" 2>/dev/null || tmux new-session -s "$name" -d -c "$dir"
+tmux switch-client -t "$name"
+# vim:ft=bash
