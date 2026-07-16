@@ -22,7 +22,7 @@ case $(uname -s) in
 esac
 
 echo '> creating essential dirs'
-mkdir -p ~/.config ~/work ~/lab ~/side
+mkdir -p ~/.config ~/work ~/lab ~/misc
 
 echo '> cloning dotfiles'
 [ -d "$DOTFILES_DIR/.git" ] || git clone "$REPO_URL" "$DOTFILES_DIR"

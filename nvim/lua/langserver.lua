@@ -5,9 +5,12 @@ vim.lsp.config('*', {
         vim.lsp.completion.enable(true, client.id, bufnr, {autotrigger=true})
         vim.lsp.inlay_hint.enable(true)
 
-        -- show usages only
-        vim.keymap.set('n', 'gru', function() vim.lsp.buf.references{includeDeclaration=false} end, {buffer=bufnr})
-    end, -- see [:help vim.lsp.*] for documentation
+        -- see [:help vim.lsp.*] for documentation
+        vim.keymap.set('n', 'gd', vim.lsp.buf.definition, {buffer=bufnr})
+        vim.keymap.set('n', 'gru', function()
+            vim.lsp.buf.references{includeDeclaration=false}
+        end, {buffer=bufnr}) -- show usages only
+    end,
     detached = true,
 }) -- consistent behaviours across language servers
 
