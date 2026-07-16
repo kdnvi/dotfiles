@@ -43,6 +43,11 @@ PS1='\[\e[32m\]\u@\h \[\e[36m\]\W\[\e[0m\]$(__git_ps1 " (%s)")\$ '
 # export JDK_JAVA_OPTIONS='-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=localhost:5005'
 # unset JDK_JAVA_OPTIONS
 
+alias gs='git status'
+alias gd='git diff'
+alias ga='git ls-files -m -o --exclude-standard | fzf -m | xargs -r git add'
+alias gr='git diff --name-only --cached | fzf -m | xargs -r git restore --staged'
+alias gR='git ls-files -m | fzf -m | xargs -r git restore'
 alias ls='ls --color=auto'
 alias grep='grep --color=auto'
 alias vi=nvim

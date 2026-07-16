@@ -1,14 +1,16 @@
 set nocp enc=utf-8 noml noswf nobk title hid
-set incsearch hlsearch ignorecase smartcase
-set autoindent showmatch splitright ruler
+set incsearch hlsearch ignorecase smartcase ruler
+set autoindent showmatch splitright ruler nu rnu
 set ts=4 sw=0 et ut=256 list wildoptions+=fuzzy
 let &showbreak = '+++ '
 
 " extend vim grep abilities with git-grep
 call system('git rev-parse --is-inside-work-tree &>/dev/null')
 if v:shell_error == 0
-  set grepformat^=%f:%l:%c:%m
   set grepprg=git\ grep\ --column\ -n\ $*
+  set grepformat^=%f:%l:%c:%m
+else
+  set grepprg=grep\ -HIrn\ $*
 endif
 " use [--untracked --no-exclude-standard] for wildcard
 nmap <Space>g :grep! -i ''<Left>
