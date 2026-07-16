@@ -40,10 +40,10 @@
 
 ## Decisions with Trade-offs
 - Ask before proceeding on choices with meaningful trade-offs — architecture, performance, compatibility, maintenance, new dependencies or major upgrades, and breaking changes to public APIs, database schemas, or config formats other code depends on.
-- Present options briefly with pros/cons; do not pick unilaterally when the decision is the user's to make.
-- Always explain the reason behind the choice you make, even when you decide without asking.
-- Prefer libraries already used in the project over introducing new ones.
 - Do not ask for approval on obvious, low-risk choices (naming a local variable, fixing a typo, following an existing pattern in the same file).
+- When asking, present options briefly with pros/cons rather than picking unilaterally.
+- When deciding without asking, always explain the reason behind the choice.
+- Prefer libraries already used in the project over introducing new ones.
 
 ## Communication Style
 - Keep progress updates and summaries concise — state what changed and why, skip narrating every step.
