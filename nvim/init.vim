@@ -45,8 +45,7 @@ if has('nvim')
   let g:loaded_netrw = 1
   let g:loaded_netrwPlugin = 1
   let g:loaded_matchit = 1
-  set undofile inccommand=split
-  set colorcolumn=80
+  set undofile cul inccommand=split
   set completeopt+=menuone,noselect
 
   " copy file name/path

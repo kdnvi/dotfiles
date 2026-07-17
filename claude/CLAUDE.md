@@ -56,3 +56,9 @@
 ## When Stuck
 - After a couple of failed attempts at the same approach, stop and ask rather than keep trying variations.
 - Explain what was tried and why it didn't work before proposing a different approach.
+
+## Plan Storage Location
+- For any non-trivial multi-step task (e.g. plan mode), save the plan as a file in `~/work/vimwiki/plans/` (`mkdir -p` if missing), in addition to presenting it in chat. Skip this for trivial one-off asks.
+- Path: `~/work/vimwiki/plans/<snake_case_slug>.md`, e.g. `migrate_auth_service.md`. If the task has a ticket number (e.g. Jira/Linear ID), prefix it: `<TICKET-123>_<snake_case_slug>.md`, e.g. `PROJ-123_migrate_auth_service.md`.
+- Content: first line `Date: YYYY-MM-DD` (today), then the plan (goal, steps, open questions/trade-offs) in the same form you'd present in chat.
+- On revision, edit the existing file — don't create a new one.

@@ -1,4 +1,3 @@
-setl colorcolumn=100
 if !empty(findfile('pom.xml', '.;'))
   setl makeprg=mvn\ package\ -DskipTests\ -T\ 1C\ -am
   setl errorformat=[ERROR]\ %f:[%l\\,%c]\ %m

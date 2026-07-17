@@ -1,12 +1,13 @@
+-- keep things simple here; only essentials
 vim.pack.add{
     'https://github.com/junegunn/fzf.vim',
     'https://github.com/tpope/vim-fugitive',
     'https://github.com/vimwiki/vimwiki',
+    {src='https://github.com/rose-pine/neovim', name='rose-pine'},
 }
 
--- fzf
 vim.opt.runtimepath:append(vim.fn.has'mac'and'/opt/homebrew/opt/fzf'or'/usr/share/fzf')
-vim.g.fzf_layout = {down='41%'}
+vim.g.fzf_layout = {down='37%'}
 vim.g.fzf_vim = {preview_window = {}}
 vim.keymap.set('n', '<leader>o', vim.cmd.Buffers)
 vim.keymap.set('n', '<leader>f', vim.cmd.Files)
@@ -34,3 +35,7 @@ vim.api.nvim_create_user_command('ExportDocx', function()
         end)
     end)
 end, {nargs=0, desc='export current markdown to docx'})
+
+-- color
+require'rose-pine'.setup{variant='moon', styles = {italic=false, transparency=true}}
+vim.cmd.colorscheme'rose-pine'

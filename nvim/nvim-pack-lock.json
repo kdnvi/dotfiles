@@ -4,6 +4,10 @@
       "rev": "d2a59a992a2455f609c0fde2ebd84427ea8f919a",
       "src": "https://github.com/junegunn/fzf.vim"
     },
+    "rose-pine": {
+      "rev": "ff483051a47e27d84bdef47703538df1ed9f4a47",
+      "src": "https://github.com/rose-pine/neovim"
+    },
     "vim-fugitive": {
       "rev": "3b753cf8c6a4dcde6edee8827d464ba9b8c4a6f0",
       "src": "https://github.com/tpope/vim-fugitive"
