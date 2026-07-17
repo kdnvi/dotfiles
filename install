@@ -7,7 +7,7 @@ REPO_URL="https://github.com/kdnvi/dotfiles.git"
 echo '> installing essential packages'
 case $(uname -s) in
     Linux)
-        sudo dnf update -y && sudo dnf install -y git bash gcc make cmake tmux fzf tree ncdu htop jq
+        sudo dnf update -y && sudo dnf install -y git bash gcc make cmake tmux fzf tree ncdu htop jq pandoc
         ;;
     Darwin)
         xcode-select -p >/dev/null 2>&1 || { echo '> installing command line tools for xcode'; xcode-select --install; }
@@ -16,7 +16,7 @@ case $(uname -s) in
             /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
             eval "$(/opt/homebrew/bin/brew shellenv)"
         }
-        brew update && brew install git bash bash-completion@2 cmake tmux fzf tree ncdu htop jq font-noto-sans-mono
+        brew update && brew install git bash bash-completion@2 cmake tmux fzf tree ncdu htop jq pandoc font-noto-sans-mono
         ;;
     *)  echo '! unsupported os: only linux and mac' >&2; exit 1 ;;
 esac

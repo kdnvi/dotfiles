@@ -4,6 +4,10 @@ set autoindent showmatch splitright ruler nu rnu
 set ts=4 sw=0 et ut=256 list wildoptions+=fuzzy
 let &showbreak = '+++ '
 
+" space as leader key
+let mapleader = ' '
+nnoremap <Space> <Nop>
+
 " extend vim grep abilities with git-grep
 call system('git rev-parse --is-inside-work-tree &>/dev/null')
 if v:shell_error == 0
@@ -13,9 +17,9 @@ else
   set grepprg=grep\ -HIrn\ $*
 endif
 " use [--untracked --no-exclude-standard] for wildcard
-nmap <Space>g :grep! -i ''<Left>
-xmap <Space>g "0y:grep! '<C-r>0'<Left>
-nmap <Space>G :grep! '<C-r><C-w>'<CR>
+nmap <leader>g :grep! -i ''<Left>
+xmap <leader>g "0y:grep! '<C-r>0'<Left>
+nmap <leader>G :grep! '<C-r><C-w>'<CR>
 
 " open the quickfix window whenever a qf command is executed
 au QuickFixCmdPost [^l]* cwindow
@@ -23,11 +27,11 @@ au FileType vim setl tabstop=2
 
 " yank/paste to/from system clipboard
 " all motions work the same as normal [y]
-nmap <Space>y "+y
-xmap <Space>y "+y
-nmap <Space>p "+p
-xmap <Space>p "+p
-nmap <Space>P "+P
+nmap <leader>y "+y
+xmap <leader>y "+y
+nmap <leader>p "+p
+xmap <leader>p "+p
+nmap <leader>P "+P
 
 if has('nvim')
   au TextYankPost * silent! lua vim.hl.on_yank()
@@ -41,7 +45,8 @@ if has('nvim')
   let g:loaded_netrw = 1
   let g:loaded_netrwPlugin = 1
   let g:loaded_matchit = 1
-  set undofile cul inccommand=split
+  set undofile inccommand=split
+  set colorcolumn=80
   set completeopt+=menuone,noselect
 
   " load lua stuff
