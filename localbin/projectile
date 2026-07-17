@@ -10,7 +10,7 @@ if [ -n "$pattern" ]; then
 fi
 
 # otherwise open first matched project having the pattern as prefix
-dir=$(find ~/work ~/lab ~/misc -maxdepth 3 -mindepth 1 -type d 2>/dev/null | fzf --tmux --query="$pattern" || true)
+dir=$(find ~/work ~/lab -maxdepth 3 -mindepth 1 -type d 2>/dev/null | fzf --tmux --query="$pattern" || true)
 [ -z "$dir" ] && exit 0
 
 # create session for selected project

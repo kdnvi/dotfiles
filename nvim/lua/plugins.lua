@@ -16,7 +16,7 @@ vim.keymap.set('n', '<leader>m', vim.cmd.Marks)
 vim.keymap.set('n', '<leader>c', vim.cmd.Changes)
 
 -- vimwiki
-vim.g.vimwiki_list = {{path='~/misc/vimwiki', syntax='markdown', ext='md'}}
+vim.g.vimwiki_list = {{path='~/work/vimwiki', syntax='markdown', ext='md'}}
 vim.g.vimwiki_global_ext = 0
 vim.api.nvim_create_user_command('ExportDocx', function()
     local src = vim.fn.expand('%:p')

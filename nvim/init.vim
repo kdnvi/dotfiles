@@ -49,6 +49,10 @@ if has('nvim')
   set colorcolumn=80
   set completeopt+=menuone,noselect
 
+  " copy file name/path
+  nmap <leader>n <Cmd>let @+=expand('%')<Bar>echo 'filename yanked'<CR>
+  nmap <leader>N <Cmd>let @+=expand('%:p')<Bar>echo 'filepath yanked'<CR>
+
   " load lua stuff
   lua require'sessionize'
   lua require'langserver'
