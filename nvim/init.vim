@@ -1,6 +1,6 @@
 set nocp enc=utf-8 noml noswf nobk title hid
-set incsearch hlsearch ignorecase smartcase ruler
-set autoindent showmatch splitright ruler nu rnu
+set incsearch hlsearch ignorecase smartcase
+set autoindent showmatch splitright ruler
 set ts=4 sw=0 et ut=256 list wildoptions+=fuzzy
 let &showbreak = '+++ '
 
@@ -30,7 +30,6 @@ xmap <Space>p "+p
 nmap <Space>P "+P
 
 if has('nvim')
-  au FileType * silent! lua vim.treesitter.stop()
   au TextYankPost * silent! lua vim.hl.on_yank()
   lua vim.filetype.add{pattern={['.*%.log.*']='messages'}, extension={psql='sql'}}
 
@@ -42,13 +41,8 @@ if has('nvim')
   let g:loaded_netrw = 1
   let g:loaded_netrwPlugin = 1
   let g:loaded_matchit = 1
-  set undofile cc=80 inccommand=split
+  set undofile inccommand=split notgc
   set completeopt+=menuone,noselect
-
-  " color
-  silent! colorscheme unokai
-  hi! NormalNC ctermbg=NONE guibg=NONE
-  hi! Normal ctermbg=NONE guibg=NONE
 
   " copy file name/path
   nmap <Space>n <Cmd>let @+=expand('%')<Bar>echo 'filename yanked'<CR>
