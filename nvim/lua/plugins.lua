@@ -3,18 +3,17 @@ vim.pack.add{
     'https://github.com/junegunn/fzf.vim',
     'https://github.com/tpope/vim-fugitive',
     'https://github.com/vimwiki/vimwiki',
-    {src='https://github.com/rose-pine/neovim', name='rose-pine'},
 }
 
 vim.opt.runtimepath:append(vim.fn.has'mac'and'/opt/homebrew/opt/fzf'or'/usr/share/fzf')
 vim.g.fzf_layout = {down='37%'}
 vim.g.fzf_vim = {preview_window = {}}
-vim.keymap.set('n', '<leader>o', vim.cmd.Buffers)
-vim.keymap.set('n', '<leader>f', vim.cmd.Files)
-vim.keymap.set('n', '<leader>s', '<Cmd>GFiles?<CR>')
-vim.keymap.set('n', '<leader>j', vim.cmd.Jumps)
-vim.keymap.set('n', '<leader>m', vim.cmd.Marks)
-vim.keymap.set('n', '<leader>c', vim.cmd.Changes)
+vim.keymap.set('n', '<Space>o', vim.cmd.Buffers)
+vim.keymap.set('n', '<Space>f', vim.cmd.Files)
+vim.keymap.set('n', '<Space>s', '<Cmd>GFiles?<CR>')
+vim.keymap.set('n', '<Space>j', vim.cmd.Jumps)
+vim.keymap.set('n', '<Space>m', vim.cmd.Marks)
+vim.keymap.set('n', '<Space>c', vim.cmd.Changes)
 
 -- vimwiki
 vim.g.vimwiki_list = {{path='~/work/vimwiki', syntax='markdown', ext='md'}}
@@ -35,7 +34,3 @@ vim.api.nvim_create_user_command('ExportDocx', function()
         end)
     end)
 end, {nargs=0, desc='export current markdown to docx'})
-
--- color
-require'rose-pine'.setup{variant='moon', styles = {italic=false, transparency=true}}
-vim.cmd.colorscheme'rose-pine'

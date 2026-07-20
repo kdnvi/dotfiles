@@ -1,7 +1,7 @@
 vim.diagnostic.config{virtual_text=true, underline=true}
 vim.lsp.config('*', {
     on_attach = function(client, bufnr)
-        vim.lsp.semantic_tokens.enable(true)
+        vim.lsp.semantic_tokens.enable(false)
         vim.lsp.completion.enable(true, client.id, bufnr, {autotrigger=true})
         vim.lsp.inlay_hint.enable(true)
 
@@ -18,24 +18,41 @@ vim.lsp.config('*', {
 -- some specific language settings can also be applied
 -- can be disabled/terminated by [:lsp disable/stop] command
 vim.lsp.config('clangd', {
-    cmd = {'clangd', '--background-index'}, filetypes = {'c', 'cpp', 'objc', 'objcpp', 'cuda'},
-    root_markers = {'.clangd', '.clang-tidy', '.clang-format', 'compile_commands.json', 'compile_flags.txt', 'configure.ac', '.git'},
-    capabilities = {offsetEncoding = {'utf-8', 'utf-16'}, textDocument = {completion = {editsNearCursor=true}}}
+    cmd = {'clangd', '--background-index'},
+    filetypes = {'c', 'cpp', 'objc', 'objcpp', 'cuda'},
+    root_markers = {
+        '.clangd', '.clang-tidy', '.clang-format', 'compile_commands.json',
+        'compile_flags.txt', 'configure.ac', '.git'
+    },
+    capabilities = {
+        offsetEncoding = {'utf-8', 'utf-16'},
+        textDocument = {completion = {editsNearCursor=true}}
+    }
 })
 vim.lsp.enable('clangd')
 
 -- python
 vim.lsp.config('pyright', {
-    cmd = {'pyright-langserver', '--stdio'}, filetypes = {'python'},
-    root_markers = {'pyrightconfig.json', 'pyproject.toml', 'setup.py', 'setup.cfg', 'requirements.txt', 'Pipfile', '.git'},
-    settings = {python = {analysis = {autoSearchPaths=true, diagnosticMode='openFilesOnly', useLibraryCodeForTypes=true}}},
+    cmd = {'pyright-langserver', '--stdio'},
+    filetypes = {'python'},
+    root_markers = {
+        'pyrightconfig.json', 'pyproject.toml', 'setup.py',
+        'setup.cfg', 'requirements.txt', 'Pipfile', '.git'
+    },
+    settings = {python = {analysis = {
+        autoSearchPaths = true,
+        diagnosticMode = 'openFilesOnly',
+        useLibraryCodeForTypes = true
+    }}}
 })
 vim.lsp.enable('pyright')
 
 -- js/ts
 vim.lsp.config('tsserver', {
-    cmd = {'typescript-language-server', '--stdio'}, filetypes = {'javascript', 'typescript'},
-    root_markers = {'tsconfig.json', 'jsconfig.json', 'package.json', '.git'}, init_options = {hostInfo='neovim'},
+    cmd = {'typescript-language-server', '--stdio'},
+    filetypes = {'javascript', 'typescript'},
+    root_markers = {'tsconfig.json', 'jsconfig.json', 'package.json', '.git'},
+    init_options = {hostInfo='neovim'},
 })
 vim.lsp.enable('tsserver')
 
