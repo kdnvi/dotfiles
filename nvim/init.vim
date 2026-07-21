@@ -8,9 +8,9 @@ let &showbreak = '+++ '
 call system('git rev-parse --is-inside-work-tree &>/dev/null')
 let s:findcmd = 'find . -type f'
 if v:shell_error == 0
-  set grepprg=git\ grep\ --column\ -n\ $*
-  set grepformat^=%f:%l:%c:%m
   let s:findcmd = 'git ls-files -c -o --exclude-standard'
+  set grepformat^=%f:%l:%c:%m
+  set grepprg=git\ grep\ --column\ -n\ $*
 else
   set grepprg=grep\ -HIrn\ $*
 endif
@@ -39,7 +39,8 @@ nmap <Space>F :find <C-r><C-w><C-z>
 func! s:gitfiles() abort
   let l:out = systemlist('git ls-files -t -m -o --exclude-standard 2>/dev/null')
   if v:shell_error != 0 || empty(l:out) | echo 'no changes' | return | endif
-  let l:files = map(l:out, {_, line -> {'filename': matchstr(line, '\s\zs.*'), 'text': matchstr(line, '^\S\ze\s')}})
+  let l:files = map(l:out, {_, line -> {
+        \ 'filename': matchstr(line, '\s\zs.*'), 'text': matchstr(line, '^\S\ze\s')}})
   call setloclist(0, l:files, 'r') | lopen
 endfunc
 command! -nargs=0 GFiles call <SID>gitfiles()
@@ -67,7 +68,7 @@ if has('nvim')
   let g:loaded_python3_provider = 0
   let g:loaded_ruby_provider = 0
   let g:loaded_matchit = 1
-  set undofile inccommand=split
+  set undofile cursorline inccommand=split
   set completeopt+=menuone,noselect
 
   " copy file name/path
