@@ -36,15 +36,14 @@ nmap <Space>f :find
 nmap <Space>F :find <C-r><C-w><C-z>
 
 " browse git modified/untracked files
-func! s:gitfiles() abort
-  let l:out = systemlist('git ls-files -t -m -o --exclude-standard 2>/dev/null')
-  if v:shell_error != 0 || empty(l:out) | echo 'no changes' | return | endif
-  let l:files = map(l:out, {_, line -> {
-        \ 'filename': matchstr(line, '\s\zs.*'), 'text': matchstr(line, '^\S\ze\s')}})
-  call setloclist(0, l:files, 'r') | lopen
+func! s:gitfiles(arglead, _cmdline, _cursorpos) abort
+  let l:out = systemlist('git ls-files -m -o --exclude-standard 2>/dev/null')
+  if v:shell_error != 0 || empty(l:out) | return [] | endif
+  return empty(a:arglead) ? l:out : matchfuzzy(l:out, a:arglead)
 endfunc
-command! -nargs=0 GFiles call <SID>gitfiles()
-nmap <Space>s <Cmd>GFiles<CR>
+command! -nargs=1 -complete=customlist,<SID>gitfiles GFiles
+      \ exe 'edit ' . fnameescape(<q-args>)
+nmap <Space>s :GFiles <C-z>
 
 " open the quickfix window whenever a qf command is executed
 au QuickFixCmdPost [^l]* cwindow
@@ -77,5 +76,4 @@ if has('nvim')
 
   " load lua stuff
   lua require'langserver'
-  lua require'sessionize'
 endif
