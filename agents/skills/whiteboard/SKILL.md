@@ -5,22 +5,15 @@ description: Weigh trade-offs and design an approach before implementing non-tri
 
 # Whiteboard
 
-## Trade-off decisions
-- Ask before proceeding on choices with meaningful trade-offs: architecture, performance, compatibility, maintenance, new dependencies or major upgrades, and breaking changes to public APIs, database schemas, or config formats other code depends on.
-- Do not ask for approval on obvious, low-risk choices (naming a local variable, fixing a typo, following an existing pattern in the same file).
-- When asking, present options briefly with pros/cons rather than picking unilaterally.
-- When deciding without asking, always explain the reasoning behind the choice.
-- Prefer libraries already used in the project over introducing new ones.
+- Ask before proceeding on choices with real trade-offs: architecture, performance, compatibility, maintenance, new dependencies/major upgrades, breaking changes to public APIs/schemas/config.
+- Skip approval for obvious, low-risk choices (variable names, typos, following an existing pattern).
+- Present options with pros/cons rather than picking unilaterally; if deciding without asking, explain the reasoning.
+- Prefer libraries already used in the project over new ones.
+- Discuss, don't assume — surface open questions and alternatives, iterate with the user to an explicit final decision, not a one-shot proposal.
+- Ground claims and scout alternatives with `sherlock` (`/sherlock`) rather than guessing or settling for the first idea.
 
-## Discuss before finalizing
-- Actively discuss with the user rather than assuming — surface open questions, ambiguous requirements, and alternative approaches, and iterate with them until there's a complete picture and an explicit final decision (not just a one-shot proposal).
-- Don't guess at facts or settle for the first idea that fits — use `sherlock` to ground claims and scout prior art/alternatives (comparable OSS projects, industry patterns, specs/RFCs) so the options presented reflect the broader landscape. Invoke it directly with `/sherlock` if it doesn't trigger automatically.
-
-## Write the design doc
-For non-trivial multi-step work, write a design doc and save it to `~/work/notes/plans/` (`mkdir -p` if missing), in addition to presenting it in chat. Skip this for trivial one-off asks.
-
-- Path: `~/work/notes/plans/<snake_case_slug>.md`, e.g. `migrate_auth_service.md`. Prefix with a ticket ID if one exists: `<TICKET-123>_<snake_case_slug>.md`.
-- On revision, edit the existing file — don't create a new one.
+## Design doc
+For non-trivial multi-step work, also write it to `~/work/notes/plans/<snake_case_slug>.md` (prefix a ticket ID if one exists, e.g. `TICKET-123_slug.md`). Skip for trivial one-off asks. On revision, edit the existing file — don't create a new one.
 
 Template:
 

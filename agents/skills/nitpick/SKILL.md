@@ -1,17 +1,23 @@
 ---
 name: nitpick
-description: Run tests/linters and do a final self-check before declaring a task done. Use after making a non-trivial code change, and right before telling the user the task is complete.
+description: Careful review gate — run tests/linters, critically review the diff, and loop back to fix rather than stop-and-report. Use right before declaring a non-trivial task done.
 ---
 
 # Nitpick
 
 ## Verify
-- Run relevant tests/linters when the project has them; report what ran and the result — don't assume changes work without verification.
-- If tests are missing for non-trivial new logic, consider `guinea-pig` for writing them rather than skipping straight to done — invoke it directly with `/guinea-pig` if useful.
+- Run relevant tests/linters when the project has them; report what ran and the result.
+- If tests are missing for non-trivial new logic, use `guinea-pig` (`/guinea-pig`) to write them rather than skipping to done.
 
-## Final self-check
-Before telling the user a task is complete:
-- Re-read the diff against the original request — nothing missed, nothing unrelated changed.
-- Check for leftover debug code or TODOs.
+## Review the diff
+- Read every changed line — check logic, edge cases, error handling, not just "does it run."
+- Re-check against the original request/plan — nothing missed, nothing unrelated changed.
+- Check for leftover debug code, dead code, or TODOs.
 - Confirm no workflow rule (scope, generated files, secrets, git) was violated.
-- If anything is incomplete or uncertain, say so instead of declaring done.
+
+## Loop until it passes
+- Found a real problem (bug, missed requirement, failing test, rule violation)? Report it to the user before fixing — don't retry on your own.
+- Consult the user on every loop, not just after repeated failures — stricter than "When Stuck", to avoid unsupervised fix-and-recheck cycles.
+- Once the user agrees with the fix direction, go back to Build/Verify, fix it, and re-review from the top.
+- Only a clean pass (tests green, diff reviewed, nothing outstanding) counts as approved.
+- Genuinely ambiguous or a trade-off, not a clear defect? Ask instead of guessing.

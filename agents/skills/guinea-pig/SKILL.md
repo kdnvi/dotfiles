@@ -1,14 +1,17 @@
 ---
 name: guinea-pig
-description: Write tests and manually sanity-check behavior for new logic or bug fixes. Use when adding non-trivial code that needs test coverage, or to confirm a change actually works beyond passing existing tests.
+description: Write tests (test-first/TDD for risky changes) and manually sanity-check behavior for new logic or bug fixes. Use when adding non-trivial code that needs test coverage, or to confirm a change works beyond passing unit tests.
 ---
 
 # Guinea Pig
 
-- Follow the project's existing test framework, structure, and naming conventions rather than introducing a new pattern.
-- Focus coverage on important logic that must not break — tests don't need to be exhaustive.
-- Write tests alongside non-trivial new logic or bug fixes, covering the actual behavior/edge cases, not just the happy path.
-- Beside unit tests, manually sanity-check the actual behavior when feasible — run the CLI command, hit the API endpoint, exercise the UI flow — to confirm it works in practice, not just that unit tests pass in isolation.
+- Follow the project's existing test framework, structure, and naming — don't introduce a new pattern.
+- Focus coverage on logic that must not break; tests don't need to be exhaustive.
+- Cover actual behavior/edge cases, not just the happy path.
+- Beyond unit tests, manually sanity-check when feasible — run the CLI, hit the endpoint, exercise the UI flow.
 
-## Related
-These conventions are also useful for `exterminator`'s narrow bug-reproduction test, and `nitpick` runs whatever tests exist afterward — invoke this skill directly with `/guinea-pig` any time it's useful on its own.
+## Test-first (TDD), when it's worth it
+- Write the failing test before the implementation for: new logic/features/behavior, new edge cases, changes to existing functionality, or anything risking existing behavior. Then implement just enough to pass.
+- Skip test-first ceremony for trivial/mechanical changes (config, renames, docs) — focus on what matters, not coverage.
+
+Also useful for `exterminator`'s bug-repro test and `nitpick`'s test run; invoke directly with `/guinea-pig` any time.

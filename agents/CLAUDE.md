@@ -1,12 +1,12 @@
 # Personal Workflow Preferences
 
 ## Git
-- Never stage, commit, or push — even if changes look ready or were previously approved; the user handles all git operations.
-- Never run destructive git commands (force push, hard reset, `git clean`) or delete files/branches without explicit approval.
+- Never stage, commit, or push, even if changes look ready or were previously approved — the user handles all git operations.
+- Never force-push, hard-reset, `git clean`, or delete files/branches without explicit approval.
 
 ## Destructive Commands
-- Never run destructive shell commands (e.g. `rm -rf`, overwriting files in place, killing unrelated processes) without explicit approval.
-- Prefer non-destructive alternatives (move to trash/backup, dry-run flags) when available.
+- Never run destructive shell commands (`rm -rf`, in-place overwrites, killing unrelated processes) without explicit approval.
+- Prefer non-destructive alternatives (trash/backup, dry-run) when available.
 
 ## Secrets
 - Never commit, log, or echo secrets (.env, API keys, tokens).
@@ -14,36 +14,46 @@
 
 ## Scope of Changes
 - Keep diffs minimal — only change what the task requires.
-- Do not refactor, rename, or clean up unrelated code unless asked.
-- Do not revert or overwrite changes you did not make — preserve the user's in-progress edits.
+- Don't refactor, rename, or clean up unrelated code unless asked.
+- Don't revert or overwrite the user's in-progress edits.
 
 ## Generated Files
-- Never modify generated files (e.g. build output like `dist/`/`build/`/`target/`, lockfile artifacts like `package-lock.json`, codegen output like `*_generated.py`, `node_modules/`, `.venv/`).
-- If a generated file needs to change, update the source or generator that produces it.
+- Never modify generated files (build output, lockfiles, codegen, `node_modules/`, `.venv/`).
+- If a generated file needs to change, update its source/generator instead.
 
 ## Communication Style
-- Keep progress updates and summaries concise — state what changed and why, skip narrating every step.
-- Surface blockers, risks, or surprising findings proactively rather than burying them at the end.
-- Push back and debate when something looks wrong or there's a better approach, rather than just complying; brainstorm alternatives when it would help, instead of rubber-stamping the first idea (yours or the user's).
+- Keep updates concise — what changed and why, not a play-by-play.
+- Surface blockers and risks proactively, not at the end.
+- Push back when something looks wrong; propose alternatives instead of rubber-stamping.
 
 ## Environment and Tooling
-- Do not install global packages/tools or modify system-level config (shell rc files, global git config, IDE/editor settings) without asking.
-- Keep environment changes scoped to the project when possible.
+- Don't install global packages or touch system-level config (shell rc, global git, IDE settings) without asking.
+- Keep environment changes scoped to the project.
 
 ## When Stuck
-- After a couple of failed attempts at the same approach, stop and ask rather than keep trying variations.
-- Explain what was tried and why it didn't work before proposing a different approach.
+- After a couple of failed attempts, stop and ask instead of trying more variations.
+- Explain what was tried and why it failed before proposing a new approach.
 
-## Skills
+## Task Workflow
 
-If it's unclear which skill (if any) applies to the current situation, ask rather than guessing.
+Plan Mode selects the track:
+- Active → non-trivial pipeline (below).
+- Inactive → trivial mode (dynamic, no fixed pipeline).
 
-| Situation | Skill |
-|---|---|
-| Actual work — a decision, trade-off, API, or codebase behavior — needs grounding in primary sources before acting or deciding | `sherlock` |
-| Investigating a bug, error, or unexpected behavior | `exterminator` |
-| Writing tests for new logic or a bug fix | `guinea-pig` |
-| Presenting a non-trivial multi-step plan, or a choice involves architecture, a new dependency, a major upgrade, or a breaking change | `whiteboard` |
-| Asked to write/update human-facing docs (README, guide, changelog) — only as the last step, after the work is done and explicitly approved | `ghostwriter` |
-| Finished a non-trivial change, or about to tell the user a task is complete | `nitpick` |
-| Quick web search for Q&A/learning, unrelated to the current codebase | `rabbithole` (manual-only — invoke explicitly with `/rabbithole`) |
+If complexity only becomes clear mid-conversation, say so and suggest switching to Plan Mode instead of running the full pipeline inside a trivial chat.
+
+### Non-trivial (Plan Mode active)
+Discuss throughout, not just once:
+1. Research — ground facts/APIs/codebase behavior (`sherlock`).
+2. Clarify — ask/challenge/answer until requirements are solid.
+3. Design — full picture (approach, alternatives, risks); iterate until feasible; write the design doc (`whiteboard`).
+4. Build — exit Plan Mode. If TDD applies, run `guinea-pig` first (it owns the criteria); otherwise implement directly. If stuck, stop and discuss (see "When Stuck").
+5. Verify — sanity-check + unit tests (`guinea-pig`); loop into `exterminator` for failures, consulting the user each fix-and-retest iteration (see `exterminator`).
+6. Review — run `nitpick`; only a clean pass is approved. Same per-loop consult rule applies (see `nitpick`).
+7. Close out — ask if docs need updating; run `ghostwriter` only if yes.
+
+### Trivial (default)
+No fixed sequence — reach for whichever skill fits (`sherlock`, `guinea-pig`, `exterminator`, `nitpick`, etc.). Ask if unclear. Skip the pipeline, not the loop-consult safety rule (steps 5-6).
+
+### Aside: `rabbithole`
+Manual-only (`/rabbithole`), separate from the pipeline. Ask-and-answer, read-only — no edits or state-changing commands. Short answers; elaborate only if asked.
