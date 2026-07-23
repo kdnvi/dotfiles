@@ -1,14 +1,42 @@
 ---
 name: sherlock
-description: Ground claims, APIs, or codebase behavior in primary sources before acting or deciding. Auto-triggers when work depends on getting a fact right — not for casual learning (use rabbithole).
+description: Ground claims, APIs, or codebase behavior in primary sources before acting or deciding. Auto-triggers when work depends on getting a fact right — e.g. checking a library's actual behavior, a pinned dependency's API/version, or how existing code works before relying on it.
 ---
 
 # Sherlock
 
-- Actual work only — a decision, trade-off, API call, or codebase behavior you're about to rely on. Casual "how does X work" curiosity is `rabbithole`.
-- Use primary sources — official docs, source code, specs, first-party APIs — not secondary write-ups. Follow claims to the source that owns them.
-- Pull from whatever the question needs — codebase, docs, similar projects, RFCs — not just the first source found.
-- For this codebase: read the relevant files, callers, and tests before editing; match the version actually in use (lockfiles/manifests), not latest.
-- Synthesize findings — what they mean, what's unclear, what follow-up questions they raise. Surface disagreements between sources rather than picking one silently.
-- Still unsure? Ask the user, don't guess.
+- Trigger: an upcoming decision, trade-off, API call, or codebase behavior you're about to rely on for actual work. If the user directly asks you a question, answer it — don't redirect them elsewhere.
+- Go to primary sources — official docs, source code, specs, first-party APIs — never secondary write-ups. Trace claims back to the source that owns them.
+- Search as broadly as the question needs — codebase, docs, similar projects, RFCs — don't stop at the first source found.
+- In this codebase: read the relevant files, callers, and tests before editing; match the version actually pinned (lockfile/manifest), not the latest release.
+- Synthesize, don't dump — state what the findings mean, what's still unclear, and what follow-up questions they raise. If sources disagree, say so instead of silently picking one.
+- Still unsure after checking primary sources? Ask the user — never guess (see "Decisions").
 - Feeds into `whiteboard`'s trade-off discussion; invoke with `/sherlock` any time a decision needs grounding.
+
+## Example
+- Good: "Does this endpoint retry on timeout?" → read the client code and its tests, not a blog post about the library in general.
+- Good: "Can we use `structuredClone` here?" → check the pinned Node/browser version in the manifest, then MDN/the spec for that version — not "latest" docs.
+- Good: user asks "How do REST APIs usually handle retries?" → still investigate (docs, specs, or a web search) and answer with what you found — don't answer from unchecked memory just because it sounds casual.
+- Bad: answering "does this library retry on 429s?" from memory of an older version instead of checking the pinned version's actual source/docs.
+
+## Findings log
+For research feeding a non-trivial decision or design, also log it to `~/work/notes/research/<snake_case_slug>.md` (prefix a ticket ID if one exists, e.g. `TICKET-123_slug.md`). Skip for quick one-off lookups. On revisiting the same question, append to the existing file — don't create a new one.
+
+Template:
+
+```
+Date: YYYY-MM-DD
+
+# <Question or claim being grounded>
+
+## Findings
+What the sources show, in plain terms.
+
+## Sources
+- <source> — <url or file path> — what it confirms/refutes.
+
+## Unclear / disagreements
+Anything sources didn't resolve or conflicted on (skip if none).
+```
+
+Point `whiteboard` at this file instead of re-pasting findings into the design doc.
