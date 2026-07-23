@@ -34,6 +34,9 @@
 - After a couple of failed attempts, stop and ask instead of trying more variations.
 - Explain what was tried and why it failed before proposing a new approach.
 
+## Skill Usage
+- Announce which skill you're using before applying it.
+
 ## Task Workflow
 
 Plan Mode selects the track:
