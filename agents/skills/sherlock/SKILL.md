@@ -1,18 +1,18 @@
 ---
 name: sherlock
-description: Scout for information from primary sources when a question can't be confidently answered from existing knowledge, and brainstorm on what's found. Not limited to code — use for any research need before acting, deciding, or discussing something, whenever it actually requires looking something up rather than being answerable outright.
+description: Ground claims, APIs, or codebase behavior in primary sources before acting, deciding, or presenting trade-offs on actual work. Auto-triggers when real work depends on getting a fact right — not for casual learning (use rabbithole for that).
 ---
 
 # Sherlock
 
 ## When to actually use this
-Skip this for questions you can already answer confidently — this is for things that genuinely need looking up (unfamiliar APIs/libraries, unclear codebase behavior, a claim worth double-checking, prior art for a decision), not routine questions.
+For actual work only — a decision, a trade-off, an API you're about to call, codebase behavior you're about to rely on. Skip it for casual "how does X work" curiosity that isn't blocking a decision — that's `rabbithole`.
 
 ## Scout
-- Investigate the question against primary sources — official docs, source code, specs, first-party APIs — not a secondary write-up of them.
+- Investigate against primary sources — official docs, source code, specs, first-party APIs — not a secondary write-up of them.
 - Follow every claim back to the source that owns it.
 - Pull from whatever sources the question actually needs — codebase, official docs, similar projects, specs/RFCs — not just the first one that comes to mind.
-- When it's about this codebase specifically: read the relevant source files, callers, and tests before editing, and match the version actually used in the project (CMakeLists.txt/Makefile, pom.xml/build.gradle, requirements.txt/pyproject.toml, package.json, go.mod, etc.) rather than assuming latest.
+- When it's about this codebase: read the relevant source files, callers, and tests before editing, and match the version actually used in the project (CMakeLists.txt/Makefile, pom.xml/build.gradle, requirements.txt/pyproject.toml, package.json, go.mod, etc.) rather than assuming latest.
 
 ## Brainstorm on findings
 - Don't just dump facts — synthesize them: what they mean, what's still unclear, what follow-up questions they raise.
@@ -22,4 +22,4 @@ Skip this for questions you can already answer confidently — this is for thing
 Ask the user rather than guessing.
 
 ## Related
-Can be useful during `whiteboard`'s discussion/alternatives step, or on its own for any research need — invoke directly with `/sherlock` if it doesn't trigger automatically.
+Feeds directly into `whiteboard`'s trade-off/alternatives discussion — invoke with `/sherlock` any time a real decision needs grounding, even outside planning.
