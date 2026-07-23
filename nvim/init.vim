@@ -4,30 +4,29 @@ set autoindent showmatch splitright ruler
 set ts=4 sw=0 et ut=256 list wildoptions+=fuzzy
 let &showbreak = '+++ '
 
-" extend vim grep abilities with git-grep
-call system('git rev-parse --is-inside-work-tree &>/dev/null')
-let s:findcmd = 'find . -type f'
-if v:shell_error == 0
-  let s:findcmd = 'git ls-files -c -o --exclude-standard'
+" extend vim grep abilities with ripgrep
+if executable('rg')
+  set grepprg=rg\ --vimgrep\ --hidden\ -n\ $*
   set grepformat^=%f:%l:%c:%m
-  set grepprg=git\ grep\ --column\ -n\ $*
+  " use [--no-ignore] for wildcard
+  nmap <Space>g :silent grep! -S ''<Left>
+  xmap <Space>g "0y:silent grep! -s '<C-r>0'<Left>
+  nmap <Space>G :silent grep! -s '<C-r><C-w>'<CR>
 else
   set grepprg=grep\ -HIrn\ $*
+  nmap <Space>g :grep! -i ''<Left>
+  xmap <Space>g "0y:grep! '<C-r>0'<Left>
+  nmap <Space>G :grep! '<C-r><C-w>'<CR>
 endif
-" use [--untracked --no-exclude-standard] for wildcard
-nmap <Space>g :grep! -i ''<Left>
-xmap <Space>g "0y:grep! '<C-r>0'<Left>
-nmap <Space>G :grep! '<C-r><C-w>'<CR>
 
 " browse buffers/files
 nmap <Space>o <Cmd>ls t<CR>:buffer 
 nmap - <Cmd>Explore<CR>
 au FileType netrw nmap <buffer> <C-c> <Cmd>Rex<CR>
 
-
 " :find command should search files
 func! s:findfiles(cmdarg, _cmdcomp) abort
-  let l:out = systemlist(s:findcmd . ' 2>/dev/null')
+  let l:out = systemlist('rg --files -. -L -S -g=!.git 2>/dev/null')
   if v:shell_error != 0 | return [] | endif
   return empty(a:cmdarg) ? l:out : matchfuzzy(l:out, a:cmdarg)
 endfunc
@@ -76,4 +75,5 @@ if has('nvim')
 
   " load lua stuff
   lua require'langserver'
+  lua require'diffsign'
 endif

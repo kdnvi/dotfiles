@@ -7,7 +7,7 @@ REPO_URL="https://github.com/kdnvi/dotfiles.git"
 echo '> installing essential packages'
 case $(uname -s) in
     Linux)
-        sudo dnf update -y && sudo dnf install -y git bash tmux neovim tree ncdu htop jq pandoc
+        sudo dnf update -y && sudo dnf install -y git bash tmux neovim ripgrep tree ncdu htop jq pandoc
         ;;
     Darwin)
         xcode-select -p >/dev/null 2>&1 || { echo '> installing command line tools for xcode'; xcode-select --install; }
@@ -16,13 +16,13 @@ case $(uname -s) in
             /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
             eval "$(/opt/homebrew/bin/brew shellenv)"
         }
-        brew update && brew install git bash bash-completion@2 tmux neovim tree ncdu htop jq pandoc
+        brew update && brew install git bash bash-completion@2 tmux neovim ripgrep tree ncdu htop jq pandoc
         ;;
     *)  echo '! unsupported os: only linux and mac' >&2; exit 1 ;;
 esac
 
 echo '> creating essential dirs'
-mkdir -p ~/.config ~/work ~/lab
+mkdir -p ~/.config ~/work ~/lab ~/.claude
 
 echo '> cloning dotfiles'
 [ -d "$DOTFILES_DIR/.git" ] || git clone "$REPO_URL" "$DOTFILES_DIR"
@@ -40,6 +40,10 @@ mkdir -p ~/.local/bin
 for f in $(pwd)/localbin/*; do
     ln -sfn "$f" "$HOME/.local/bin/$(basename "$f")"
 done
+
+echo '> configuring claude agent'
+ln -sfn "$DOTFILES_DIR/agents/CLAUDE.md" ~/.claude/CLAUDE.md
+ln -sfn "$DOTFILES_DIR/agents/skills" ~/.claude/skills
 
 echo '> downloading git-completion.bash and git-prompt.sh'
 curl -fsSL https://raw.githubusercontent.com/git/git/refs/heads/master/contrib/completion/git-completion.bash -o ~/.git-completion.bash
