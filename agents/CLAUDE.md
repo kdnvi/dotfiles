@@ -40,7 +40,7 @@ If it's unclear which skill (if any) applies to the current situation, ask rathe
 
 | Situation | Skill |
 |---|---|
-| Something genuinely needs looking up (not just code) before acting, deciding, or discussing it — not answerable from existing knowledge alone | `sherlock` |
+| Actual work — a decision, trade-off, API, or codebase behavior — needs grounding in primary sources before acting or deciding | `sherlock` |
 | Investigating a bug, error, or unexpected behavior | `exterminator` |
 | Writing tests for new logic or a bug fix | `guinea-pig` |
 | Presenting a non-trivial multi-step plan, or a choice involves architecture, a new dependency, a major upgrade, or a breaking change | `whiteboard` |
