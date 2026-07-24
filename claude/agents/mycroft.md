@@ -40,3 +40,7 @@ Anything sources didn't resolve or conflicted on (skip if none).
 ```
 
 Skip the shape for quick one-off curiosity — a plain answer is enough. Otherwise, whoever delegated to you saves it as-is to `~/work/notes/research/<snake_case_slug>.md` (prefix a ticket ID if one exists, e.g. `TICKET-123_slug.md`), appending instead of creating a new file on a repeat question.
+
+### Keeping the log usable
+- Appending is for the *same* question revisited — if a repeat lookup turns out to be a different question than the file's title covers, start a new file instead of stretching the old one.
+- Before reusing or appending to an existing entry, skim it for size/focus: if it's grown past a handful of appended entries or now spans clearly unrelated sub-questions, split it into separate files by topic rather than adding another entry, and say so to whoever delegated to you.

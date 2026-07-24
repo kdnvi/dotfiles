@@ -21,6 +21,8 @@ description: Weigh trade-offs and design an approach before implementing non-tri
 ## Design doc
 Always write it to `~/work/notes/plans/<snake_case_slug>.md` — no other location (prefix a ticket ID if one exists, e.g. `TICKET-123_slug.md`). On revision, edit the existing file — don't create a new one. Cite the findings log (`~/work/notes/research/`) by file/entry wherever the design relies on it, instead of re-pasting or re-asserting the findings here.
 
+Every section below is required — don't omit one to save time; if a section genuinely doesn't apply (e.g. no viable alternative existed), say so explicitly in it rather than dropping it, so `guinea-pig`/`gatekeeper` can rely on the doc having a complete shape.
+
 Template:
 
 ```
@@ -40,8 +42,14 @@ The proposed steps/design, in the order they'd be executed.
 ## Alternatives Considered
 Other approaches and why they were not chosen (skip only if no other approach was viable).
 
+## Design Decision
+Why the chosen approach won — the specific reasoning/evidence that tipped it over the alternatives above, not a restatement of the Approach itself.
+
 ## Risks / Trade-offs
 Anything that could break, be slow, or need a follow-up.
+
+## Verification Plan
+How this will be confirmed to work — what `guinea-pig` should test and what `gatekeeper` should check at review time.
 
 ## Open Questions
 Anything unresolved that needs a decision before/during implementation.
