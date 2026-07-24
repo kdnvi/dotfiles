@@ -1,9 +1,9 @@
 ---
-name: nitpick
+name: gatekeeper
 description: Careful review gate — run tests/linters, critically review the diff, and loop back to fix rather than stop-and-report. Use right before declaring a non-trivial task done.
 ---
 
-# Nitpick
+# Gatekeeper
 
 - Trigger: right before declaring a non-trivial task done. Run every section below, in order, before saying so.
 
@@ -14,7 +14,7 @@ description: Careful review gate — run tests/linters, critically review the di
 ## 2. Review the diff
 - Read every changed line — check logic, edge cases, error handling, not just "does it run."
 - Re-check against the original request/plan — nothing missed, nothing unrelated changed.
-- Grep for any `[DEBUG-...]` tags left by `exterminator` (must be empty) and check for other dead code or TODOs.
+- Grep for any `[DEBUG-...]` tags left by `sleuth` (must be empty) and check for other dead code or TODOs.
 - Confirm no workflow rule was violated.
 
 ## 3. Loop until it passes

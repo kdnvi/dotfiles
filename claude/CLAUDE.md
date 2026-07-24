@@ -13,13 +13,8 @@
 - Warn before touching files that likely contain credentials.
 
 ## Scope of Changes
-- Keep diffs minimal — only change what the task requires.
 - Don't refactor, rename, or clean up unrelated code unless asked.
 - Don't revert or overwrite the user's in-progress edits.
-
-## Generated Files
-- Never modify generated files (build output, lockfiles, codegen, `node_modules/`, `.venv/`).
-- If a generated file needs to change, update its source/generator instead.
 
 ## Communication Style
 - Keep updates concise — what changed and why, not a play-by-play.
@@ -41,6 +36,20 @@
 - A *fact* you can find by exploring the environment (files, tools, docs)? Look it up, don't ask. A *decision*? That's the user's, every time.
 - Not highly confident it's trivial-and-reversible? Ask — never guess or pick silently. Don't act on unconfirmed decisions.
 
+## Skill Map
+Quick index — see each skill's own file for its actual rules; don't restate them here.
+
+| Name | Type | Purpose |
+| --- | --- | --- |
+| `sherlock` | skill | Coordinator — answers questions/grounds claims, routing to `watson`/`mycroft`/`whiteboard` as needed |
+| `whiteboard` | skill | Weighs trade-offs and designs an approach for a non-trivial decision, in Plan Mode |
+| `guinea-pig` | skill | Writes tests (TDD where warranted) and manually sanity-checks behavior |
+| `sleuth` | skill | Systematically roots out the cause of a bug/failure before fixing |
+| `gatekeeper` | skill | Final review gate — tests/linters, diff review, loop until clean |
+| `wordsmith` | skill | Writes human-facing docs (customer-facing or engineering), only when explicitly asked |
+| `mycroft` | subagent | Deep-dive research — primary sources, findings/risks, never weighs a decision |
+| `watson` | subagent | Reads/explains this codebase — traces, diagrams, `file:line` citations |
+
 ## Task Workflow
 
 - Announce which skill you're using before applying it.
@@ -53,20 +62,14 @@ If complexity only becomes clear mid-conversation, say so and suggest switching 
 ### Non-trivial (Plan Mode active)
 Discuss throughout, not just once:
 1. Research — ground facts/APIs/codebase behavior (`sherlock`).
-2. Clarify — one question at a time (see "Decisions"), until the user confirms scope is solid.
+2. Clarify (`whiteboard`) — one question at a time (see "Decisions"), until the user confirms scope is solid.
 3. Design — full picture (approach, alternatives, risks); iterate until the user approves the design; write the design doc (`whiteboard`).
 4. Build — before exiting Plan Mode, add steps 5-7 to the todo list so they survive the mode switch. At the start of Build, decide whether TDD applies (see `guinea-pig`'s criteria); if so, run it first, otherwise implement directly. If stuck, stop and discuss (see "When Stuck").
-5. Verify — `guinea-pig`; loop into `exterminator` for failures, consulting the user each fix-and-retest iteration (see `exterminator`).
-6. Review — run `nitpick`; only a clean pass is approved. Same per-loop consult rule applies (see `nitpick`).
-7. Close out — ask if docs need updating; run `ghostwriter` only if yes.
+5. Verify — `guinea-pig`; loop into `sleuth` for failures, consulting the user each fix-and-retest iteration (see `sleuth`).
+6. Review — run `gatekeeper`; only a clean pass is approved. Same per-loop consult rule applies (see `gatekeeper`).
+7. Close out — ask if docs need updating; run `wordsmith` only if yes.
 
 Never call a non-trivial task done with an open Verify or Review todo.
 
 ### Trivial (default)
-No fixed sequence — reach for whichever skill fits (`sherlock`, `guinea-pig`, `exterminator`, `nitpick`, etc.). Ask if unclear. Skip the pipeline, not the loop-consult safety rule (steps 5-6).
-
-### Aside: `rabbithole`
-Manual-only (`/rabbithole`), separate from the pipeline. Ask-and-answer, read-only — no edits or state-changing commands. Short answers; elaborate only if asked.
-
-### Aside: `tailor`
-Manual-only (`/tailor`), separate from the pipeline. Reference for writing/reviewing skill files themselves, not for doing a task's actual work — consult before creating or editing a `SKILL.md`.
+No fixed sequence — reach for whichever skill fits (`sherlock`, `guinea-pig`, `sleuth`, `gatekeeper`, etc.). Ask if unclear. Skip the pipeline, not the loop-consult safety rule (steps 5-6).

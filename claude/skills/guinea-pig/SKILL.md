@@ -21,7 +21,7 @@ Applies (write the failing test first, then implement just enough to pass) if th
 
 Skip test-first ceremony for trivial/mechanical changes (config, renames, docs) — write tests after, if at all, and focus on what matters, not coverage for its own sake.
 
-Also useful for `exterminator`'s bug-repro test and `nitpick`'s test run; invoke directly with `/guinea-pig` any time.
+Also useful for `sleuth`'s bug-repro test and `gatekeeper`'s test run; invoke directly with `/guinea-pig` any time.
 
 ## Example
 - Good: adding a `discount()` function → write a failing test for the 10%-off case first, then implement until it passes.
