@@ -75,5 +75,4 @@ if has('nvim')
 
   " load lua stuff
   lua require'langserver'
-  lua require'diffsign'
 endif

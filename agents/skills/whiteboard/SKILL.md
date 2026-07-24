@@ -6,10 +6,11 @@ description: Weigh trade-offs and design an approach before implementing non-tri
 # Whiteboard
 
 - Trigger: a choice with real trade-offs — architecture, performance, compatibility, maintenance, a new dependency/major upgrade, or a breaking change to a public API/schema/config. Ask before proceeding (see "Decisions" — this is never a trivial-and-reversible case).
+- Do this work in Plan Mode — its read-only guarantee matches designing before touching code. If not already active, switch to it before designing.
 - Present every option with its pros/cons; never pick a non-trivial option unilaterally.
 - Prefer a library already used in the project over introducing a new one, unless you state a specific reason not to.
 - Surface open questions and alternatives, and iterate with the user until they give an explicit final decision — a single unconfirmed proposal is not a decision.
-- Ground claims and scout alternatives with `sherlock` (`/sherlock`) instead of guessing or settling for the first idea.
+- Ground claims and scout alternatives with `sherlock` (`/sherlock`) instead of guessing or settling for the first idea. Every claim the design doc's Approach/Risks rests on must trace back to a `sherlock` findings-log entry — if it doesn't, run `sherlock` first.
 
 ## Example
 - Good: "Add caching" → present Redis vs in-memory vs on-disk with pros/cons, ask which fits before writing code.
@@ -17,7 +18,7 @@ description: Weigh trade-offs and design an approach before implementing non-tri
 - Skip: renaming a local variable, fixing a typo — trivial and reversible (see "Decisions"), just do it.
 
 ## Design doc
-For non-trivial multi-step work, also write it to `~/work/notes/plans/<snake_case_slug>.md` (prefix a ticket ID if one exists, e.g. `TICKET-123_slug.md`). Skip for trivial one-off asks. On revision, edit the existing file — don't create a new one. Link to `sherlock`'s findings log (`~/work/notes/research/`) instead of re-pasting its findings here.
+Always write it to `~/work/notes/plans/<snake_case_slug>.md` — no other location (prefix a ticket ID if one exists, e.g. `TICKET-123_slug.md`). On revision, edit the existing file — don't create a new one. Cite `sherlock`'s findings log (`~/work/notes/research/`) by file/entry wherever the design relies on it, instead of re-pasting or re-asserting the findings here.
 
 Template:
 
